@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { RxHamburgerMenu } from "react-icons/rx";
 import { IoIosSearch } from "react-icons/io";
 import { BiUser } from "react-icons/bi";
@@ -79,13 +79,35 @@ const styles = {
         alignItems: 'center',
         marginRight: '1rem',
         },
+    
     /* User Container */
     userContainer:{
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         gap: '0.5rem',
-    }
+    },
+
+    // Mobile User
+    userIconMobile:{
+        display: 'none',
+    },
+    searchBarMobile:{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: '0.5rem',
+        width: '55%',
+        height: '50%',
+        background: 'rgb(255, 255, 255)',
+        boxSizing: 'border-box',
+        border: '1.5px solid rgb(0, 0, 0)',
+        borderRadius: '30.08px',
+        padding: '0 1rem',      
+        cursor: 'pointer',
+        marginLeft: '1rem',
+    },
+
 }
 
 function Navbar() {
@@ -97,22 +119,56 @@ function Navbar() {
             inputRef.current.focus();
         }
     };
+
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
   return (
     <nav style={styles.nav}>
-        <Logo />
-        <div style={styles.searchBar} onClick={handleDivClick}>
+        <Logo isMobile={isMobile}/>
+
+
+        
+            {isMobile ? (
+        <div style={styles.searchBarMobile} onClick={handleDivClick}>
             <IoIosSearch style={styles.searchIcon} />
-            <input
-                ref={inputRef}
-                type="text"
+                <input
+                    ref={inputRef}
+                    type="text"
+                placeholder={t("navbar.search")}
+                style={styles.searchInput}
+                />
+            </div>
+            ) : (
+                <div style={styles.searchBar} onClick={handleDivClick}>
+                <IoIosSearch style={styles.searchIcon} />
+                <input
+                    ref={inputRef}
+                    type="text"
                 placeholder={t("navbar.search")}
                 style={styles.searchInput}
             />
         </div>
+            )}
+
+
+
+
         <div style={styles.userContainer}>
-        <div style={styles.user}>
-            <BiUser style={styles.userIcon} />
-        </div>
+            {isMobile ? (
+                <div style={styles.userMobile}>
+                    <BiUser style={styles.userIconMobile} />
+                </div>
+            ) : (
+                <div style={styles.user}>
+                    <BiUser style={styles.userIcon} />
+                </div>
+            )}
         <div style={styles.hamburger}>
             <RxHamburgerMenu style={styles.hamburgerIcon} />
         </div>
