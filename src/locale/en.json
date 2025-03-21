@@ -1,0 +1,38 @@
+{
+    "navbar": {
+        "logo": "TIXMOJO",
+        "search": "Search Events..."
+    },
+    "footer": {
+        "copyright": "Copyright 2025 | All Right Reserved with TIXMOJO",
+        "tnc": {
+            "privacy": "Privacy Policy",
+            "refund": "Refund Policy",
+            "terms": "Terms & Conditions"
+            },
+        "information": {
+            "title": "Information",
+            "redirects": {
+                "one": "About Us",
+                "two": "Blog",
+                "three": "Events"
+            }
+        },
+        "links": {
+                "title": "Helpful Links",
+            "redirects": {
+                "one": "Terms & Conditions",
+                "two": "Privacy Policy",
+                "three": "Refund Policy"
+            }
+        },
+        "contact": {
+            "title": "Contact Us",
+            "redirects": {
+                "one": "+61 483952024",
+                "two": "info@tixmojo.com"
+            }
+        }
+
+    }   
+}
