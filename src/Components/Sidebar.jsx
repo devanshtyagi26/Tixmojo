@@ -3,7 +3,7 @@ import { HiArrowSmRight, HiChartPie } from "react-icons/hi";
 import { PiListHeartBold } from "react-icons/pi";
 import { HiOutlineInformationCircle, HiOutlinePhone } from "react-icons/hi";
 import "../Style/sidebarAnimation.css";
-
+import { useEffect, useState } from "react";
 const styles = {
   sidebar: {
     width: "250px",
@@ -59,15 +59,27 @@ const styles = {
   },
 };
 
-export function SidebarScroll({ toggleScrollPage }) {
+export function SidebarScroll({ toggleScrollPage, isSidebarOpen }) {
   const handleClick = () => {
     toggleScrollPage();
   };
 
+  useEffect(() => {
+    if (isSidebarOpen) {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.classList.add("slide-in");
+      sidebar.classList.remove("slide-out");
+    } else {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.classList.remove("slide-in");
+      sidebar.classList.add("slide-out");
+    }
+  }, [isSidebarOpen]);
+
   return (
     <>
       <div style={styles.overlay} onClick={handleClick}></div>
-      <div style={styles.sidebar} className="slide-in">
+      <div style={styles.sidebar} id="sidebar">
         <div style={styles.itemGroup}>
           <a href="#" style={styles.item}>
             <HiChartPie style={styles.icon} /> Dashboard

@@ -110,7 +110,7 @@ const styles = {
   },
 };
 
-function Navbar({ toggleScrollPage }) {
+function Navbar({ toggleScrollPage, isSidebarOpen }) {
   const { t } = useTranslation();
   const inputRef = useRef(null);
 
@@ -165,7 +165,7 @@ function Navbar({ toggleScrollPage }) {
           </div>
         )}
         <div style={styles.hamburger}>
-          <Hamburger onToggle={toggleScrollPage} />
+          <Hamburger onToggle={toggleScrollPage} isSidebarOpen={isSidebarOpen} />
         </div>
       </div>
     </nav>

@@ -6,8 +6,16 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   return (
     <>
-      <Navbar toggleScrollPage={() => setIsSidebarOpen((prev) => !prev)} />
-      {isSidebarOpen && <SidebarScroll toggleScrollPage={() => setIsSidebarOpen((prev) => !prev)} />}
+      <Navbar
+        isSidebarOpen={isSidebarOpen}
+        toggleScrollPage={() => setIsSidebarOpen((prev) => !prev)}
+      />
+      {isSidebarOpen && (
+        <SidebarScroll
+          isSidebarOpen={isSidebarOpen}
+          toggleScrollPage={() => setIsSidebarOpen((prev) => !prev)}
+        />
+      )}
       {console.log(isSidebarOpen)}
       <Footer />
     </>

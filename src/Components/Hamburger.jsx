@@ -1,11 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 
-const Hamburger = ({ onToggle }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
+const Hamburger = ({ onToggle, isSidebarOpen }) => {
   const handleClick = () => {
-    setIsOpen(!isOpen);
     onToggle();
   };
 
@@ -16,7 +13,7 @@ const Hamburger = ({ onToggle }) => {
           <input
             id="checkbox"
             type="checkbox"
-            checked={isOpen}
+            checked={isSidebarOpen}
             onChange={handleClick}
           />
           <label className="toggle" htmlFor="checkbox">
