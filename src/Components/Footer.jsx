@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import Logo from "../assets/Logo";
 import "../i18n";
 import { Phone, Email } from "../assets/FooterSVGs";
-
+import { Link } from "react-router-dom";
 const styles = {
   footer: {
     boxShadow: "0px 1px 45px 5px rgba(0, 0, 0, 0.11)",
@@ -35,7 +35,7 @@ const styles = {
   },
   copyright: {
     display: "grid",
-    gridTemplateColumns: "1fr 1fr 1fr",
+    gridTemplateColumns: "1.4fr 1fr 1fr",
     justifyContent: "center",
     alignItems: "center",
     width: "100vw",
@@ -59,6 +59,8 @@ const styles = {
     fontSize: "12px",
     fontWeight: "300",
     cursor: "pointer",
+    color: "rgb(0, 0, 0)",
+    textDecoration: "none",
     transition: "text-decoration 0.2s ease-in-out",
   },
   tncTextHover: {
@@ -88,6 +90,7 @@ const styles = {
     justifyContent: "center",
     alignItems: "flex-start",
     flexDirection: "column",
+    textDecoration: "none",
   },
   contactSvg: {
     display: "flex",
@@ -191,17 +194,29 @@ function Footer() {
             <div style={styles.usefulBlock}>
               <p style={styles.title}>{t("footer.information.title")}</p>
               <div style={styles.content}>
-                {renderLink("footer.information.redirects.one")}
-                {renderLink("footer.information.redirects.two")}
-                {renderLink("footer.information.redirects.three")}
+                <Link to="/page-not-found" style={{ textDecoration: "none" }}>
+                  {renderLink("footer.information.redirects.one")}
+                </Link>
+                <Link to="/page-not-found" style={{ textDecoration: "none" }}>
+                  {renderLink("footer.information.redirects.two")}
+                </Link>
+                <Link to="/page-not-found" style={{ textDecoration: "none" }}>
+                  {renderLink("footer.information.redirects.three")}
+                </Link>
               </div>
             </div>
             <div style={styles.usefulBlock}>
               <p style={styles.title}>{t("footer.links.title")}</p>
               <div style={styles.content}>
-                {renderLink("footer.links.redirects.one")}
-                {renderLink("footer.links.redirects.two")}
-                {renderLink("footer.links.redirects.three")}
+                <Link to="/page-not-found" style={{ textDecoration: "none" }}>
+                  {renderLink("footer.links.redirects.one")}
+                </Link>
+                <Link to="/page-not-found" style={{ textDecoration: "none" }}>
+                  {renderLink("footer.links.redirects.two")}
+                </Link>
+                <Link to="/page-not-found" style={{ textDecoration: "none" }}>
+                  {renderLink("footer.links.redirects.three")}
+                </Link>
               </div>
             </div>
           </div>
@@ -212,11 +227,15 @@ function Footer() {
               <div style={styles.content}>
                 <div style={styles.contactSvg}>
                   <Phone />
-                  {renderLink("footer.contact.redirects.one")}
+                  <Link to="/page-not-found" style={{ textDecoration: "none" }}>
+                    {renderLink("footer.contact.redirects.one")}
+                  </Link>
                 </div>
                 <div style={styles.contactSvg}>
                   <Email />
-                  {renderLink("footer.contact.redirects.two")}
+                  <Link to="/page-not-found" style={{ textDecoration: "none" }}>
+                    {renderLink("footer.contact.redirects.two")}
+                  </Link>
                 </div>
                 <div style={styles.socialSvgContainer}>
                   <div className="insta" style={styles.socialSvg}></div>
@@ -240,34 +259,56 @@ function Footer() {
               <div style={styles.usefulBlock}>
                 <p style={styles.title}>{t("footer.information.title")}</p>
                 <div style={styles.content}>
-                  {renderLink("footer.information.redirects.one")}
-                  {renderLink("footer.information.redirects.two")}
-                  {renderLink("footer.information.redirects.three")}
+                  <Link to="/page-not-found" style={{ textDecoration: "none" }}>
+                    {renderLink("footer.information.redirects.one")}
+                  </Link>
+                  <Link to="/page-not-found" style={{ textDecoration: "none" }}>
+                    {renderLink("footer.information.redirects.two")}
+                  </Link>
+                  <Link to="/page-not-found" style={{ textDecoration: "none" }}>
+                    {renderLink("footer.information.redirects.three")}
+                  </Link>
                 </div>
               </div>
               <div style={styles.usefulBlock}>
                 <p style={styles.title}>{t("footer.links.title")}</p>
                 <div style={styles.content}>
-                  {renderLink("footer.links.redirects.one")}
-                  {renderLink("footer.links.redirects.two")}
-                  {renderLink("footer.links.redirects.three")}
+                  <Link to="./page-not-found" style={{ textDecoration: "none" }}>
+                    {renderLink("footer.links.redirects.one")}
+                  </Link>
+                  <Link to="./page-not-found" style={{ textDecoration: "none" }}>
+                    {renderLink("footer.links.redirects.two")}
+                  </Link>
+                  <Link to="./page-not-found" style={{ textDecoration: "none" }}>
+                    {renderLink("footer.links.redirects.three")}
+                  </Link>
                 </div>
               </div>
               <div style={styles.usefulBlock}>
                 <p style={styles.title}>{t("footer.contact.title")}</p>
                 <div style={styles.content}>
-                  <div style={styles.contactSvg}>
-                    <Phone />
-                    {renderLink("footer.contact.redirects.one")}
-                  </div>
-                  <div style={styles.contactSvg}>
-                    <Email />
-                    {renderLink("footer.contact.redirects.two")}
-                  </div>
+                  <Link to="./page-not-found" style={{ textDecoration: "none" }}>
+                    <div style={styles.contactSvg}>
+                      <Phone />
+                      {renderLink("footer.contact.redirects.one")}
+                    </div>
+                  </Link>
+                  <Link to="./page-not-found" style={{ textDecoration: "none" }}> 
+                    <div style={styles.contactSvg}>
+                      <Email />
+                      {renderLink("footer.contact.redirects.two")}
+                    </div>
+                  </Link>
                   <div style={styles.socialSvgContainer}>
-                    <div className="insta" style={styles.socialSvg}></div>
-                    <div className="twitter" style={styles.socialSvg}></div>
-                    <div className="facebook" style={styles.socialSvg}></div>
+                    <Link to="./page-not-found" style={{ textDecoration: "none" }}>
+                      <div className="insta" style={styles.socialSvg}></div>
+                    </Link>
+                    <Link to="./page-not-found" style={{ textDecoration: "none" }}>
+                      <div className="twitter" style={styles.socialSvg}></div>
+                    </Link>
+                    <Link to="./page-not-found" style={{ textDecoration: "none" }}>
+                      <div className="facebook" style={styles.socialSvg}></div>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -277,9 +318,13 @@ function Footer() {
             <span></span>
             <p>{t("footer.copyright")}</p>
             <div style={styles.tnc}>
-              {renderLink("footer.tnc.privacy")}
-              {renderLink("footer.tnc.refund")}
-              {renderLink("footer.tnc.terms")}
+              <Link to="/page-not-found" style={{ textDecoration: "none" }}>
+                {renderLink("footer.tnc.privacy")}
+              </Link>
+              <Link to="/page-not-found" style={{ textDecoration: "none" }}>
+                {renderLink("footer.tnc.refund")}
+              </Link>
+              <Link to="/page-not-found" style={{textDecoration: "none"}}>{renderLink("footer.tnc.terms")}</Link>
             </div>
           </div>
         </footer>

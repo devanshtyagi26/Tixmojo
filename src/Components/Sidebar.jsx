@@ -3,13 +3,13 @@ import { HiArrowSmRight, HiChartPie } from "react-icons/hi";
 import { PiListHeartBold } from "react-icons/pi";
 import { HiOutlineInformationCircle, HiOutlinePhone } from "react-icons/hi";
 import "../Style/sidebarAnimation.css";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+
 const styles = {
   sidebar: {
     width: "250px",
     height: "70vh",
     backgroundColor: "#f8f9fa",
-    boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
     padding: "1rem",
     display: "flex",
     flexDirection: "column",
@@ -65,16 +65,28 @@ export function SidebarScroll({ toggleScrollPage, isSidebarOpen }) {
   };
 
   useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        toggleScrollPage();
+      }
+    };
+
     if (isSidebarOpen) {
       const sidebar = document.getElementById("sidebar");
       sidebar.classList.add("slide-in");
       sidebar.classList.remove("slide-out");
+      document.addEventListener("keydown", handleKeyDown);
     } else {
       const sidebar = document.getElementById("sidebar");
       sidebar.classList.remove("slide-in");
       sidebar.classList.add("slide-out");
+      document.removeEventListener("keydown", handleKeyDown);
     }
-  }, [isSidebarOpen]);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isSidebarOpen, toggleScrollPage]);
 
   return (
     <>
