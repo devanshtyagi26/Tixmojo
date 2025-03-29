@@ -14,7 +14,7 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "flex-start",
     flexDirection: "column",
-    position: "fixed",
+    position: "relative",
     bottom: "0",
     padding: "2rem 0 0 0",
   },
@@ -273,13 +273,22 @@ function Footer() {
               <div style={styles.usefulBlock}>
                 <p style={styles.title}>{t("footer.links.title")}</p>
                 <div style={styles.content}>
-                  <Link to="./page-not-found" style={{ textDecoration: "none" }}>
+                  <Link
+                    to="./page-not-found"
+                    style={{ textDecoration: "none" }}
+                  >
                     {renderLink("footer.links.redirects.one")}
                   </Link>
-                  <Link to="./page-not-found" style={{ textDecoration: "none" }}>
+                  <Link
+                    to="./page-not-found"
+                    style={{ textDecoration: "none" }}
+                  >
                     {renderLink("footer.links.redirects.two")}
                   </Link>
-                  <Link to="./page-not-found" style={{ textDecoration: "none" }}>
+                  <Link
+                    to="./page-not-found"
+                    style={{ textDecoration: "none" }}
+                  >
                     {renderLink("footer.links.redirects.three")}
                   </Link>
                 </div>
@@ -287,26 +296,41 @@ function Footer() {
               <div style={styles.usefulBlock}>
                 <p style={styles.title}>{t("footer.contact.title")}</p>
                 <div style={styles.content}>
-                  <Link to="./page-not-found" style={{ textDecoration: "none" }}>
+                  <Link
+                    to="./page-not-found"
+                    style={{ textDecoration: "none" }}
+                  >
                     <div style={styles.contactSvg}>
                       <Phone />
                       {renderLink("footer.contact.redirects.one")}
                     </div>
                   </Link>
-                  <Link to="./page-not-found" style={{ textDecoration: "none" }}> 
+                  <Link
+                    to="./page-not-found"
+                    style={{ textDecoration: "none" }}
+                  >
                     <div style={styles.contactSvg}>
                       <Email />
                       {renderLink("footer.contact.redirects.two")}
                     </div>
                   </Link>
                   <div style={styles.socialSvgContainer}>
-                    <Link to="./page-not-found" style={{ textDecoration: "none" }}>
+                    <Link
+                      to="./page-not-found"
+                      style={{ textDecoration: "none" }}
+                    >
                       <div className="insta" style={styles.socialSvg}></div>
                     </Link>
-                    <Link to="./page-not-found" style={{ textDecoration: "none" }}>
+                    <Link
+                      to="./page-not-found"
+                      style={{ textDecoration: "none" }}
+                    >
                       <div className="twitter" style={styles.socialSvg}></div>
                     </Link>
-                    <Link to="./page-not-found" style={{ textDecoration: "none" }}>
+                    <Link
+                      to="./page-not-found"
+                      style={{ textDecoration: "none" }}
+                    >
                       <div className="facebook" style={styles.socialSvg}></div>
                     </Link>
                   </div>
@@ -324,7 +348,9 @@ function Footer() {
               <Link to="/page-not-found" style={{ textDecoration: "none" }}>
                 {renderLink("footer.tnc.refund")}
               </Link>
-              <Link to="/page-not-found" style={{textDecoration: "none"}}>{renderLink("footer.tnc.terms")}</Link>
+              <Link to="/page-not-found" style={{ textDecoration: "none" }}>
+                {renderLink("footer.tnc.terms")}
+              </Link>
             </div>
           </div>
         </footer>

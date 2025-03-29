@@ -4,7 +4,7 @@
         "search": "Search Events..."
     },
     "footer": {
-        "copyright": "Copyright 2025 | All Right Reserved with TIXMOJO",
+        "copyright": "Copyright 2025 | All Right Reserved with TIXMOJO",
         "tnc": {
             "privacy": "Privacy Policy",
             "refund": "Refund Policy",
@@ -34,5 +34,65 @@
             }
         }
 
+    },
+    "eventsSection": {
+        "sectionTitles": {
+            "popular": "Events in",
+            "featured": "Featured in",
+            "happening": "Happening in",
+            "recommended": "Recommended"
+        },
+        "filters": {
+            "all": "All",
+            "today": "Today",
+            "tomorrow": "Tomorrow",
+            "thisWeek": "This Week"
+        },
+        "locations": {
+            "sydney": "Sydney",
+            "melbourne": "Melbourne",
+            "singapore": "Singapore",
+            "brisbane": "Brisbane",
+            "tokyo": "Tokyo",
+            "london": "London",
+            "newYork": "New York"
+        },
+        "noEvents": {
+            "title": "No events available",
+            "message": "No events found in {{location}} for \"{{filter}}\" filter",
+            "viewAll": "View all events"
+        },
+        "events": {
+            "today": {
+                "live": "TODAY'S LIVE CONCERT",
+                "jazz": "TODAY'S JAZZ NIGHT",
+                "outdoor": "TODAY'S OUTDOOR FESTIVAL",
+                "comedy": "TODAY'S COMEDY SPECIAL",
+                "food": "TODAY'S FOOD TASTING",
+                "melbourne": "MELBOURNE JAZZ FESTIVAL"
+            },
+            "tomorrow": {
+                "dance": "TOMORROW'S DANCE PARTY",
+                "comedy": "TOMORROW'S COMEDY SHOW",
+                "art": "TOMORROW'S ART EXHIBITION",
+                "food": "TOMORROW'S FOOD FESTIVAL",
+                "tech": "TOMORROW'S TECH CONFERENCE",
+                "melbourne": "COMEDY FESTIVAL"
+            },
+            "thisWeek": {
+                "festival": "THIS WEEK FESTIVAL",
+                "indie": "THIS WEEK INDIE ROCK",
+                "theater": "THIS WEEK THEATER SHOW",
+                "fashion": "THIS WEEK FASHION SHOW",
+                "music": "THIS WEEK MUSIC FESTIVAL",
+                "melbourne": "CULTURAL SHOWCASE"
+            },
+            "other": {
+                "symphony": "NEXT MONTH SYMPHONIC",
+                "edm": "NEXT WEEK EDM PARTY",
+                "art": "NEXT MONTH ART EXHIBIT"
+            }
+        },
+        "priceLabel": "From AUD {{price}}"
     }   
 }
