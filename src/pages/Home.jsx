@@ -2,6 +2,8 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import EventsSection from "../Components/EventsSection.jsx";
 import RecommendationSection from "../Components/RecommendationSection.jsx";
+import FlyerCarousel from "../Components/FlyerCarousel.jsx";
+import { flyerData } from "../data/flyerData.js";
 
 // Get today and tomorrow's dates formatted as "DD MMM"
 const formatDate = (date) => {
@@ -178,6 +180,8 @@ function Home() {
     t("eventsSection.locations.sydney")
   );
 
+  // Flyer data is now imported directly from the data file
+  
   // Recommendations data (combining popular events from different locations)
   const recommendationsData = [
     {
@@ -282,6 +286,12 @@ function Home() {
       <RecommendationSection
         events={recommendationsData}
         containerId="recommendationsContainer"
+      />
+      
+      {/* Featured Flyers Carousel */}
+      <FlyerCarousel 
+        flyers={flyerData}
+        containerId="featuredFlyersCarousel"
       />
     </div>
   );

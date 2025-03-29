@@ -40,7 +40,8 @@
             "popular": "Events in",
             "featured": "Featured in",
             "happening": "Happening in",
-            "recommended": "Recommended"
+            "recommended": "Recommended",
+            "featuredEvents": "Featured Events"
         },
         "filters": {
             "all": "All",
