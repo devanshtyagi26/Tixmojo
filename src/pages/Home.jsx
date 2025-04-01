@@ -271,7 +271,13 @@ function Home() {
   // Only keeping the popular events location handler since that's the only one being used
 
   return (
-    <div style={{ padding: "80px 0 180px" }}>
+    <>
+      {/* Featured Flyers Carousel */}
+      <FlyerCarousel 
+        flyers={flyerData}
+        containerId="featuredFlyersCarousel"
+      />
+
       {/* Popular Events Section */}
       <EventsSection
         title={t("eventsSection.sectionTitles.popular")}
@@ -288,12 +294,7 @@ function Home() {
         containerId="recommendationsContainer"
       />
       
-      {/* Featured Flyers Carousel */}
-      <FlyerCarousel 
-        flyers={flyerData}
-        containerId="featuredFlyersCarousel"
-      />
-    </div>
+    </>
   );
 }
 
