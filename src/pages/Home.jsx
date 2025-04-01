@@ -5,6 +5,7 @@ import RecommendationSection from "../Components/RecommendationSection.jsx";
 import FlyerCarousel from "../Components/FlyerCarousel.jsx";
 import { flyerData } from "../data/flyerData.js";
 import Footer from "../Components/Footer.jsx";
+import Recommendations from "../Components/RecommendSection.jsx";
 
 // Get today and tomorrow's dates formatted as "DD MMM"
 const formatDate = (date) => {
@@ -289,10 +290,8 @@ function Home() {
           onLocationChange={handlePopularLocationChange}
           availableLocations={availableLocations}
         />
-
-        {/* Recommendations Section - Smaller cards, 4 visible at a time */}
-        <RecommendationSection
-          events={recommendationsData}
+        <Recommendations
+          events={eventsData}
           containerId="recommendationsContainer"
         />
       </div>

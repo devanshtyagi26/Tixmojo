@@ -8,7 +8,7 @@ import { IoLocationOutline } from "react-icons/io5";
 const style = {
   card: {
     position: "relative",
-    width: "27rem",
+    width: "23rem",
     height: "33rem",
     boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.15)",
     background: "rgb(255, 255, 255)",
@@ -88,7 +88,7 @@ const style = {
   },
   // Title of the event
   eventTitle: {
-    fontSize: "24px",
+    fontSize: "20px",
     fontWeight: "800",
     color: "#000000",
     textTransform: "uppercase",
@@ -142,16 +142,16 @@ const style = {
   // Text styling for date
   dateText: {
     color: "#000000",
-    fontSize: "16px",
+    fontSize: "14px",
     fontWeight: "500",
     lineHeight: "1.4",
   },
   // Text styling for location
   locationText: {
     color: "#000000",
-    fontSize: "16px",
+    fontSize: "14px",
     fontWeight: "400",
-    width: "60%",
+    width: "55%",
     whiteSpace: "normal",
     wordBreak: "break-word",
     lineHeight: "1.4",
@@ -166,7 +166,7 @@ const style = {
     border: "1px solid #000",
     borderRadius: "5px",
     padding: "10px 15px",
-    fontSize: "14px",
+    fontSize: "13px",
     fontWeight: "600",
     cursor: "pointer",
     transition: "all 0.2s ease",
@@ -236,11 +236,10 @@ const Cards = memo(function Cards({
 
   return (
     <div
-      className={`card ${isRecommendation && "recommendationCard"}`}
+      className={`card`}
       style={{
         ...style.card,
         ...(isCardHovered ? style.cardHover : {}),
-        ...(isRecommendation ? { height: "40rem" } : {}),
       }}
       onMouseEnter={handleCardMouseEnter}
       onMouseLeave={handleCardMouseLeave}
@@ -255,7 +254,9 @@ const Cards = memo(function Cards({
         }
       }}
     >
-      <div style={style.cornerNumber}>{displayRanking}</div>
+      {isRecommendation && (
+        <div style={style.cornerNumber}>{displayRanking}</div>
+      )}
       <div style={style.imageContainer}>
         <div
           style={{

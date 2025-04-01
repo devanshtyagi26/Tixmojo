@@ -142,7 +142,6 @@ function RecommendationSection({ events, containerId }) {
           </button>
         </div>
       </div>
-
       {/* Scrollable container for event cards */}
       <div
         id={containerId}
@@ -153,10 +152,10 @@ function RecommendationSection({ events, containerId }) {
           scrollbarWidth: "none", // Hide scrollbar for Firefox
           msOverflowStyle: "none", // Hide scrollbar for IE/Edge
           padding: windowWidth <= 768 ? "0 20px" : "0 60px",
-          gap: windowWidth <= 480 ? "120px" : "110px", // Adjust gap for screen size
+          gap: windowWidth <= 480 ? "120px" : "7.9rem", // Adjust gap for screen size
           scrollSnapType: "x mandatory",
           position: "relative",
-          marginLeft: windowWidth <= 768 ? "0" : "60px",
+          marginLeft: windowWidth <= 768 ? "0" : "30px",
         }}
         className="hide-scrollbar" // For webkit browsers (Chrome, Safari)
       >

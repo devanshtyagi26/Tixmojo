@@ -117,7 +117,16 @@ const CustomNextArrow = ({ onClick }) => (
   </button>
 );
 
+import { useState, useEffect } from "react";
+
 function FlyerCarousel() {
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   const settings = {
     dots: true, // Show navigation dots
     infinite: true, // Infinite scrolling
@@ -140,12 +149,12 @@ function FlyerCarousel() {
     {
       id: 2,
       image:
-        "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=2574&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=2940&auto=format&fit=crop",
     },
     {
       id: 3,
       image:
-        "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=2574&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=2940&auto=format&fit=crop",
     },
   ];
 
@@ -158,27 +167,20 @@ function FlyerCarousel() {
         padding: "20px",
       }}
     >
-      {/* SVG for clipPath */}
-      <svg width="0" height="0">
-        <defs>
-          <clipPath id="flyerClipPath" clipPathUnits="userSpaceOnUse">
-            <path d="M1491 0C1495.97 0 1500 4.02944 1500 9V171.891C1465.11 171.891 1436.83 200.174 1436.83 235.063C1436.83 269.681 1464.67 297.794 1499.18 298.231L1500 298.237V461.127C1500 466.098 1495.97 470.127 1491 470.127H9C4.02944 470.127 0 466.098 0 461.127V298.084C32.8334 295.821 58.7656 268.472 58.7656 235.063C58.7655 201.656 32.8333 174.305 0 172.042V9C2.52225e-06 4.02944 4.02944 4.22794e-08 9 0H1491Z" />
-          </clipPath>
-        </defs>
-      </svg>
-
       <Slider {...settings}>
         {flyers.map((flyer) => (
           <div key={flyer.id}>
             <img
+              className="flyerimage"
+              onClick={() => console.log(flyer.id)}
               src={flyer.image}
               alt={`Flyer ${flyer.id}`}
               style={{
                 width: "100%", // Fit the width of the container
                 height: "auto", // Maintain aspect ratio
-                aspectRatio: "945 / 256", // Enforce the aspect ratio
+                aspectRatio: windowWidth <= 768 ? "3/2" : "945 / 256", // Enforce the aspect ratio
                 borderRadius: "10px",
-                // clipPath: "url(#flyerClipPath)", // Apply the custom clipPath
+                transition: "transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)", // Add cubic-bezier animation
                 boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
               }}
             />

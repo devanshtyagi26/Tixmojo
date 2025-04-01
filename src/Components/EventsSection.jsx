@@ -348,7 +348,7 @@ const EventsSection = ({
 
       {/* Filter options */}
       <div
-      className="events-section-filters"
+        className="events-section-filters"
         style={{
           padding: "0 60px",
           borderBottom: "1px solid rgba(0,0,0,0.1)",
@@ -391,7 +391,7 @@ const EventsSection = ({
             }}
           >
             <div
-            className="navigation-buttons"
+              className="navigation-buttons"
               style={{
                 display: "flex",
                 gap: "15px",
@@ -453,8 +453,8 @@ const EventsSection = ({
         style={{
           display: "flex",
           overflowX: "auto",
-          gap: "3rem",
-          padding: "40px 60px 30px",
+          gap: "1.5rem",
+          padding: "44px 42px 38px 42px",
           scrollbarWidth: "thin",
           scrollBehavior: "smooth",
           WebkitOverflowScrolling: "touch",
@@ -530,6 +530,7 @@ const EventsSection = ({
                 eventRanking={event.eventRanking}
                 rankScore={event.rankScore}
                 eventLocation={event.eventLocation}
+                isRecommendation={true}
               />
             </div>
           ))

@@ -19,6 +19,8 @@ const styles = {
     boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
     background: "rgb(255, 255, 255)",
     overflow: "hidden",
+    position: "sticky",
+    zIndex: "100",
   },
   /* TIXMOJO */
 
@@ -127,7 +129,6 @@ function Navbar({ toggleScrollPage, isSidebarOpen }) {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
   return (
     <nav style={styles.nav}>
       <Logo isMobile={isMobile} />
@@ -165,7 +166,10 @@ function Navbar({ toggleScrollPage, isSidebarOpen }) {
           </div>
         )}
         <div style={styles.hamburger}>
-          <Hamburger onToggle={toggleScrollPage} isSidebarOpen={isSidebarOpen} />
+          <Hamburger
+            onToggle={toggleScrollPage}
+            isSidebarOpen={isSidebarOpen}
+          />
         </div>
       </div>
     </nav>

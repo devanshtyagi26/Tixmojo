@@ -13,7 +13,7 @@ const styles = {
     padding: "1rem",
     display: "flex",
     flexDirection: "column",
-    position: "absolute",
+    position: "fixed",
     right: "0",
     top: "calc(60px - 10px)",
     zIndex: "1000",
