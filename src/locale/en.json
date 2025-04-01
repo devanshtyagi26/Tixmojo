@@ -38,10 +38,7 @@
     "eventsSection": {
         "sectionTitles": {
             "popular": "Events in",
-            "featured": "Featured in",
-            "happening": "Happening in",
-            "recommended": "Recommended",
-            "featuredEvents": "Featured Events"
+            "recommended": "Recommended"
         },
         "filters": {
             "all": "All",

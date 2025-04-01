@@ -13,20 +13,12 @@ import Cards from "./Cards.jsx";
 // Note: Scrollbar styling is now in imports.css for better maintainability
 
 const EventsSection = ({
-  title = "Events in",
-  location = "Sydney",
+  title,
+  location,
   events = [],
   containerId = "scrollContainer",
   onLocationChange = () => {},
-  availableLocations = [
-    "Sydney",
-    "Melbourne",
-    "Brisbane",
-    "Singapore",
-    "Tokyo",
-    "London",
-    "New York",
-  ],
+  availableLocations,
 }) => {
   const [activeFilter, setActiveFilter] = useState("All");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

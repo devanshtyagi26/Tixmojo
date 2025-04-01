@@ -25,7 +25,7 @@ const styles = {
   },
   link: {
     textDecoration: "none",
-    color: "#333",
+    color: "white",
     textAlign: "center",
     fontSize: "1.5rem",
     fontWeight: "bold",
@@ -37,7 +37,6 @@ const styles = {
 function PageNotFound() {
   return (
     <>
-      <Navbar />
       <div style={styles.container}>
         <h1 style={styles.h1}>PageNotFound Page</h1>
         <p style={styles.p}>The page you are looking for does not exist.</p>
@@ -45,7 +44,6 @@ function PageNotFound() {
           Go to Home
         </Link>
       </div>
-      <Footer />
     </>
   );
 }

@@ -12,6 +12,11 @@
 body {
   overflow-x: hidden;
   width: 100vw;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  position: relative;
+  left: 10px;
   font-family: "Poppins", sans-serif;
 }
 
