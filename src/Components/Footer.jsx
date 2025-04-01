@@ -16,7 +16,7 @@ const styles = {
     flexDirection: "column",
     position: "relative",
     bottom: "0",
-    padding: "2rem 0 0 0",
+    padding: "1rem 0 0 0",
   },
   footerContainer: {
     display: "flex",
@@ -143,9 +143,9 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "column",
-    position: "fixed",
+    // position: "relavtive",
     bottom: "0",
-    padding: "2rem 0 0 0",
+    padding: "1rem 0 0 0",
   },
   footerContainerMobile: {
     display: "flex",

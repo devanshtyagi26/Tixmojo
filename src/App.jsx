@@ -9,23 +9,25 @@ import { SidebarScroll } from "./Components/Sidebar";
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   return (
-    <BrowserRouter>
-      <Navbar
-        isSidebarOpen={isSidebarOpen}
-        toggleScrollPage={() => setIsSidebarOpen((prev) => !prev)}
-      />
-      {isSidebarOpen && (
-        <SidebarScroll
+    <>
+      <BrowserRouter>
+        <Navbar
           isSidebarOpen={isSidebarOpen}
           toggleScrollPage={() => setIsSidebarOpen((prev) => !prev)}
         />
-      )}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/page-not-found" element={<PageNotFound />} />
-      </Routes>
-      <Footer />
-    </BrowserRouter>
+        {isSidebarOpen && (
+          <SidebarScroll
+            isSidebarOpen={isSidebarOpen}
+            toggleScrollPage={() => setIsSidebarOpen((prev) => !prev)}
+          />
+        )}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/page-not-found" element={<PageNotFound />} />
+        </Routes>
+        <Footer />
+      </BrowserRouter>
+    </>
   );
 }
 

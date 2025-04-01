@@ -16,10 +16,7 @@ const style = {
     fontFamily: "Poppins, sans-serif",
     transition: "transform 0.3s ease, box-shadow 0.3s ease",
     cursor: "pointer",
-    "@media (max-width: 768px)": {
-      width: "24rem",
-      height: "30rem",
-    },
+    "@media (maxWidth: 768px)": {},
   },
   // Hover effect for card
   cardHover: {
@@ -79,7 +76,7 @@ const style = {
     textAlign: "left",
     webkitTextStroke: "10px black",
     paintOrder: "stroke fill",
-    "@media (max-width: 768px)": {
+    "@media (maxWidth: 768px)": {
       fontSize: "120px",
       top: "-25px",
       left: "-10px",
@@ -97,7 +94,7 @@ const style = {
     textTransform: "uppercase",
     marginBottom: "15px",
     lineHeight: "1.2",
-    "@media (max-width: 768px)": {
+    "@media (maxWidth: 768px)": {
       fontSize: "20px",
     },
   },
@@ -239,7 +236,7 @@ const Cards = memo(function Cards({
 
   return (
     <div
-      className="card"
+      className={`card ${isRecommendation && "recommendationCard"}`}
       style={{
         ...style.card,
         ...(isCardHovered ? style.cardHover : {}),
@@ -258,11 +255,9 @@ const Cards = memo(function Cards({
         }
       }}
     >
-      {/* Large number in the corner */}
       <div style={style.cornerNumber}>{displayRanking}</div>
-      <div className="imageContainer" style={style.imageContainer}>
+      <div style={style.imageContainer}>
         <div
-          className="cardImage"
           style={{
             ...style.cardImage,
             ...(isCardHovered ? style.cardImageHover : {}),
@@ -271,7 +266,6 @@ const Cards = memo(function Cards({
           aria-hidden="true"
         />
         <div
-          className="imageDarkOverlay"
           style={{
             ...style.imageDarkOverlay,
             ...(isCardHovered ? style.imageDarkOverlayHover : {}),
@@ -281,18 +275,12 @@ const Cards = memo(function Cards({
       </div>
 
       <div style={style.content}>
-        {/* Event title */}
         <div style={style.eventTitle}>{displayName}</div>
-
-        {/* Grouped information section with icons and details */}
         <div style={style.infoContainer}>
-          {/* Column for icons */}
           <div style={style.iconsColumn} aria-hidden="true">
             <SlCalender style={style.icon} />
             <IoLocationOutline style={style.iconLocation} />
           </div>
-
-          {/* Column for text details */}
           <div style={style.detailsColumn}>
             <div style={style.dateText}>{displayDate}</div>
             <div style={style.locationText}>{displayAddress}</div>
@@ -300,7 +288,6 @@ const Cards = memo(function Cards({
         </div>
       </div>
 
-      {/* Price badge as interactive button */}
       {eventPrice && (
         <button
           style={{

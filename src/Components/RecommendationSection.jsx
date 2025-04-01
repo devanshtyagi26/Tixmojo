@@ -75,7 +75,7 @@ function RecommendationSection({ events, containerId }) {
   }
 
   return (
-    <div style={{ margin: "60px 0" }}>
+    <div style={{ margin: windowWidth <= 768 ? "10px 0" : "60px 0" }}>
       {/* Section heading with Recommended title */}
       <div
         style={{
@@ -97,13 +97,15 @@ function RecommendationSection({ events, containerId }) {
         </h2>
 
         {/* Navigation buttons */}
-        <div style={{ display: "flex", gap: "15px" }}>
+        <div
+          style={{ display: windowWidth <= 768 ? "none" : "flex", gap: "15px" }}
+        >
           <button
             onClick={scrollLeft}
             disabled={!showLeftButton}
             style={{
-              width: "50px",
-              height: "50px",
+              width: "44px",
+              height: "44px",
               borderRadius: "50%",
               backgroundColor: showLeftButton ? "#000" : "#e0e0e0",
               color: "#fff",
@@ -122,8 +124,8 @@ function RecommendationSection({ events, containerId }) {
             onClick={scrollRight}
             disabled={!showRightButton}
             style={{
-              width: "50px",
-              height: "50px",
+              width: "44px",
+              height: "44px",
               borderRadius: "50%",
               backgroundColor: showRightButton ? "#000" : "#e0e0e0",
               color: "#fff",

@@ -4,6 +4,7 @@ import EventsSection from "../Components/EventsSection.jsx";
 import RecommendationSection from "../Components/RecommendationSection.jsx";
 import FlyerCarousel from "../Components/FlyerCarousel.jsx";
 import { flyerData } from "../data/flyerData.js";
+import Footer from "../Components/Footer.jsx";
 
 // Get today and tomorrow's dates formatted as "DD MMM"
 const formatDate = (date) => {
@@ -181,7 +182,7 @@ function Home() {
   );
 
   // Flyer data is now imported directly from the data file
-  
+
   // Recommendations data (combining popular events from different locations)
   const recommendationsData = [
     {
@@ -272,28 +273,29 @@ function Home() {
 
   return (
     <>
-      {/* Featured Flyers Carousel */}
-      <FlyerCarousel 
-        flyers={flyerData}
-        containerId="featuredFlyersCarousel"
-      />
+      <div style={{ position: "relative", height: "fit-content" }}>
+        {/* Featured Flyers Carousel */}
+        <FlyerCarousel
+          flyers={flyerData}
+          containerId="featuredFlyersCarousel"
+        />
 
-      {/* Popular Events Section */}
-      <EventsSection
-        title={t("eventsSection.sectionTitles.popular")}
-        location={popularEventsLocation}
-        events={eventsData}
-        containerId="popularEventsContainer"
-        onLocationChange={handlePopularLocationChange}
-        availableLocations={availableLocations}
-      />
+        {/* Popular Events Section */}
+        <EventsSection
+          title={t("eventsSection.sectionTitles.popular")}
+          location={popularEventsLocation}
+          events={eventsData}
+          containerId="popularEventsContainer"
+          onLocationChange={handlePopularLocationChange}
+          availableLocations={availableLocations}
+        />
 
-      {/* Recommendations Section - Smaller cards, 4 visible at a time */}
-      <RecommendationSection
-        events={recommendationsData}
-        containerId="recommendationsContainer"
-      />
-      
+        {/* Recommendations Section - Smaller cards, 4 visible at a time */}
+        <RecommendationSection
+          events={recommendationsData}
+          containerId="recommendationsContainer"
+        />
+      </div>
     </>
   );
 }
