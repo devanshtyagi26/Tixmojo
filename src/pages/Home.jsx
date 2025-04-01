@@ -1,28 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import EventsSection from "../Components/EventsSection.jsx";
-import RecommendationSection from "../Components/RecommendationSection.jsx";
 import FlyerCarousel from "../Components/FlyerCarousel.jsx";
-import { flyerData } from "../data/flyerData.js";
-import Footer from "../Components/Footer.jsx";
-import Recommendations from "../Components/RecommendSection.jsx";
 
 // Get today and tomorrow's dates formatted as "DD MMM"
 const formatDate = (date) => {
   const day = date.getDate();
   const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
   ];
   const month = monthNames[date.getMonth()];
   return `${day} ${month}`;
@@ -174,85 +160,159 @@ const eventsData = [
   },
 ];
 
-// We're only keeping the data that's being used in the components
+// Trending events data
+const trendingEventsData = [
+  {
+    eventName: "ELECTRONIC MUSIC FESTIVAL",
+    eventDate: `${futureFormatted1} - ${futureFormatted1}`,
+    eventRanking: "1",
+    eventAddress: "Olympic Park, Melbourne",
+    eventLocation: "Melbourne",
+    eventPrice: "350",
+    eventPoster:
+      "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?q=80&w=2835&auto=format&fit=crop",
+    rankScore: 98,
+  },
+  {
+    eventName: "INTERNATIONAL JAZZ FESTIVAL",
+    eventDate: `${tomorrowFormatted} - ${nextWeekFormatted}`,
+    eventRanking: "1",
+    eventAddress: "Federation Square, Melbourne",
+    eventLocation: "Melbourne",
+    eventPrice: "189",
+    eventPoster:
+      "https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=2432&auto=format&fit=crop",
+    rankScore: 94,
+  },
+  {
+    eventName: "FOOD & WINE EXPO",
+    eventDate: `${todayFormatted} - ${tomorrowFormatted}`,
+    eventRanking: "2",
+    eventAddress: "Crown Exhibition Hall, Melbourne",
+    eventLocation: "Melbourne",
+    eventPrice: "79",
+    eventPoster:
+      "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=2787&auto=format&fit=crop",
+    rankScore: 88,
+  },
+  {
+    eventName: "STAND-UP COMEDY NIGHT",
+    eventDate: `${nextWeekFormatted}`,
+    eventRanking: "2",
+    eventAddress: "Comedy Theatre, Melbourne",
+    eventLocation: "Melbourne",
+    eventPrice: "120",
+    eventPoster:
+      "https://images.unsplash.com/photo-1527224857830-43a7acc85260?q=80&w=2729&auto=format&fit=crop",
+    rankScore: 85,
+  },
+  {
+    eventName: "FASHION WEEK",
+    eventDate: `${futureFormatted1} - ${futureFormatted2}`,
+    eventRanking: "1",
+    eventAddress: "Convention Center, Tokyo",
+    eventLocation: "Tokyo",
+    eventPrice: "250",
+    eventPoster:
+      "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=2787&auto=format&fit=crop",
+    rankScore: 92,
+  },
+  {
+    eventName: "ROCK LEGENDS TOUR",
+    eventDate: `${futureFormatted1}`,
+    eventRanking: "1",
+    eventAddress: "Saitama Super Arena, Tokyo",
+    eventLocation: "Tokyo",
+    eventPrice: "290",
+    eventPoster:
+      "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=2940&auto=format&fit=crop",
+    rankScore: 90,
+  },
+];
+
+// Upcoming events data
+const upcomingEventsData = [
+  {
+    eventName: "ANNUAL TECH CONFERENCE",
+    eventDate: `${futureFormatted2} - ${formatDate(new Date(futureDate2.getTime() + 86400000 * 3))}`,
+    eventRanking: "1",
+    eventAddress: "Jacob K. Javits Convention Center, New York",
+    eventLocation: "New York",
+    eventPrice: "599",
+    eventPoster:
+      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2670&auto=format&fit=crop",
+    rankScore: 96,
+  },
+  {
+    eventName: "BROADWAY MUSICAL PREMIERE",
+    eventDate: `${futureFormatted1}`,
+    eventRanking: "1",
+    eventAddress: "Broadway Theatre, New York",
+    eventLocation: "New York",
+    eventPrice: "299",
+    eventPoster:
+      "https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?q=80&w=2669&auto=format&fit=crop",
+    rankScore: 93,
+  },
+  {
+    eventName: "NEW YORK FILM FESTIVAL",
+    eventDate: `${futureFormatted2} - ${formatDate(new Date(futureDate2.getTime() + 86400000 * 10))}`,
+    eventRanking: "2",
+    eventAddress: "Lincoln Center, New York",
+    eventLocation: "New York",
+    eventPrice: "149",
+    eventPoster:
+      "https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=2670&auto=format&fit=crop",
+    rankScore: 91,
+  },
+  {
+    eventName: "CONTEMPORARY ART EXHIBITION",
+    eventDate: `${futureFormatted1} - ${futureFormatted2}`,
+    eventRanking: "2",
+    eventAddress: "MoMA, New York",
+    eventLocation: "New York",
+    eventPrice: "89",
+    eventPoster:
+      "https://images.unsplash.com/photo-1544967082-d9d25d867d66?q=80&w=2787&auto=format&fit=crop",
+    rankScore: 88,
+  },
+  {
+    eventName: "MARINA BAY COUNTDOWN",
+    eventDate: `${futureFormatted2}`,
+    eventRanking: "1",
+    eventAddress: "Marina Bay Sands, Singapore",
+    eventLocation: "Singapore",
+    eventPrice: "199",
+    eventPoster:
+      "https://images.unsplash.com/photo-1552560880-2482cef14240?q=80&w=2670&auto=format&fit=crop",
+    rankScore: 95,
+  },
+  {
+    eventName: "SOUTHEAST ASIAN FOOD FESTIVAL",
+    eventDate: `${nextWeekFormatted} - ${futureFormatted1}`,
+    eventRanking: "1",
+    eventAddress: "Gardens By The Bay, Singapore",
+    eventLocation: "Singapore",
+    eventPrice: "59",
+    eventPoster:
+      "https://images.unsplash.com/photo-1485962398705-ef6a13c41e8f?q=80&w=2574&auto=format&fit=crop",
+    rankScore: 87,
+  },
+];
 
 function Home() {
   const { t } = useTranslation();
-  const [popularEventsLocation, setPopularEventsLocation] = React.useState(
+  const [popularEventsLocation, setPopularEventsLocation] = useState(
     t("eventsSection.locations.sydney")
   );
-
-  // Flyer data is now imported directly from the data file
-
-  // Recommendations data (combining popular events from different locations)
-  const recommendationsData = [
-    {
-      eventName: "TRENDING: ELECTRONIC DANCE FESTIVAL",
-      eventDate: `${nextWeekFormatted} - ${nextWeekFormatted}`,
-      eventAddress: "Arts Centre, Melbourne",
-      eventPrice: "129",
-      eventPoster:
-        "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=2574&auto=format&fit=crop",
-    },
-    {
-      eventName: "POPULAR: CULTURAL FOOD FESTIVAL",
-      eventDate: `${tomorrowFormatted} - ${tomorrowFormatted}`,
-      eventAddress: "Federation Square, Melbourne",
-      eventPrice: "99",
-      eventPoster:
-        "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=2787&auto=format&fit=crop",
-    },
-    {
-      eventName: "BEST SELLER: JAZZ NIGHT SPECIAL",
-      eventDate: `${todayFormatted} - ${todayFormatted}`,
-      eventAddress: "Opera House, Sydney",
-      eventPrice: "149",
-      eventPoster:
-        "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?q=80&w=2940&auto=format&fit=crop",
-    },
-    {
-      eventName: "TOP RATED: COMEDY NIGHT",
-      eventDate: `${tomorrowFormatted} - ${tomorrowFormatted}`,
-      eventAddress: "State Theatre, Sydney",
-      eventPrice: "89",
-      eventPoster:
-        "https://images.unsplash.com/photo-1527224857830-43a7acc85260?q=80&w=2729&auto=format&fit=crop",
-    },
-    {
-      eventName: "HOT PICK: FASHION SHOWCASE",
-      eventDate: `${nextWeekFormatted} - ${nextWeekFormatted}`,
-      eventAddress: "Marina Bay Sands, Singapore",
-      eventPrice: "199",
-      eventPoster:
-        "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=2787&auto=format&fit=crop",
-    },
-    {
-      eventName: "MUST SEE: ROCK CONCERT",
-      eventDate: `${todayFormatted} - ${todayFormatted}`,
-      eventAddress: "National Stadium, Singapore",
-      eventPrice: "179",
-      eventPoster:
-        "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=2940&auto=format&fit=crop",
-    },
-    {
-      eventName: "FOR YOU: ART EXHIBITION",
-      eventDate: `${tomorrowFormatted} - ${tomorrowFormatted}`,
-      eventAddress: "National Gallery, Singapore",
-      eventPrice: "69",
-      eventPoster:
-        "https://images.unsplash.com/photo-1544967082-d9d25d867d66?q=80&w=2787&auto=format&fit=crop",
-    },
-    {
-      eventName: "RISING STAR: INDIE MUSIC NIGHT",
-      eventDate: `${nextWeekFormatted} - ${nextWeekFormatted}`,
-      eventAddress: "The Promontory, Sydney",
-      eventPrice: "79",
-      eventPoster:
-        "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?q=80&w=2940&auto=format&fit=crop",
-    },
-  ];
-
-  // We've removed Melbourne events data since it's not being used
+  
+  const [trendingEventsLocation, setTrendingEventsLocation] = useState(
+    t("eventsSection.locations.melbourne")
+  );
+  
+  const [upcomingEventsLocation, setUpcomingEventsLocation] = useState(
+    t("eventsSection.locations.newYork")
+  );
 
   // Define available locations for dropdowns
   const availableLocations = [
@@ -265,36 +325,53 @@ function Home() {
 
   // Handler for popular events location selector
   const handlePopularLocationChange = (newLocation) => {
-    console.log(`Popular events location changed to: ${newLocation}`);
     setPopularEventsLocation(newLocation);
-    // In a real app, you would fetch new events for the selected location
   };
-
-  // Only keeping the popular events location handler since that's the only one being used
+  
+  // Handler for trending events location selector
+  const handleTrendingLocationChange = (newLocation) => {
+    setTrendingEventsLocation(newLocation);
+  };
+  
+  // Handler for upcoming events location selector
+  const handleUpcomingLocationChange = (newLocation) => {
+    setUpcomingEventsLocation(newLocation);
+  };
 
   return (
     <>
-      <div style={{ position: "relative", height: "fit-content" }}>
-        {/* Featured Flyers Carousel */}
-        <FlyerCarousel
-          flyers={flyerData}
-          containerId="featuredFlyersCarousel"
-        />
-
-        {/* Popular Events Section */}
-        <EventsSection
-          title={t("eventsSection.sectionTitles.popular")}
-          location={popularEventsLocation}
-          events={eventsData}
-          containerId="popularEventsContainer"
-          onLocationChange={handlePopularLocationChange}
-          availableLocations={availableLocations}
-        />
-        <Recommendations
-          events={eventsData}
-          containerId="recommendationsContainer"
-        />
-      </div>
+      {/* Hero Section with Carousel */}
+      <FlyerCarousel />
+      
+      {/* Popular Events Section */}
+      <EventsSection
+        title={t("eventsSection.sectionTitles.popular")}
+        location={popularEventsLocation}
+        events={eventsData}
+        containerId="popularEventsContainer"
+        onLocationChange={handlePopularLocationChange}
+        availableLocations={availableLocations}
+      />
+      
+      {/* Trending Events Section */}
+      <EventsSection
+        title={t("eventsSection.sectionTitles.trending")}
+        location={trendingEventsLocation}
+        events={trendingEventsData}
+        containerId="trendingEventsContainer"
+        onLocationChange={handleTrendingLocationChange}
+        availableLocations={availableLocations}
+      />
+      
+      {/* Upcoming Events Section */}
+      <EventsSection
+        title={t("eventsSection.sectionTitles.upcoming")}
+        location={upcomingEventsLocation}
+        events={upcomingEventsData}
+        containerId="upcomingEventsContainer"
+        onLocationChange={handleUpcomingLocationChange}
+        availableLocations={availableLocations}
+      />
     </>
   );
 }

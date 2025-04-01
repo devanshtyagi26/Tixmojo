@@ -8,9 +8,8 @@ import React, {
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
+import { IoFilter } from "react-icons/io5";
 import Cards from "./Cards.jsx";
-
-// Note: Scrollbar styling is now in imports.css for better maintainability
 
 const EventsSection = ({
   title,
@@ -152,15 +151,6 @@ const EventsSection = ({
 
   // Handle filter click
   const handleFilterClick = useCallback((filter) => {
-    // Add visual feedback on click
-    const button = document.querySelector(`.filter-tab[aria-pressed="true"]`);
-    if (button) {
-      button.style.transform = "scale(0.98)";
-      setTimeout(() => {
-        button.style.transform = "scale(1)";
-      }, 150);
-    }
-
     setActiveFilter(filter);
 
     // Scroll to the top of the container
@@ -247,286 +237,188 @@ const EventsSection = ({
   }, []);
 
   return (
-    <div className="events-section-container" style={{ marginBottom: "80px" }}>
-      {/* City selector and title */}
-      <div
-        className="events-section-header"
-        style={{
-          padding: "0 60px",
-          marginBottom: "20px",
-        }}
-      >
-        <h2
-          className="events-section-title"
-          style={{
-            fontSize: "34px",
-            fontWeight: "500",
-            fontFamily: "Poppins, sans-serif",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            color: "rgb(0, 0, 0)",
-            lineHeight: "51px",
-            letterSpacing: "6%",
-          }}
-        >
-          {title}
-          <div ref={dropdownRef} className="location-dropdown">
-            <button
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="events-section-location"
-              aria-label={`Change location from ${selectedLocation}`}
-              aria-expanded={isDropdownOpen}
-              aria-haspopup="listbox"
-              style={{
-                fontSize: "34px",
-                fontWeight: "205",
-                fontFamily: "Poppins, sans-serif",
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                color: "rgb(0, 0, 0)",
-                lineHeight: "51px",
-                letterSpacing: "6%",
-                borderBottom: "1px solid #000",
-                paddingBottom: "2px",
-                cursor: "pointer",
-                background: "none",
-                border: "none",
-                padding: 0,
-                outline: "none",
-              }}
-            >
-              {selectedLocation}
-              <span
-                style={{
-                  marginLeft: "5px",
-                  transform: isDropdownOpen ? "rotate(180deg)" : "none",
-                  transition: "transform 0.3s ease",
+    <div className="section-container">
+      <div className="container" style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px" }}>
+        {/* Section header with title and location selector */}
+        <div style={{ 
+          display: "flex", 
+          justifyContent: "space-between", 
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "15px",
+          marginBottom: "30px",
+        }}>
+          <div style={{ maxWidth: "600px" }}>
+            <h2 className="section-title slide-up">
+              {title}{" "}
+              <span 
+                ref={dropdownRef} 
+                style={{ 
+                  position: "relative", 
+                  display: "inline-flex",
+                  cursor: "pointer",
+                  alignItems: "center",
                 }}
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
-                ▾
-              </span>
-            </button>
-
-            {isDropdownOpen && (
-              <div
-                className="location-dropdown-content"
-                role="listbox"
-                aria-label="Select a location"
-              >
-                {availableLocations.map((city) => (
-                  <div
-                    key={city}
-                    className={`location-dropdown-item ${
-                      selectedLocation === city ? "selected" : ""
-                    }`}
-                    role="option"
-                    aria-selected={selectedLocation === city}
-                    onClick={() => handleLocationSelect(city)}
-                    style={{
-                      fontFamily: "Poppins, sans-serif",
-                      fontSize: "16px",
-                    }}
-                  >
-                    {city}
+                <span style={{ color: "var(--primary)", borderBottom: "2px solid var(--primary)" }}>
+                  {selectedLocation}
+                </span>
+                <span
+                  style={{
+                    marginLeft: "5px",
+                    transform: isDropdownOpen ? "rotate(180deg)" : "none",
+                    transition: "transform 0.3s ease",
+                    fontSize: "18px",
+                  }}
+                >
+                  ▾
+                </span>
+                
+                {isDropdownOpen && (
+                  <div className="location-dropdown-content">
+                    {availableLocations.map((city) => (
+                      <div
+                        key={city}
+                        className={`location-dropdown-item ${
+                          selectedLocation === city ? "selected" : ""
+                        }`}
+                        onClick={() => handleLocationSelect(city)}
+                      >
+                        {city}
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            )}
+                )}
+              </span>
+            </h2>
+            <p className="section-subtitle slide-up">
+              Discover the most popular events happening in {selectedLocation} right now
+            </p>
           </div>
-        </h2>
-      </div>
-
-      {/* Filter options */}
-      <div
-        className="events-section-filters"
-        style={{
-          padding: "0 60px",
-          borderBottom: "1px solid rgba(0,0,0,0.1)",
-          marginBottom: "5px",
-          position: "relative",
-        }}
-      >
-        <div
-          className="filter-options-container"
-          style={{
-            display: "flex",
-            gap: "40px",
-          }}
-        >
-          {filterOptions.map((filter) => (
-            <button
-              key={filter}
-              onClick={() => handleFilterClick(filter)}
-              className={`filter-tab ${
-                activeFilter === filter ? "active" : ""
-              }`}
-              aria-pressed={activeFilter === filter}
-              style={{
-                color: activeFilter === filter ? "#000" : "#666",
-                marginRight: "10px",
-              }}
-            >
-              {filter}
-            </button>
-          ))}
-
-          {/* Navigation controls */}
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              position: "absolute",
-              right: "40px",
-              top: "-26px", // Adjusted for better alignment with the new buttons
-            }}
-          >
-            <div
-              className="navigation-buttons"
-              style={{
-                display: "flex",
-                gap: "15px",
-                alignItems: "center",
-              }}
-            >
+          
+          {/* Filter options and navigation controls */}
+          <div style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            gap: "10px",
+            flexWrap: "wrap",
+          }}>
+            <div style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "8px", 
+              border: "1px solid rgba(107, 56, 251, 0.2)",
+              borderRadius: "50px",
+              padding: "4px",
+              background: "rgba(107, 56, 251, 0.05)",
+            }}>
+              {filterOptions.map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() => handleFilterClick(filter)}
+                  className={`filter-tab ${
+                    activeFilter === filter ? "active" : ""
+                  }`}
+                  aria-pressed={activeFilter === filter}
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
+            
+            <div style={{ display: "flex", gap: "10px" }}>
               <button
+                className="navigation-btn"
                 onClick={handleScrollLeft}
                 disabled={!showLeftButton}
-                onKeyDown={(e) => handleKeyDown(e, handleScrollLeft)}
                 aria-label="Scroll left"
-                style={{
-                  width: "44px",
-                  height: "44px",
-                  borderRadius: "50%",
-                  backgroundColor: showLeftButton ? "#000" : "#e0e0e0",
-                  color: "#fff",
-                  border: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: showLeftButton ? "pointer" : "default",
-                  fontSize: "24px",
-                }}
               >
-                <MdNavigateBefore />
+                <MdNavigateBefore size={24} />
               </button>
               <button
+                className="navigation-btn"
                 onClick={handleScrollRight}
                 disabled={!showRightButton}
-                onKeyDown={(e) => handleKeyDown(e, handleScrollRight)}
                 aria-label="Scroll right"
-                style={{
-                  width: "44px",
-                  height: "44px",
-                  borderRadius: "50%",
-                  backgroundColor: showRightButton ? "#000" : "#e0e0e0",
-                  color: "#fff",
-                  border: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: showRightButton ? "pointer" : "default",
-                  fontSize: "24px",
-                }}
               >
-                <MdNavigateNext />
+                <MdNavigateNext size={24} />
               </button>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Horizontal scrollable container */}
-      <div
-        id={containerId}
-        ref={scrollContainerRef}
-        className="scrollbar-container"
-        style={{
-          display: "flex",
-          overflowX: "auto",
-          gap: "1.5rem",
-          padding: "44px 42px 38px 42px",
-          scrollbarWidth: "thin",
-          scrollBehavior: "smooth",
-          WebkitOverflowScrolling: "touch",
-          msOverflowStyle: "none" /* Hide scrollbar in IE and Edge */,
-        }}
-      >
-        {/* Display empty state if no events */}
-        {filteredEvents.length === 0 ? (
-          <div
-            style={{
-              width: "100%",
-              textAlign: "center",
-              padding: "60px 0",
-              color: "#666",
-              fontFamily: "Poppins, sans-serif",
-              fontSize: "18px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "15px",
-            }}
-          >
-            <div style={{ fontSize: "24px", marginBottom: "10px" }}>
-              {t("eventsSection.noEvents.title")}
-            </div>
-            <div>
-              {t("eventsSection.noEvents.message", {
-                location: location,
-                filter: activeFilter,
-              })}
-            </div>
-            <div style={{ display: "flex", gap: "15px", marginTop: "10px" }}>
+        {/* Horizontal scrollable container */}
+        <div
+          id={containerId}
+          ref={scrollContainerRef}
+          className="scrollbar-container"
+          style={{
+            display: "flex",
+            overflowX: "auto",
+            gap: "20px",
+            padding: "10px 0 30px 0",
+            scrollbarWidth: "thin",
+            scrollBehavior: "smooth",
+          }}
+        >
+          {/* Display empty state if no events */}
+          {filteredEvents.length === 0 ? (
+            <div
+              style={{
+                width: "100%",
+                textAlign: "center",
+                padding: "60px 0",
+                color: "var(--gray-medium)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "15px",
+              }}
+            >
+              <div style={{ fontSize: "24px", marginBottom: "10px", color: "var(--dark)" }}>
+                {t("eventsSection.noEvents.title")}
+              </div>
+              <div>
+                {t("eventsSection.noEvents.message", {
+                  location: location,
+                  filter: activeFilter,
+                })}
+              </div>
               <button
+                className="btn btn-primary"
+                style={{ marginTop: "15px" }}
                 onClick={() => handleFilterClick("All")}
-                style={{
-                  background: "none",
-                  border: "1px solid #666",
-                  borderRadius: "4px",
-                  padding: "8px 16px",
-                  fontSize: "16px",
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "#f3f3f3";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "none";
-                }}
               >
                 {t("eventsSection.noEvents.viewAll")}
               </button>
             </div>
-          </div>
-        ) : (
-          /* Display all event cards */
-          filteredEvents.map((event, index) => (
-            <div
-              key={index}
-              style={{
-                flex: "0 0 auto",
-                opacity: 1, // Default opacity for desktop
-                transition: "opacity 0.3s ease, transform 0.3s ease",
-              }}
-              className="event-card"
-            >
-              <Cards
-                eventName={event.eventName}
-                eventDate={event.eventDate}
-                eventAddress={event.eventAddress}
-                eventPrice={event.eventPrice}
-                eventPoster={event.eventPoster}
-                eventRanking={event.eventRanking}
-                rankScore={event.rankScore}
-                eventLocation={event.eventLocation}
-                isRecommendation={true}
-              />
-            </div>
-          ))
-        )}
+          ) : (
+            /* Display all event cards */
+            filteredEvents.map((event, index) => (
+              <div
+                key={index}
+                className="fade-in"
+                style={{
+                  flex: "0 0 auto",
+                  animationDelay: `${index * 0.1}s`,
+                }}
+              >
+                <Cards
+                  eventName={event.eventName}
+                  eventDate={event.eventDate}
+                  eventAddress={event.eventAddress}
+                  eventPrice={event.eventPrice}
+                  eventPoster={event.eventPoster}
+                  eventRanking={event.eventRanking}
+                  rankScore={event.rankScore}
+                  eventLocation={event.eventLocation}
+                  isRecommendation={true}
+                />
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

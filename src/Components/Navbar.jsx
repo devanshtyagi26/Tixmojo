@@ -1,171 +1,164 @@
 import React, { useRef, useState, useEffect } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { BiUser } from "react-icons/bi";
+import { TbTicket } from "react-icons/tb";
+import { MdLocalActivity } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import Logo from "../assets/Logo";
 import "../i18n";
 import Hamburger from "./Hamburger";
 
-const styles = {
-  /* Navbar */
-  nav: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100vw",
-    height: "60px",
-    left: "0",
-    top: "0",
-    boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)",
-    background: "rgb(255, 255, 255)",
-    overflow: "hidden",
-    position: "sticky",
-    zIndex: "100",
-  },
-  /* TIXMOJO */
-
-  /* Hamburger */
-  hamburger: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    cursor: "pointer",
-    marginRight: "1rem",
-  },
-  hamburgerIcon: {
-    height: "2rem",
-    width: "2rem",
-  },
-  /* Search Bar */
-  searchBar: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "0.5rem",
-    width: "40%",
-    height: "50%",
-    background: "rgb(255, 255, 255)",
-    boxSizing: "border-box",
-    border: "1.5px solid rgb(0, 0, 0)",
-    borderRadius: "30.08px",
-    padding: "0 1rem",
-    cursor: "pointer",
-  },
-  /* Search Input */
-  searchInput: {
-    width: "100%",
-    height: "100%",
-    border: "none",
-    outline: "none",
-    fontSize: "1rem",
-    fontWeight: "400",
-    lineHeight: "1.5rem",
-    letterSpacing: "0%",
-    textAlign: "left",
-    color: "rgb(0, 0, 0, 0.5)",
-  },
-  /* Search Icon */
-  searchIcon: {
-    height: "1.5rem",
-    width: "1.5rem",
-  },
-  /* User Icon */
-  userIcon: {
-    height: "2rem",
-    width: "2rem",
-    cursor: "pointer",
-  },
-  /* User */
-  user: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: "1rem",
-  },
-
-  /* User Container */
-  userContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "0.5rem",
-  },
-
-  // Mobile User
-  userIconMobile: {
-    display: "none",
-  },
-  searchBarMobile: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "0.5rem",
-    width: "55%",
-    height: "50%",
-    background: "rgb(255, 255, 255)",
-    boxSizing: "border-box",
-    border: "1.5px solid rgb(0, 0, 0)",
-    borderRadius: "30.08px",
-    padding: "0 1rem",
-    cursor: "pointer",
-    marginLeft: "1rem",
-  },
-};
-
 function Navbar({ toggleScrollPage, isSidebarOpen }) {
   const { t } = useTranslation();
   const inputRef = useRef(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [scrolled, setScrolled] = useState(false);
 
-  const handleDivClick = () => {
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const handleSearchClick = () => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
   };
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
   return (
-    <nav style={styles.nav}>
-      <Logo isMobile={isMobile} />
-
-      {isMobile ? (
-        <div style={styles.searchBarMobile} onClick={handleDivClick}>
-          <IoIosSearch style={styles.searchIcon} />
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder={t("navbar.search")}
-            style={styles.searchInput}
-          />
-        </div>
-      ) : (
-        <div style={styles.searchBar} onClick={handleDivClick}>
-          <IoIosSearch style={styles.searchIcon} />
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder={t("navbar.search")}
-            style={styles.searchInput}
-          />
-        </div>
-      )}
-
-      <div style={styles.userContainer}>
-        {isMobile ? (
-          <div style={styles.userMobile}>
-            <BiUser style={styles.userIconMobile} />
-          </div>
-        ) : (
-          <div style={styles.user}>
-            <BiUser style={styles.userIcon} />
+    <nav 
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100vw",
+        height: "70px",
+        left: "0",
+        top: "0",
+        background: scrolled ? "rgba(255, 255, 255, 0.95)" : "transparent",
+        backdropFilter: scrolled ? "blur(10px)" : "none",
+        boxShadow: scrolled ? "0 4px 20px rgba(107, 56, 251, 0.1)" : "none",
+        transition: "all 0.3s ease",
+        position: "fixed",
+        zIndex: 100,
+        padding: "0 24px",
+      }}
+    >
+      <div className="nav-left" style={{ display: "flex", alignItems: "center" }}>
+        <Logo isMobile={isMobile} />
+        
+        {!isMobile && (
+          <div className="nav-links" style={{ 
+            display: "flex", 
+            marginLeft: "40px", 
+            gap: "24px"
+          }}>
+            <NavLink active={true}>Events</NavLink>
+            <NavLink>Venues</NavLink>
+            <NavLink>Artists</NavLink>
+            <NavLink>Promoters</NavLink>
           </div>
         )}
-        <div style={styles.hamburger}>
+      </div>
+
+      <div className="nav-right" style={{ 
+        display: "flex", 
+        alignItems: "center", 
+        gap: isMobile ? "16px" : "24px" 
+      }}>
+        <div 
+          className="search-bar" 
+          onClick={handleSearchClick}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            backgroundColor: "rgba(107, 56, 251, 0.08)",
+            borderRadius: "50px",
+            padding: isMobile ? "8px 12px" : "10px 16px",
+            width: isMobile ? "40px" : "200px",
+            transition: "all 0.3s ease",
+            cursor: "pointer",
+          }}
+        >
+          <IoIosSearch style={{ 
+            color: "var(--primary)",
+            fontSize: "20px",
+            marginRight: isMobile ? "0" : "8px",
+          }} />
+          
+          {!isMobile && (
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder={t("navbar.search")}
+              style={{
+                border: "none",
+                background: "transparent",
+                outline: "none",
+                fontSize: "14px",
+                width: "100%",
+                color: "var(--dark)",
+              }}
+            />
+          )}
+        </div>
+
+        {!isMobile && (
+          <button className="btn btn-outline" style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            gap: "8px",
+            padding: "8px 16px",
+          }}>
+            <TbTicket />
+            My Tickets
+          </button>
+        )}
+
+        <button className="btn btn-primary" style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          gap: "8px",
+          padding: isMobile ? "8px" : "8px 16px",
+          width: isMobile ? "40px" : "auto",
+          aspectRatio: isMobile ? "1/1" : "auto",
+        }}>
+          <MdLocalActivity />
+          {!isMobile && "Create Event"}
+        </button>
+
+        <div style={{ 
+          width: "40px", 
+          height: "40px", 
+          borderRadius: "50%", 
+          backgroundColor: "var(--primary-light)", 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "center",
+          cursor: "pointer",
+        }}>
+          <BiUser style={{ color: "white", fontSize: "20px" }} />
+        </div>
+
+        <div style={{
+          display: isMobile ? "flex" : "none",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
           <Hamburger
             onToggle={toggleScrollPage}
             isSidebarOpen={isSidebarOpen}
@@ -173,6 +166,36 @@ function Navbar({ toggleScrollPage, isSidebarOpen }) {
         </div>
       </div>
     </nav>
+  );
+}
+
+function NavLink({ children, active }) {
+  return (
+    <a 
+      href="#"
+      style={{
+        color: active ? "var(--primary)" : "var(--dark)",
+        fontWeight: active ? "600" : "500",
+        fontSize: "15px",
+        textDecoration: "none",
+        position: "relative",
+        padding: "4px 0",
+        transition: "all 0.3s ease",
+      }}
+    >
+      {children}
+      {active && (
+        <span style={{
+          position: "absolute",
+          bottom: "-2px",
+          left: "0",
+          width: "100%",
+          height: "3px",
+          background: "var(--primary)",
+          borderRadius: "2px",
+        }}></span>
+      )}
+    </a>
   );
 }
 
