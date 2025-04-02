@@ -254,7 +254,14 @@ const EventsSection = ({
           }}
         >
           <div style={{ maxWidth: "600px", position: "relative", zIndex: 10 }}>
-            <h2 className="section-title slide-up">
+            <h2 className="section-title slide-up" style={{
+            fontSize: "38px",
+            fontWeight: "800",
+            marginBottom: "16px",
+            color: "var(--dark)",
+            letterSpacing: "-0.5px",
+            fontFamily: "Inter, sans-serif",
+          }}>
               {title}{" "}
               <span
                 ref={dropdownRef}
@@ -263,14 +270,20 @@ const EventsSection = ({
                   display: "inline-flex",
                   cursor: "pointer",
                   alignItems: "center",
-                  // backgroundColor: "var(--light)",
-                  padding: "4px",
-                  borderRadius: "30px",
-                  marginLeft: "2px",
-                  transition: "all 0.3s ease",
+                  padding: "4px 12px",
+                  borderRadius: "12px",
+                  marginLeft: "8px",
+                  transition: "all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)",
                   boxShadow: isDropdownOpen
-                    ? "0 3px 12px rgba(111, 68, 255, 0.12)"
+                    ? "0 4px 16px rgba(111, 68, 255, 0.15)"
                     : "none",
+                  backgroundColor: isDropdownOpen 
+                    ? "rgba(111, 68, 255, 0.1)"
+                    : "rgba(111, 68, 255, 0.05)",
+                  border: "1px solid",
+                  borderColor: isDropdownOpen 
+                    ? "rgba(111, 68, 255, 0.2)"
+                    : "rgba(111, 68, 255, 0.1)",
                 }}
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
@@ -278,9 +291,7 @@ const EventsSection = ({
                   style={{
                     color: "var(--primary)",
                     fontWeight: "700",
-                    letterSpacing: "0.5px",
-                    borderBottom: "2px solid var(--primary)",
-                    paddingBottom: "2px",
+                    letterSpacing: "0",
                   }}
                 >
                   {selectedLocation}
@@ -289,9 +300,11 @@ const EventsSection = ({
                   style={{
                     marginLeft: "8px",
                     transform: isDropdownOpen ? "rotate(180deg)" : "none",
-                    transition: "transform 0.3s ease",
-                    fontSize: "14px",
+                    transition: "transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)",
+                    fontSize: "16px",
                     color: "var(--primary)",
+                    display: "flex",
+                    alignItems: "center",
                   }}
                 >
                   ▾
@@ -301,11 +314,13 @@ const EventsSection = ({
                   <div
                     className="location-dropdown-content"
                     style={{
-                      boxShadow: "0 10px 25px rgba(111, 68, 255, 0.15)",
-                      border: "1px solid var(--purple-100)",
+                      boxShadow: "0 10px 30px rgba(111, 68, 255, 0.2)",
+                      border: "1px solid var(--purple-200)",
                       width: "240px",
                       borderRadius: "16px",
                       zIndex: 1000,
+                      backgroundColor: "white",
+                      overflow: "hidden",
                     }}
                   >
                     {availableLocations.map((city) => (
@@ -316,17 +331,18 @@ const EventsSection = ({
                         }`}
                         onClick={() => handleLocationSelect(city)}
                         style={{
-                          padding: "12px 18px",
+                          padding: "14px 18px",
                           fontSize: "15px",
+                          fontFamily: "Inter, sans-serif",
+                          fontWeight: selectedLocation === city ? "600" : "500",
                           borderBottom:
                             city !==
                             availableLocations[availableLocations.length - 1]
                               ? "1px solid var(--purple-100)"
                               : "none",
-                          borderLeft:
-                            selectedLocation === city
-                              ? "3px solid var(--primary)"
-                              : "3px solid transparent",
+                          backgroundColor: selectedLocation === city ? "rgba(111, 68, 255, 0.05)" : "transparent",
+                          color: selectedLocation === city ? "var(--primary)" : "var(--dark)",
+                          transition: "all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1)",
                         }}
                       >
                         {city}
@@ -338,7 +354,15 @@ const EventsSection = ({
             </h2>
             <p
               className="section-subtitle slide-up"
-              style={{ position: "relative", zIndex: -1 }}
+              style={{ 
+                position: "relative", 
+                zIndex: -1,
+                fontSize: "16px",
+                color: "var(--gray-medium)",
+                fontFamily: "Inter, sans-serif",
+                lineHeight: "1.6",
+                fontWeight: "500",
+              }}
             >
               Discover the most popular events happening in {selectedLocation}{" "}
               right now

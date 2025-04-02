@@ -53,16 +53,18 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
         justifyContent: "space-between",
         alignItems: "center",
         width: "100vw",
-        height: "60px",
+        height: "70px",
         left: "0",
         top: "0",
-        background: scrolled ? "rgba(255, 255, 255, 0.95)" : "transparent",
-        backdropFilter: scrolled ? "blur(10px)" : "none",
+        background: scrolled ? "rgba(255, 255, 255, 0.98)" : "rgba(255, 255, 255, 0.7)",
+        backdropFilter: "blur(12px)",
         boxShadow: scrolled ? "0 4px 20px rgba(111, 68, 255, 0.1)" : "none",
-        transition: "all 0.3s ease",
+        transition: "all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)",
         position: "fixed",
         zIndex: 100,
         padding: "0 32px",
+        borderBottom: "1px solid",
+        borderColor: scrolled ? "rgba(111, 68, 255, 0.08)" : "transparent",
       }}
     >
       {/* Logo on the left */}
@@ -70,8 +72,8 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
         <h2 style={{
           fontWeight: "800",
           color: "var(--primary)",
-          fontSize: isMobile ? "20px" : "26px",
-          fontFamily: "Raleway, sans-serif",
+          fontSize: isMobile ? "20px" : "24px",
+          fontFamily: "Inter, sans-serif",
           letterSpacing: "-0.5px"
         }}>
           TIXMOJO
@@ -82,7 +84,7 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
       <div className="nav-right" style={{ 
         display: "flex", 
         alignItems: "center",
-        gap: isMobile ? "12px" : "20px"
+        gap: isMobile ? "12px" : "16px"
       }}>
         {/* Search bar */}
         <div 
@@ -91,17 +93,28 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
           style={{
             display: "flex",
             alignItems: "center",
-            backgroundColor: "rgba(111, 68, 255, 0.08)",
-            borderRadius: "50px",
-            padding: isMobile ? "8px 12px" : "10px 16px",
-            width: isMobile ? "40px" : "240px",
-            transition: "all 0.3s ease",
+            backgroundColor: "rgba(111, 68, 255, 0.06)",
+            borderRadius: "12px",
+            padding: isMobile ? "8px 12px" : "10px 14px",
+            width: isMobile ? "40px" : "220px",
+            transition: "all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)",
             cursor: "pointer",
+            border: "1px solid",
+            borderColor: "rgba(111, 68, 255, 0.1)",
+            boxShadow: "0 2px 6px rgba(111, 68, 255, 0.04)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "rgba(111, 68, 255, 0.08)";
+            e.currentTarget.style.boxShadow = "0 2px 8px rgba(111, 68, 255, 0.08)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "rgba(111, 68, 255, 0.06)";
+            e.currentTarget.style.boxShadow = "0 2px 6px rgba(111, 68, 255, 0.04)";
           }}
         >
           <IoIosSearch style={{ 
             color: "var(--primary)",
-            fontSize: "20px",
+            fontSize: "18px",
             marginRight: isMobile ? "0" : "8px",
           }} />
           
@@ -117,6 +130,7 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
                 fontSize: "14px",
                 width: "100%",
                 color: "var(--dark)",
+                fontFamily: "Inter, sans-serif",
               }}
             />
           )}
@@ -126,33 +140,53 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
         <div 
           onClick={handleUserClick}
           style={{
-            width: "38px",
-            height: "38px",
-            borderRadius: "50%",
-            backgroundColor: "var(--purple-100)",
+            width: "40px",
+            height: "40px",
+            borderRadius: "12px",
+            backgroundColor: "rgba(111, 68, 255, 0.06)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             cursor: "pointer",
-            transition: "all 0.3s ease",
+            transition: "all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)",
+            border: "1px solid",
+            borderColor: "rgba(111, 68, 255, 0.1)",
+            boxShadow: "0 2px 6px rgba(111, 68, 255, 0.04)",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--purple-200)";
-            e.currentTarget.style.transform = "scale(1.05)";
+            e.currentTarget.style.backgroundColor = "rgba(111, 68, 255, 0.08)";
+            e.currentTarget.style.boxShadow = "0 2px 8px rgba(111, 68, 255, 0.08)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--purple-100)";
-            e.currentTarget.style.transform = "scale(1)";
+            e.currentTarget.style.backgroundColor = "rgba(111, 68, 255, 0.06)";
+            e.currentTarget.style.boxShadow = "0 2px 6px rgba(111, 68, 255, 0.04)";
           }}
         >
-          <BiUser style={{ color: "var(--primary)", fontSize: "22px" }} />
+          <BiUser style={{ color: "var(--primary)", fontSize: "20px" }} />
         </div>
 
         {/* Hamburger menu */}
         <div style={{
+          width: "40px",
+          height: "40px",
+          borderRadius: "12px",
+          backgroundColor: "rgba(111, 68, 255, 0.06)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          cursor: "pointer",
+          transition: "all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)",
+          border: "1px solid",
+          borderColor: "rgba(111, 68, 255, 0.1)",
+          boxShadow: "0 2px 6px rgba(111, 68, 255, 0.04)",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = "rgba(111, 68, 255, 0.08)";
+          e.currentTarget.style.boxShadow = "0 2px 8px rgba(111, 68, 255, 0.08)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = "rgba(111, 68, 255, 0.06)";
+          e.currentTarget.style.boxShadow = "0 2px 6px rgba(111, 68, 255, 0.04)";
         }}>
           <Hamburger
             onToggle={toggleScrollPage}
