@@ -415,6 +415,48 @@ h1, h2, h3, h4, h5, h6 {
   animation: slideUp 0.8s ease forwards;
 }
 
+/* Scroll Animation Classes */
+.scroll-fade-in {
+  opacity: 1;
+  transition: opacity 0.8s ease;
+}
+
+.scroll-slide-up {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.scroll-slide-down {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.scroll-slide-left {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.scroll-slide-right {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.scroll-zoom-in {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.scroll-rotate {
+  opacity: 1;
+  transform: rotate(0deg);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
 @keyframes slideUp {
   from {
     opacity: 0;

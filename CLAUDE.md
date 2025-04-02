@@ -126,17 +126,37 @@ Changed the color theme from green to shades of purple:
   - Added subtle shadows and better spacing throughout the section
   - Changed title to "Spotlight Events" for better marketing presence
 
+## 7. Scroll Animations
+
+Added scroll-triggered animations throughout the application for a more dynamic user experience:
+  - Created a ScrollAnimation utility (src/utils/ScrollAnimation.jsx) with:
+    - Custom hooks for detecting element visibility
+    - Component for wrapping content with animations
+    - Support for different animation directions and delays
+  - Added scroll-triggered entrance animations to:
+    - Main page sections (Hero, Events, Recommendations)
+    - Section titles and content
+    - Cards with staggered reveal effects (each card animates with a slight delay)
+  - Enhanced CSS with new animation classes for:
+    - Fade-in effects
+    - Slide animations from different directions
+    - Zoom effects
+    - Rotation animations
+  - Improved perceived performance with sequential loading animations
+  - Ensured smooth transitions and timing for a polished experience
+
 ## Component Files Modified
 
-1. `src/Style/imports.css` - Color system and global styles
+1. `src/Style/imports.css` - Color system and global styles, animation classes
 2. `src/Components/Navbar.jsx` - Navbar height and styling
 3. `src/Components/Footer.jsx` - Logo removal
 4. `src/Components/Cards.jsx` - Card redesign and ranking indicator, added hideRanking prop
 5. `src/Components/Sidebar.jsx` - Position adjustment
 6. `src/Components/FlyerCarousel.jsx` - Margin and color updates
 7. `src/Components/EventsSection.jsx` - Dropdown redesign
-8. `src/Components/NewRecommendSection.jsx` - New component for recommendations without rankings
-9. `src/pages/Home.jsx` - Added new recommendation section
+8. `src/Components/NewRecommendSection.jsx` - New component for recommendations without rankings, added scroll animations
+9. `src/pages/Home.jsx` - Added new recommendation section, implemented scroll animations
+10. `src/utils/ScrollAnimation.jsx` - New utility for scroll-based animations (using .jsx extension for JSX syntax)
 
 ## Future Enhancement Ideas
 

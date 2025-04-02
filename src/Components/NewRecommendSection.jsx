@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
 import Cards from "./Cards.jsx";
+import { useScrollAnimation } from "../utils/ScrollAnimation.jsx";
 
 function NewRecommendSection({
   title = "Trending Now",
@@ -61,6 +62,17 @@ function NewRecommendSection({
       handleScrollRight();
     }
   }, [handleScrollLeft, handleScrollRight]);
+  
+  // Scroll animations
+  const [cardsContainerRef, isCardsContainerVisible] = useScrollAnimation({
+    threshold: 0.1,
+    once: true
+  });
+  
+  const [titleRef, isTitleVisible] = useScrollAnimation({
+    threshold: 0.1,
+    once: true
+  });
 
   return (
     <div
@@ -93,10 +105,14 @@ function NewRecommendSection({
           }}
         >
           <div 
+            ref={titleRef}
             style={{
               position: "relative",
               marginBottom: "10px",
               display: "inline-block",
+              opacity: isTitleVisible ? 1 : 0,
+              transform: isTitleVisible ? "translateY(0)" : "translateY(20px)",
+              transition: "opacity 0.8s ease, transform 0.8s ease",
             }}
           >
             <span
@@ -238,7 +254,11 @@ function NewRecommendSection({
           {/* Scrollable Container */}
           <div
             id={containerId}
-            ref={scrollContainerRef}
+            ref={(el) => {
+              // Assign both refs to the same element
+              scrollContainerRef.current = el;
+              if (cardsContainerRef) cardsContainerRef.current = el;
+            }}
             className="scrollbar-container"
             style={{
               display: "flex",
@@ -247,6 +267,9 @@ function NewRecommendSection({
               padding: "20px 10px 30px",
               position: "relative",
               marginTop: "10px",
+              opacity: isCardsContainerVisible ? 1 : 0,
+              transform: isCardsContainerVisible ? "translateY(0)" : "translateY(30px)",
+              transition: "opacity 0.8s ease, transform 0.8s ease",
             }}
           >
             {events.map((event, index) => (
@@ -255,12 +278,19 @@ function NewRecommendSection({
                 className="fade-in"
                 style={{
                   flex: "0 0 auto",
-                  animationDelay: `${index * 0.1}s`,
-                  transform: "translateY(0)",
-                  transition: "transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
+                  opacity: isCardsContainerVisible ? 1 : 0,
+                  transform: isCardsContainerVisible 
+                    ? "translateY(0)" 
+                    : "translateY(40px)",
+                  transition: `opacity 0.6s ease, 
+                             transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)`,
+                  transitionDelay: `${0.1 + (index * 0.1)}s`,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-12px)";
+                  // Only apply hover effect if animation has completed
+                  if (isCardsContainerVisible) {
+                    e.currentTarget.style.transform = "translateY(-12px)";
+                  }
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = "translateY(0)";

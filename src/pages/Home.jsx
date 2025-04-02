@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import EventsSection from "../Components/EventsSection.jsx";
 import FlyerCarousel from "../Components/FlyerCarousel.jsx";
 import NewRecommendSection from "../Components/NewRecommendSection.jsx";
+import { ScrollAnimation } from "../utils/ScrollAnimation.jsx";
 
 import "../i18n";
 // Get today and tomorrow's dates formatted as "DD MMM"
@@ -357,25 +358,32 @@ function Home() {
   return (
     <>
       {/* Hero Section with Carousel */}
-      <FlyerCarousel />
+      <ScrollAnimation direction="down" distance={30} duration={1.2}>
+        <FlyerCarousel />
+      </ScrollAnimation>
 
       
       {/* Popular Events Section */}
-      <EventsSection
-        title={t("eventsSection.sectionTitles.popular")}
-        location={popularEventsLocation}
-        events={eventsData}
-        containerId="popularEventsContainer"
-        onLocationChange={handlePopularLocationChange}
-        availableLocations={availableLocations}
-      />
+      <ScrollAnimation direction="up" distance={40} duration={1} delay={0.2}>
+        <EventsSection
+          title={t("eventsSection.sectionTitles.popular")}
+          location={popularEventsLocation}
+          events={eventsData}
+          containerId="popularEventsContainer"
+          onLocationChange={handlePopularLocationChange}
+          availableLocations={availableLocations}
+        />
+      </ScrollAnimation>
+      
       {/* New Recommendation Section without rankings */}
-      <NewRecommendSection
-        title="Spotlight Events"
-        subtitle="Curated selection of must-see events you don't want to miss"
-        events={eventsData.slice(0, 8)}
-        containerId="trendingRecommendations"
-      />
+      <ScrollAnimation direction="up" distance={40} duration={1} delay={0.3}>
+        <NewRecommendSection
+          title="Spotlight Events"
+          subtitle="Curated selection of must-see events you don't want to miss"
+          events={eventsData.slice(0, 8)}
+          containerId="trendingRecommendations"
+        />
+      </ScrollAnimation>
     </>
   );
 }
