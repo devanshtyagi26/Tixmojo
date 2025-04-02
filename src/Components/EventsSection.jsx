@@ -268,9 +268,7 @@ const EventsSection = ({
                   borderRadius: "30px",
                   marginLeft: "2px",
                   transition: "all 0.3s ease",
-                  boxShadow: isDropdownOpen
-                    ? "0 3px 12px rgba(111, 68, 255, 0.12)"
-                    : "none",
+                  boxShadow: "none",
                 }}
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
@@ -301,7 +299,7 @@ const EventsSection = ({
                   <div
                     className="location-dropdown-content"
                     style={{
-                      boxShadow: "0 10px 25px rgba(111, 68, 255, 0.15)",
+                      // boxShadow: "0 10px 25px rgba(111, 68, 255, 0.15)",
                       border: "1px solid var(--purple-100)",
                       width: "240px",
                       borderRadius: "16px",
@@ -316,7 +314,7 @@ const EventsSection = ({
                         }`}
                         onClick={() => handleLocationSelect(city)}
                         style={{
-                          padding: "12px 18px",
+                          padding: "16px 18px",
                           fontSize: "15px",
                           borderBottom:
                             city !==

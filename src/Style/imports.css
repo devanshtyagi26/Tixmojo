@@ -3,39 +3,39 @@
 
 :root {
   /* Primary Purple Color Palette */
-  --purple-50: #F8F5FF;
-  --purple-100: #EEE6FF;
-  --purple-200: #D9C6FF;
-  --purple-300: #C4A7FF;
-  --purple-400: #A988FF;
-  --purple-500: #8A66FF;
-  --purple-600: #6F44FF;
-  --purple-700: #5C31E6;
-  --purple-800: #4A21CC;
-  --purple-900: #3817A3;
-  
+  --purple-50: #f8f5ff;
+  --purple-100: #eee6ff;
+  --purple-200: #d9c6ff;
+  --purple-300: #c4a7ff;
+  --purple-400: #a988ff;
+  --purple-500: #8a66ff;
+  --purple-600: #6f44ff;
+  --purple-700: #5c31e6;
+  --purple-800: #4a21cc;
+  --purple-900: #3817a3;
+
   /* Neutral Color Palette */
-  --neutral-50: #FFFFFF;
-  --neutral-100: #F5F5FA;
-  --neutral-200: #EEEEF5;
-  --neutral-300: #E0E0EB;
-  --neutral-400: #BDBDCE;
-  --neutral-500: #9E9EBA;
-  --neutral-600: #7C7C9F;
-  --neutral-700: #5E5E80;
-  --neutral-800: #36364A;
-  --neutral-900: #16162B;
-  
+  --neutral-50: #ffffff;
+  --neutral-100: #f5f5fa;
+  --neutral-200: #eeeef5;
+  --neutral-300: #e0e0eb;
+  --neutral-400: #bdbdce;
+  --neutral-500: #9e9eba;
+  --neutral-600: #7c7c9f;
+  --neutral-700: #5e5e80;
+  --neutral-800: #36364a;
+  --neutral-900: #16162b;
+
   /* Accent Colors */
-  --accent-pink: #FF5EA3;
-  --accent-teal: #2EEBC9;
-  --accent-indigo: #7B61FF;
-  
+  --accent-pink: #ff5ea3;
+  --accent-teal: #2eebc9;
+  --accent-indigo: #7b61ff;
+
   /* Semantic Colors */
-  --success: #2ECB94;
-  --warning: #FFB547;
-  --error: #FF5E5E;
-  --info: #60A5FA;
+  --success: #2ecb94;
+  --warning: #ffb547;
+  --error: #ff5e5e;
+  --info: #60a5fa;
 
   /* Functional Color Assignments */
   --primary: var(--purple-600);
@@ -49,7 +49,7 @@
   --gray-light: var(--neutral-500);
   --accent: var(--accent-teal);
   --surface: var(--purple-50);
-  
+
   /* Shadow Effects with the new purple color */
   --card-shadow: 0 8px 24px rgba(111, 68, 255, 0.12);
   --hover-shadow: 0 12px 32px rgba(111, 68, 255, 0.25);
@@ -63,7 +63,7 @@
 
 body {
   font-family: "Montserrat", sans-serif;
-  background-color: var(--surface);
+  background-color: var(--neutral-50);
   color: var(--dark);
   overflow-x: hidden;
   width: 100vw;
@@ -73,7 +73,12 @@ body {
   position: relative;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: "Raleway", sans-serif;
   font-weight: 700;
 }
@@ -158,6 +163,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .flyerimage:hover {
   transform: scale(1.03);
+  overflow: hidden;
+  border-radius: 16px;
   box-shadow: var(--hover-shadow);
 }
 
@@ -191,6 +198,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 10px 16px;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-weight: 500;
   border-left: 3px solid transparent;
 }
 
@@ -243,7 +251,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .section-container {
-  padding: 40px 0;
+  padding: 10px 0;
   margin-bottom: 40px;
 }
 
@@ -310,7 +318,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .price-badge {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    var(--primary-dark) 100%
+  );
   color: var(--light);
   border-radius: 30px;
   padding: 8px 16px;
@@ -396,11 +408,11 @@ h1, h2, h3, h4, h5, h6 {
     width: 280px !important;
     height: 380px !important;
   }
-  
+
   .section-title {
     font-size: 28px;
   }
-  
+
   .section-subtitle {
     font-size: 16px;
   }
@@ -470,7 +482,11 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Hero section styles */
 .hero-container {
-  background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--primary-dark) 0%,
+    var(--primary) 100%
+  );
   min-height: 500px;
   border-radius: 0 0 30px 30px;
   overflow: hidden;
@@ -612,19 +628,19 @@ h1, h2, h3, h4, h5, h6 {
     min-height: 400px;
     padding: 40px 15px;
   }
-  
+
   .hero-title {
     font-size: 32px;
   }
-  
+
   .hero-subtitle {
     font-size: 16px;
   }
-  
+
   .recommended-section {
     margin-top: -80px;
   }
-  
+
   .recommended-card {
     width: 280px;
     height: 380px;

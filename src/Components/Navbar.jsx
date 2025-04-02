@@ -58,7 +58,7 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
         top: "0",
         background: scrolled ? "rgba(255, 255, 255, 0.95)" : "transparent",
         backdropFilter: scrolled ? "blur(10px)" : "none",
-        boxShadow: scrolled ? "0 4px 20px rgba(111, 68, 255, 0.1)" : "none",
+        boxShadow: "0 4px 20px rgba(111, 68, 255, 0.1)",
         transition: "all 0.3s ease",
         position: "fixed",
         zIndex: 100,

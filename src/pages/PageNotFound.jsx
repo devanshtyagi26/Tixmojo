@@ -38,7 +38,7 @@ function PageNotFound() {
   return (
     <>
       <div style={styles.container}>
-        <h1 style={styles.h1}>PageNotFound Page</h1>
+        <h1 style={styles.h1}>PageNotFound</h1>
         <p style={styles.p}>The page you are looking for does not exist.</p>
         <Link to="/" style={styles.link}>
           Go to Home

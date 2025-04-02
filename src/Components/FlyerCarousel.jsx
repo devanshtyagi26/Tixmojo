@@ -135,7 +135,7 @@ function FlyerCarousel() {
     slidesToScroll: 1, // Number of slides to scroll
     autoplay: true, // Enable autoplay
     autoplaySpeed: 3000, // Autoplay interval
-    arrows: true, // Enable custom arrows
+    arrows: false, // Enable custom arrows
     prevArrow: <CustomPrevArrow />, // Custom previous button
     nextArrow: <CustomNextArrow />, // Custom next button
   };
@@ -162,9 +162,10 @@ function FlyerCarousel() {
     <div
       style={{
         width: "100%", // Fit to width
-        maxWidth: "1500px", // Increased size while maintaining the aspect ratio
+        maxWidth: "1260px", // Increased size while maintaining the aspect ratio
         margin: "0 auto",
-        marginTop: "90px", // Add top margin to account for navbar height
+        marginTop: "55px", // Add top margin to account for navbar height
+        marginBottom: "0px !important", // Add top margin to account for navbar height
         padding: "20px",
       }}
     >
@@ -179,7 +180,7 @@ function FlyerCarousel() {
               style={{
                 width: "100%", // Fit the width of the container
                 height: "auto", // Maintain aspect ratio
-                aspectRatio: windowWidth <= 768 ? "3/2" : "945 / 256", // Enforce the aspect ratio
+                aspectRatio: windowWidth <= 768 ? "3/2" : "1000 / 400", // Enforce the aspect ratio
                 borderRadius: "10px",
                 transition: "transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)", // Add cubic-bezier animation
                 boxShadow: "0 4px 8px rgba(111, 68, 255, 0.15)",
