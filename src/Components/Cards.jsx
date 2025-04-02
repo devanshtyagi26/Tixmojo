@@ -61,7 +61,7 @@ const Cards = memo(function Cards({
         }
       }}
     >
-      {/* Ranking badge with circular background */}
+      {/* Ranking badge */}
       {eventRanking && !hideRanking && (
         <div
           style={{
@@ -69,30 +69,29 @@ const Cards = memo(function Cards({
             top: "12px",
             left: "12px",
             zIndex: 10,
-            width: "45px",
-            height: "45px",
-            borderRadius: "50%",
-            backgroundColor: "var(--primary-light)",
+            width: "40px",
+            height: "40px",
+            borderRadius: "12px",
+            backgroundColor: "rgba(0, 0, 0, 0.7)",
+            backdropFilter: "blur(5px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
-            border: "1px solid var(--primary)",
+            boxShadow: "0 2px 10px rgba(0, 0, 0, 0.2)",
             transition: "transform 0.3s ease",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
           }}
         >
-          {/* Ranking number */}
           <span
             style={{
-              fontSize: "30px",
+              fontSize: "22px",
               fontWeight: "700",
               lineHeight: "1",
               color: "white",
               fontFamily: "Raleway, sans-serif",
-              marginTop: "-6px", // Slight adjustment to visually center the number
             }}
           >
-            {eventRanking}
+            #{eventRanking}
           </span>
         </div>
       )}
