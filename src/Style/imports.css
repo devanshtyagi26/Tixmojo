@@ -136,17 +136,17 @@ h1, h2, h3, h4, h5, h6 {
 
 .location-dropdown-content {
   position: absolute;
-  top: calc(100% + 5px);
+  top: calc(100% + 8px);
   left: 0;
   width: 220px;
   max-height: 300px;
   overflow-y: auto;
   background-color: var(--light);
-  box-shadow: 0 8px 24px rgba(20, 20, 40, 0.15);
-  border-radius: 12px;
-  z-index: 100;
+  box-shadow: 0 8px 24px rgba(111, 68, 255, 0.15);
+  border-radius: 16px;
+  z-index: 1000;
   padding: 8px 0;
-  animation: fadeIn 0.2s ease;
+  animation: fadeIn 0.25s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .flyerimage {
@@ -195,14 +195,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .location-dropdown-item:hover {
-  background-color: rgba(111, 68, 255, 0.05);
-  border-left: 3px solid var(--primary-light);
+  background-color: var(--purple-100);
+  border-left: 3px solid var(--primary-light) !important;
 }
 
 .location-dropdown-item.selected {
-  background-color: rgba(111, 68, 255, 0.1);
-  border-left: 3px solid var(--primary);
+  background-color: var(--purple-200);
+  border-left: 3px solid var(--primary) !important;
   font-weight: 600;
+  color: var(--primary);
 }
 
 @keyframes fadeIn {
@@ -262,8 +263,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .card {
   position: relative;
-  width: 320px;
-  height: 420px;
+  width: 350px;
+  height: 450px;
   background: var(--light);
   border-radius: 8px;
   overflow: hidden;

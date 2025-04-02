@@ -1,4 +1,4 @@
-import { BiBuoy } from "react-icons/bi";
+import { BiBuoy, BiUser } from "react-icons/bi";
 import { HiArrowSmRight, HiChartPie } from "react-icons/hi";
 import { PiListHeartBold } from "react-icons/pi";
 import { HiOutlineInformationCircle, HiOutlinePhone } from "react-icons/hi";
@@ -29,12 +29,13 @@ const styles = {
   item: {
     display: "flex",
     alignItems: "center",
-    padding: "10px",
+    padding: "12px 15px",
     textDecoration: "none",
     color: "var(--neutral-800)",
     fontSize: "16px",
-    borderRadius: "5px",
-    transition: "background 0.3s ease",
+    borderRadius: "8px",
+    transition: "all 0.3s ease",
+    margin: "4px 0",
   },
   icon: {
     marginRight: "10px",
@@ -42,6 +43,8 @@ const styles = {
   },
   itemHover: {
     background: "var(--purple-100)",
+    color: "var(--primary)",
+    transform: "translateX(5px)",
   },
   divider: {
     width: "100%",
@@ -92,27 +95,129 @@ export function SidebarScroll({ toggleScrollPage, isSidebarOpen }) {
     <>
       <div style={styles.overlay} onClick={handleClick}></div>
       <div style={styles.sidebar} id="sidebar">
+        {/* User profile section */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          marginBottom: "20px",
+          padding: "10px",
+        }}>
+          <div style={{
+            width: "50px",
+            height: "50px",
+            borderRadius: "50%",
+            backgroundColor: "var(--purple-300)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: "15px",
+          }}>
+            <BiUser style={{ color: "white", fontSize: "26px" }} />
+          </div>
+          <div>
+            <div style={{
+              fontWeight: "700",
+              fontSize: "16px",
+              color: "var(--dark)",
+            }}>Guest User</div>
+            <div style={{
+              fontSize: "14px",
+              color: "var(--gray-light)",
+            }}>Not signed in</div>
+          </div>
+        </div>
+        <span style={styles.divider}></span>
+        
+        {/* Account actions */}
         <div style={styles.itemGroup}>
-          <a href="#" style={styles.item}>
-            <HiChartPie style={styles.icon} /> Dashboard
-          </a>
-          <a href="#" style={styles.item}>
+          <a 
+            href="#" 
+            style={styles.item}
+            onMouseEnter={(e) => {
+              Object.assign(e.currentTarget.style, styles.itemHover);
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "";
+              e.currentTarget.style.color = "var(--neutral-800)";
+              e.currentTarget.style.transform = "";
+            }}
+          >
             <HiArrowSmRight style={styles.icon} /> Sign In
+          </a>
+          <a 
+            href="#" 
+            style={styles.item}
+            onMouseEnter={(e) => {
+              Object.assign(e.currentTarget.style, styles.itemHover);
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "";
+              e.currentTarget.style.color = "var(--neutral-800)";
+              e.currentTarget.style.transform = "";
+            }}
+          >
+            <HiChartPie style={styles.icon} /> My Dashboard
+          </a>
+          <a 
+            href="#" 
+            style={styles.item}
+            onMouseEnter={(e) => {
+              Object.assign(e.currentTarget.style, styles.itemHover);
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "";
+              e.currentTarget.style.color = "var(--neutral-800)";
+              e.currentTarget.style.transform = "";
+            }}
+          >
+            <PiListHeartBold style={styles.icon} /> My Tickets
           </a>
         </div>
         <span style={styles.divider}></span>
+        
+        {/* Help & Support */}
         <div style={styles.itemGroup}>
-          <a href="#" style={styles.item}>
-            <PiListHeartBold style={styles.icon} /> List With Us
-          </a>
-          <a href="#" style={styles.item}>
+          <a 
+            href="#" 
+            style={styles.item}
+            onMouseEnter={(e) => {
+              Object.assign(e.currentTarget.style, styles.itemHover);
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "";
+              e.currentTarget.style.color = "var(--neutral-800)";
+              e.currentTarget.style.transform = "";
+            }}
+          >
             <HiOutlineInformationCircle style={styles.icon} /> About Us
           </a>
-          <a href="#" style={styles.item}>
-            <HiOutlinePhone style={styles.icon} /> Contact Us
+          <a 
+            href="#" 
+            style={styles.item}
+            onMouseEnter={(e) => {
+              Object.assign(e.currentTarget.style, styles.itemHover);
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "";
+              e.currentTarget.style.color = "var(--neutral-800)";
+              e.currentTarget.style.transform = "";
+            }}
+          >
+            <HiOutlinePhone style={styles.icon} /> Contact Support
           </a>
-          <a href="#" style={styles.item}>
-            <BiBuoy style={styles.icon} /> Help
+          <a 
+            href="#" 
+            style={styles.item}
+            onMouseEnter={(e) => {
+              Object.assign(e.currentTarget.style, styles.itemHover);
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "";
+              e.currentTarget.style.color = "var(--neutral-800)";
+              e.currentTarget.style.transform = "";
+            }}
+          >
+            <BiBuoy style={styles.icon} /> Help Center
           </a>
         </div>
       </div>

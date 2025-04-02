@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { BiUser } from "react-icons/bi";
 import { TbTicket } from "react-icons/tb";
-import { MdLocalActivity } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import "../i18n";
 import Hamburger from "./Hamburger";
@@ -136,28 +135,22 @@ function Navbar({ toggleScrollPage, isSidebarOpen }) {
           </button>
         )}
 
-        <button className="btn btn-primary" style={{ 
-          display: "flex", 
-          alignItems: "center", 
-          gap: "8px",
-          padding: isMobile ? "8px" : "8px 16px",
-          width: isMobile ? "40px" : "auto",
-          aspectRatio: isMobile ? "1/1" : "auto",
-        }}>
-          <MdLocalActivity />
-          {!isMobile && "Create Event"}
-        </button>
 
-        <div style={{ 
-          width: "40px", 
-          height: "40px", 
-          borderRadius: "50%", 
-          backgroundColor: "var(--primary-light)", 
-          display: "flex", 
-          alignItems: "center", 
-          justifyContent: "center",
-          cursor: "pointer",
-        }}>
+        <div 
+          onClick={toggleScrollPage}
+          style={{ 
+            width: "40px", 
+            height: "40px", 
+            borderRadius: "50%", 
+            backgroundColor: isSidebarOpen ? "var(--primary)" : "var(--primary-light)", 
+            display: "flex", 
+            alignItems: "center", 
+            justifyContent: "center",
+            cursor: "pointer",
+            transition: "background-color 0.3s ease",
+            boxShadow: isSidebarOpen ? "0 2px 10px rgba(111, 68, 255, 0.25)" : "none",
+          }}
+        >
           <BiUser style={{ color: "white", fontSize: "20px" }} />
         </div>
 

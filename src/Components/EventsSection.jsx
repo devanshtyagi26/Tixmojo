@@ -238,45 +238,76 @@ const EventsSection = ({
 
   return (
     <div className="section-container">
-      <div className="container" style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px" }}>
+      <div
+        className="container"
+        style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 20px" }}
+      >
         {/* Section header with title and location selector */}
-        <div style={{ 
-          display: "flex", 
-          justifyContent: "space-between", 
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "15px",
-          marginBottom: "30px",
-        }}>
-          <div style={{ maxWidth: "600px" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "15px",
+            marginBottom: "30px",
+          }}
+        >
+          <div style={{ maxWidth: "600px", position: "relative", zIndex: 10 }}>
             <h2 className="section-title slide-up">
               {title}{" "}
-              <span 
-                ref={dropdownRef} 
-                style={{ 
-                  position: "relative", 
+              <span
+                ref={dropdownRef}
+                style={{
+                  position: "relative",
                   display: "inline-flex",
                   cursor: "pointer",
                   alignItems: "center",
+                  // backgroundColor: "var(--light)",
+                  padding: "4px",
+                  borderRadius: "30px",
+                  marginLeft: "2px",
+                  transition: "all 0.3s ease",
+                  boxShadow: isDropdownOpen
+                    ? "0 3px 12px rgba(111, 68, 255, 0.12)"
+                    : "none",
                 }}
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
-                <span style={{ color: "var(--primary)", borderBottom: "2px solid var(--primary)" }}>
+                <span
+                  style={{
+                    color: "var(--primary)",
+                    fontWeight: "700",
+                    letterSpacing: "0.5px",
+                    borderBottom: "2px solid var(--primary)",
+                    paddingBottom: "2px",
+                  }}
+                >
                   {selectedLocation}
                 </span>
                 <span
                   style={{
-                    marginLeft: "5px",
+                    marginLeft: "8px",
                     transform: isDropdownOpen ? "rotate(180deg)" : "none",
                     transition: "transform 0.3s ease",
-                    fontSize: "18px",
+                    fontSize: "14px",
+                    color: "var(--primary)",
                   }}
                 >
                   ▾
                 </span>
-                
+
                 {isDropdownOpen && (
-                  <div className="location-dropdown-content">
+                  <div
+                    className="location-dropdown-content"
+                    style={{
+                      boxShadow: "0 10px 25px rgba(111, 68, 255, 0.15)",
+                      border: "1px solid var(--purple-100)",
+                      width: "240px",
+                      borderRadius: "16px",
+                      zIndex: 1000,
+                    }}
+                  >
                     {availableLocations.map((city) => (
                       <div
                         key={city}
@@ -284,6 +315,19 @@ const EventsSection = ({
                           selectedLocation === city ? "selected" : ""
                         }`}
                         onClick={() => handleLocationSelect(city)}
+                        style={{
+                          padding: "12px 18px",
+                          fontSize: "15px",
+                          borderBottom:
+                            city !==
+                            availableLocations[availableLocations.length - 1]
+                              ? "1px solid var(--purple-100)"
+                              : "none",
+                          borderLeft:
+                            selectedLocation === city
+                              ? "3px solid var(--primary)"
+                              : "3px solid transparent",
+                        }}
                       >
                         {city}
                       </div>
@@ -292,27 +336,35 @@ const EventsSection = ({
                 )}
               </span>
             </h2>
-            <p className="section-subtitle slide-up">
-              Discover the most popular events happening in {selectedLocation} right now
+            <p
+              className="section-subtitle slide-up"
+              style={{ position: "relative", zIndex: -1 }}
+            >
+              Discover the most popular events happening in {selectedLocation}{" "}
+              right now
             </p>
           </div>
-          
+
           {/* Filter options and navigation controls */}
-          <div style={{ 
-            display: "flex", 
-            alignItems: "center", 
-            gap: "10px",
-            flexWrap: "wrap",
-          }}>
-            <div style={{ 
-              display: "flex", 
-              alignItems: "center", 
-              gap: "8px", 
-              border: "1px solid rgba(107, 56, 251, 0.2)",
-              borderRadius: "50px",
-              padding: "4px",
-              background: "rgba(107, 56, 251, 0.05)",
-            }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              flexWrap: "wrap",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                border: "1px solid rgba(107, 56, 251, 0.2)",
+                borderRadius: "50px",
+                padding: "4px",
+                background: "rgba(107, 56, 251, 0.05)",
+              }}
+            >
               {filterOptions.map((filter) => (
                 <button
                   key={filter}
@@ -326,7 +378,7 @@ const EventsSection = ({
                 </button>
               ))}
             </div>
-            
+
             <div style={{ display: "flex", gap: "10px" }}>
               <button
                 className="navigation-btn"
@@ -376,7 +428,13 @@ const EventsSection = ({
                 gap: "15px",
               }}
             >
-              <div style={{ fontSize: "24px", marginBottom: "10px", color: "var(--dark)" }}>
+              <div
+                style={{
+                  fontSize: "24px",
+                  marginBottom: "10px",
+                  color: "var(--dark)",
+                }}
+              >
                 {t("eventsSection.noEvents.title")}
               </div>
               <div>
