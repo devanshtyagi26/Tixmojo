@@ -3,19 +3,60 @@ import { Link } from "react-router-dom";
 import { IoLogoFacebook, IoLogoTwitter, IoLogoInstagram } from "react-icons/io5";
 import { FaLinkedinIn, FaYoutube } from "react-icons/fa";
 import { FiMail, FiPhone, FiMapPin } from "react-icons/fi";
-import { MdLocalActivity } from "react-icons/md";
 import { useTranslation } from "react-i18next";
+
+// Map of icon names to actual icon components
+const iconMap = {
+  IoLogoFacebook: <IoLogoFacebook />,
+  IoLogoTwitter: <IoLogoTwitter />,
+  IoLogoInstagram: <IoLogoInstagram />,
+  FaLinkedinIn: <FaLinkedinIn />,
+  FaYoutube: <FaYoutube />,
+  FiMail: <FiMail />,
+  FiPhone: <FiPhone />,
+  FiMapPin: <FiMapPin />
+};
 
 function Footer() {
   const { t } = useTranslation();
   const year = new Date().getFullYear();
+
+  // Get footer data from translation
+  const socialNetworks = t("footer.social.networks", { returnObjects: true });
+  const categories = t("footer.categories.list", { returnObjects: true });
+  
+  // Contact information
+  const contactInfo = [
+    { 
+      icon: "FiMapPin", 
+      text: t("footer.contact.address") 
+    },
+    { 
+      icon: "FiPhone", 
+      text: t("footer.contact.redirects.one") 
+    },
+    { 
+      icon: "FiMail", 
+      text: t("footer.contact.redirects.two") 
+    }
+  ];
+
+  // Quick links
+  const quickLinks = [
+    "footer.information.redirects.one", 
+    "footer.information.redirects.two", 
+    "footer.information.redirects.three",
+    "footer.links.redirects.one",
+    "footer.links.redirects.two",
+    "footer.links.redirects.three",
+    "footer.otherLinks.contactUs"
+  ];
 
   return (
     <footer style={{
       backgroundColor: "var(--dark)",
       color: "var(--light)",
       padding: "60px 0 30px",
-      marginTop: "60px",
     }}>
       <div style={{
         maxWidth: "1200px",
@@ -46,24 +87,18 @@ function Footer() {
               color: "var(--gray-light)",
               marginBottom: "20px",
             }}>
-              TixMojo is your one-stop platform for discovering and booking tickets to the best events, concerts, and performances in your city.
+              {t("footer.about")}
             </p>
             
             <div style={{
               display: "flex",
               gap: "15px",
             }}>
-              {[
-                { icon: <IoLogoFacebook />, label: "Facebook" },
-                { icon: <IoLogoTwitter />, label: "Twitter" },
-                { icon: <IoLogoInstagram />, label: "Instagram" },
-                { icon: <FaLinkedinIn />, label: "LinkedIn" },
-                { icon: <FaYoutube />, label: "YouTube" },
-              ].map((social, index) => (
+              {socialNetworks.map((social, index) => (
                 <Link 
                   key={index}
                   to="/page-not-found"
-                  aria-label={social.label}
+                  aria-label={social.name}
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -87,7 +122,7 @@ function Footer() {
                     e.currentTarget.style.transform = "translateY(0)";
                   }}
                 >
-                  {social.icon}
+                  {iconMap[social.icon]}
                 </Link>
               ))}
             </div>
@@ -101,22 +136,14 @@ function Footer() {
               marginBottom: "20px",
               color: "white",
             }}>
-              {t("footer.information.title")}
+              {t("footer.otherLinks.title")}
             </h3>
             <ul style={{
               listStyle: "none",
               padding: 0,
               margin: 0,
             }}>
-              {[
-                "footer.information.redirects.one", 
-                "footer.information.redirects.two", 
-                "footer.information.redirects.three",
-                "footer.links.redirects.one",
-                "footer.links.redirects.two",
-                "footer.links.redirects.three",
-                "Contact Us"
-              ].map((link, index) => (
+              {quickLinks.map((link, index) => (
                 <li key={index} style={{ marginBottom: "12px" }}>
                   <Link 
                     to="/page-not-found"
@@ -148,7 +175,7 @@ function Footer() {
                       borderRadius: "50%",
                       backgroundColor: "var(--primary)",
                     }}></span>
-                    {link === "Contact Us" ? link : t(link)}
+                    {t(link)}
                   </Link>
                 </li>
               ))}
@@ -163,7 +190,7 @@ function Footer() {
               marginBottom: "20px",
               color: "white",
             }}>
-              {t("footer.links.title")}
+              {t("footer.categories.title")}
             </h3>
             <ul style={{
               listStyle: "none",
@@ -173,18 +200,7 @@ function Footer() {
               gridTemplateColumns: "1fr 1fr",
               gap: "12px",
             }}>
-              {[
-                "Concerts", 
-                "Festivals",
-                "Theatre",
-                "Comedy",
-                "Sports",
-                "Arts",
-                "Family",
-                "Workshops",
-                "Nightlife",
-                "Culture"
-              ].map((category, index) => (
+              {categories.map((category, index) => (
                 <li key={index}>
                   <Link 
                     to="/page-not-found"
@@ -223,20 +239,7 @@ function Footer() {
               padding: 0,
               margin: 0,
             }}>
-              {[
-                { 
-                  icon: <FiMapPin />, 
-                  text: "123 Event Street, Sydney, NSW 2000, Australia" 
-                },
-                { 
-                  icon: <FiPhone />, 
-                  text: t("footer.contact.redirects.one") 
-                },
-                { 
-                  icon: <FiMail />, 
-                  text: t("footer.contact.redirects.two") 
-                },
-              ].map((contact, index) => (
+              {contactInfo.map((contact, index) => (
                 <li 
                   key={index} 
                   style={{
@@ -251,7 +254,7 @@ function Footer() {
                     fontSize: "18px",
                     marginTop: "2px",
                   }}>
-                    {contact.icon}
+                    {iconMap[contact.icon]}
                   </span>
                   <Link
                     to="/page-not-found"
@@ -282,7 +285,7 @@ function Footer() {
                 marginBottom: "15px",
                 color: "white",
               }}>
-                Subscribe to Newsletter
+                {t("footer.newsletter.title")}
               </h4>
               <div style={{
                 display: "flex",
@@ -290,7 +293,7 @@ function Footer() {
               }}>
                 <input
                   type="email"
-                  placeholder="Your email"
+                  placeholder={t("footer.newsletter.placeholder")}
                   style={{
                     flex: 1,
                     padding: "10px 15px",
@@ -310,7 +313,7 @@ function Footer() {
                     padding: "0 20px",
                   }}
                 >
-                  Subscribe
+                  {t("footer.newsletter.button")}
                 </button>
               </div>
             </div>

@@ -5,11 +5,12 @@
     },
     "footer": {
         "copyright": "Copyright 2025 | All Right Reserved with TIXMOJO",
+        "about": "TixMojo is your one-stop platform for discovering and booking tickets to the best events, concerts, and performances in your city.",
         "tnc": {
             "privacy": "Privacy Policy",
             "refund": "Refund Policy",
             "terms": "Terms & Conditions"
-            },
+        },
         "information": {
             "title": "Information",
             "redirects": {
@@ -19,7 +20,7 @@
             }
         },
         "links": {
-                "title": "Helpful Links",
+            "title": "Helpful Links",
             "redirects": {
                 "one": "Terms & Conditions",
                 "two": "Privacy Policy",
@@ -31,14 +32,52 @@
             "redirects": {
                 "one": "+61 483952024",
                 "two": "info@tixmojo.com"
-            }
+            },
+            "address": "123 Event Street, Sydney, NSW 2000, Australia"
+        },
+        "categories": {
+            "title": "Event Categories",
+            "list": [
+                "Concerts", 
+                "Festivals",
+                "Theatre",
+                "Comedy",
+                "Sports",
+                "Arts",
+                "Family",
+                "Workshops",
+                "Nightlife",
+                "Culture"
+            ]
+        },
+        "social": {
+            "title": "Follow Us",
+            "networks": [
+                { "name": "Facebook", "icon": "IoLogoFacebook" },
+                { "name": "Twitter", "icon": "IoLogoTwitter" },
+                { "name": "Instagram", "icon": "IoLogoInstagram" },
+                { "name": "LinkedIn", "icon": "FaLinkedinIn" },
+                { "name": "YouTube", "icon": "FaYoutube" }
+            ]
+        },
+        "newsletter": {
+            "title": "Subscribe to Newsletter",
+            "placeholder": "Your email",
+            "button": "Subscribe"
+        },
+        "otherLinks": {
+            "title": "Quick Links",
+            "contactUs": "Contact Us"
         }
-
     },
     "eventsSection": {
         "sectionTitles": {
             "popular": "Events in",
-            "recommended": "Recommended"
+            "recommended": "Recommended",
+            "spotlight": "Spotlight Events"
+        },
+        "subtitle": {
+            "spotlight": "Curated selection of must-see events you don't want to miss"
         },
         "filters": {
             "all": "All",
@@ -47,6 +86,7 @@
             "thisWeek": "This Week"
         },
         "locations": {
+            "default": "Sydney",
             "sydney": "Sydney",
             "melbourne": "Melbourne",
             "singapore": "Singapore",
@@ -55,6 +95,7 @@
             "london": "London",
             "newYork": "New York"
         },
+        "availableLocations": ["sydney", "melbourne", "singapore", "tokyo", "newYork"],
         "noEvents": {
             "title": "No events available",
             "message": "No events found in {{location}} for \"{{filter}}\" filter",
@@ -91,6 +132,189 @@
                 "art": "NEXT MONTH ART EXHIBIT"
             }
         },
-        "priceLabel": "From AUD {{price}}"
-    }   
+        "priceLabel": "From AUD {{price}}",
+        "eventsData": [
+            {
+                "eventName": "TODAY'S LIVE CONCERT",
+                "eventAddress": "Pulse Live (Former Yang), Sydney",
+                "eventLocation": "Sydney",
+                "eventPrice": "399",
+                "eventPoster": "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=2940&auto=format&fit=crop",
+                "rankScore": 95,
+                "eventRanking": "1",
+                "eventDateType": "today"
+            },
+            {
+                "eventName": "TOMORROW'S DANCE PARTY",
+                "eventAddress": "Marina Bay Sands, Sydney",
+                "eventLocation": "Sydney",
+                "eventPrice": "299",
+                "eventPoster": "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=2574&auto=format&fit=crop",
+                "rankScore": 90,
+                "eventRanking": "1",
+                "eventDateType": "tomorrow"
+            },
+            {
+                "eventName": "THIS WEEK FESTIVAL",
+                "eventAddress": "National Stadium, Sydney",
+                "eventLocation": "Sydney",
+                "eventPrice": "499",
+                "eventPoster": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=2940&auto=format&fit=crop",
+                "rankScore": 88,
+                "eventRanking": "1",
+                "eventDateType": "thisWeek"
+            },
+            {
+                "eventName": "TODAY'S JAZZ NIGHT",
+                "eventAddress": "Esplanade Concert Hall, Sydney",
+                "eventLocation": "Sydney",
+                "eventPrice": "199",
+                "eventPoster": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=2940&auto=format&fit=crop",
+                "rankScore": 85,
+                "eventRanking": "2",
+                "eventDateType": "today"
+            },
+            {
+                "eventName": "TOMORROW'S COMEDY SHOW",
+                "eventAddress": "Sentosa Beach, Sydney",
+                "eventLocation": "Sydney",
+                "eventPrice": "249",
+                "eventPoster": "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?q=80&w=2850&auto=format&fit=crop",
+                "rankScore": 82,
+                "eventRanking": "2",
+                "eventDateType": "tomorrow"
+            },
+            {
+                "eventName": "NEXT MONTH SYMPHONIC",
+                "eventAddress": "Victoria Concert Hall, Sydney",
+                "eventLocation": "Sydney",
+                "eventPrice": "349",
+                "eventPoster": "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?q=80&w=2940&auto=format&fit=crop",
+                "rankScore": 75,
+                "eventRanking": "1",
+                "eventDateType": "nextMonth"
+            },
+            {
+                "eventName": "NEXT WEEK EDM PARTY",
+                "eventAddress": "Gardens by the Bay, Sydney",
+                "eventLocation": "Sydney",
+                "eventPrice": "450",
+                "eventPoster": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=2940&auto=format&fit=crop",
+                "rankScore": 80,
+                "eventRanking": "1",
+                "eventDateType": "nextWeek"
+            },
+            {
+                "eventName": "THIS WEEK INDIE ROCK",
+                "eventAddress": "The Promontory, Sydney",
+                "eventLocation": "Sydney",
+                "eventPrice": "279",
+                "eventPoster": "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=2940&auto=format&fit=crop",
+                "rankScore": 78,
+                "eventRanking": "2",
+                "eventDateType": "thisWeek"
+            },
+            {
+                "eventName": "TODAY'S OUTDOOR FESTIVAL",
+                "eventAddress": "Botanical Gardens, Sydney",
+                "eventLocation": "Sydney",
+                "eventPrice": "159",
+                "eventPoster": "https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=2940&auto=format&fit=crop",
+                "rankScore": 70,
+                "eventRanking": "3",
+                "eventDateType": "today"
+            },
+            {
+                "eventName": "TOMORROW'S ART EXHIBITION",
+                "eventAddress": "Modern Art Gallery, Sydney",
+                "eventLocation": "Sydney",
+                "eventPrice": "120",
+                "eventPoster": "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?q=80&w=2940&auto=format&fit=crop",
+                "rankScore": 65,
+                "eventRanking": "3",
+                "eventDateType": "tomorrow"
+            },
+            {
+                "eventName": "THIS WEEK THEATER SHOW",
+                "eventAddress": "Sydney Opera House, Sydney",
+                "eventLocation": "Sydney",
+                "eventPrice": "299",
+                "eventPoster": "https://images.unsplash.com/photo-1607998803461-4e9aaa2291a0?q=80&w=2940&auto=format&fit=crop",
+                "rankScore": 60,
+                "eventRanking": "3",
+                "eventDateType": "thisWeek"
+            }
+        ],
+        "dateFormat": {
+            "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        },
+        "spotlightEvents": [
+            {
+                "eventName": "EXCLUSIVE ARTS GALA",
+                "eventAddress": "National Gallery, Sydney",
+                "eventLocation": "Sydney",
+                "eventPrice": "299",
+                "eventPoster": "https://images.unsplash.com/photo-1604871000636-074fa5117945?q=80&w=2787&auto=format&fit=crop",
+                "rankScore": 98,
+                "eventRanking": "1",
+                "eventDateType": "nextWeek"
+            },
+            {
+                "eventName": "VIP JAZZ EVENING",
+                "eventAddress": "Opera House, Sydney",
+                "eventLocation": "Sydney",
+                "eventPrice": "349",
+                "eventPoster": "https://images.unsplash.com/photo-1501612780327-45045538702b?q=80&w=2940&auto=format&fit=crop",
+                "rankScore": 95,
+                "eventRanking": "2",
+                "eventDateType": "thisWeek"
+            },
+            {
+                "eventName": "PREMIERE FILM FESTIVAL",
+                "eventAddress": "Luna Park Cinema, Sydney",
+                "eventLocation": "Sydney",
+                "eventPrice": "199",
+                "eventPoster": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=2825&auto=format&fit=crop",
+                "rankScore": 93,
+                "eventRanking": "3",
+                "eventDateType": "nextMonth"
+            },
+            {
+                "eventName": "CULINARY MASTERCLASS",
+                "eventAddress": "Darling Harbour Convention, Sydney",
+                "eventLocation": "Sydney", 
+                "eventPrice": "129",
+                "eventPoster": "https://images.unsplash.com/photo-1555244162-803834f70033?q=80&w=2940&auto=format&fit=crop",
+                "rankScore": 91,
+                "eventRanking": "4",
+                "eventDateType": "tomorrow"
+            },
+            {
+                "eventName": "TECH INNOVATION SUMMIT",
+                "eventAddress": "International Convention Centre, Sydney",
+                "eventLocation": "Sydney",
+                "eventPrice": "249",
+                "eventPoster": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2940&auto=format&fit=crop",
+                "rankScore": 89,
+                "eventRanking": "5",
+                "eventDateType": "nextWeek"
+            },
+            {
+                "eventName": "FASHION WEEK SHOWCASE",
+                "eventAddress": "Royal Botanic Garden, Sydney",
+                "eventLocation": "Sydney",
+                "eventPrice": "179",
+                "eventPoster": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=2787&auto=format&fit=crop",
+                "rankScore": 87,
+                "eventRanking": "6",
+                "eventDateType": "thisWeek"
+            }
+        ]
+    },
+    "pageNotFound": {
+        "title": "Page Not Found",
+        "message": "Sorry, the page you are looking for does not exist.",
+        "redirect": "Go back to Home"
+    }
+
 }
