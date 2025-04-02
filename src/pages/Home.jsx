@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import EventsSection from "../Components/EventsSection.jsx";
 import FlyerCarousel from "../Components/FlyerCarousel.jsx";
 import NewRecommendSection from "../Components/NewRecommendSection.jsx";
 import { ScrollAnimation } from "../utils/ScrollAnimation.jsx";
+import { IoSearchOutline, IoCalendarOutline, IoLocationOutline, IoTicketOutline } from "react-icons/io5";
+import { MdOutlineLocalActivity, MdNavigateNext } from "react-icons/md";
+import { Link } from "react-router-dom";
 
 import "../i18n";
 // Get today and tomorrow's dates formatted as "DD MMM"
@@ -317,8 +320,27 @@ const upcomingEventsData = [
   },
 ];
 
+// Combined data for Featured Events
+const featuredEvents = [
+  ...trendingEventsData.slice(0, 2),
+  ...upcomingEventsData.slice(0, 2),
+  ...eventsData.slice(0, 2),
+];
+
+// Event categories with icons
+const eventCategories = [
+  { name: "Music", icon: <MdOutlineLocalActivity />, count: 42 },
+  { name: "Sports", icon: <MdOutlineLocalActivity />, count: 28 },
+  { name: "Arts", icon: <MdOutlineLocalActivity />, count: 35 },
+  { name: "Food", icon: <MdOutlineLocalActivity />, count: 19 },
+  { name: "Business", icon: <MdOutlineLocalActivity />, count: 23 },
+  { name: "Wellness", icon: <MdOutlineLocalActivity />, count: 17 },
+];
+
 function Home() {
   const { t } = useTranslation();
+  const searchInputRef = useRef(null);
+  
   const [popularEventsLocation, setPopularEventsLocation] = useState(
     t("eventsSection.locations.sydney")
   );
@@ -355,13 +377,451 @@ function Home() {
     setUpcomingEventsLocation(newLocation);
   };
 
+  // Handler for search submission
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    console.log("Search query:", searchInputRef.current.value);
+    // In a real app, this would navigate to search results
+    searchInputRef.current.value = "";
+  };
+
   return (
     <>
-      {/* Hero Section with Carousel */}
+      {/* Hero Section with enhanced search */}
+      <ScrollAnimation direction="down" distance={30} duration={1.2}>
+        <div className="hero-container" style={{
+          background: "linear-gradient(135deg, var(--purple-800) 0%, var(--purple-600) 100%)",
+          minHeight: "600px",
+          padding: "80px 20px 100px",
+          marginTop: "90px",
+          position: "relative",
+          overflow: "hidden",
+          borderRadius: "0 0 30px 30px",
+        }}>
+          {/* Animated background shapes */}
+          <div style={{
+            position: "absolute",
+            width: "300px",
+            height: "300px",
+            borderRadius: "50%",
+            background: "rgba(255, 255, 255, 0.08)",
+            top: "-50px",
+            right: "-50px",
+            animation: "float 15s infinite ease-in-out",
+          }}></div>
+          <div style={{
+            position: "absolute",
+            width: "200px",
+            height: "200px",
+            borderRadius: "50%",
+            background: "rgba(255, 255, 255, 0.05)",
+            bottom: "50px",
+            left: "-50px",
+            animation: "float 18s infinite ease-in-out reverse",
+          }}></div>
+          
+          <div className="container" style={{
+            maxWidth: "1200px",
+            margin: "0 auto",
+            position: "relative",
+            zIndex: 2,
+          }}>
+            <div className="hero-content" style={{ textAlign: "center" }}>
+              <h1 className="hero-title" style={{
+                fontSize: "60px",
+                fontWeight: "800",
+                marginBottom: "24px",
+                color: "var(--light)",
+                letterSpacing: "-0.5px",
+                lineHeight: "1.1",
+              }}>
+                Find Your Perfect Event
+              </h1>
+              <p className="hero-subtitle" style={{
+                fontSize: "20px",
+                color: "var(--light)",
+                opacity: "0.9",
+                maxWidth: "700px",
+                margin: "0 auto 40px",
+                lineHeight: "1.5",
+              }}>
+                Discover amazing concerts, festivals, and experiences near you
+              </p>
+              
+              {/* Enhanced search section */}
+              <div className="hero-search" style={{
+                maxWidth: "800px",
+                margin: "0 auto",
+                position: "relative",
+                display: "flex",
+                flexDirection: "column",
+                gap: "20px",
+                background: "rgba(255, 255, 255, 0.12)",
+                padding: "30px",
+                borderRadius: "20px",
+                backdropFilter: "blur(8px)",
+                border: "1px solid rgba(255, 255, 255, 0.2)",
+              }}>
+                <form onSubmit={handleSearchSubmit} style={{
+                  display: "flex",
+                  gap: "10px",
+                  position: "relative",
+                }}>
+                  <div style={{ position: "relative", flex: "1" }}>
+                    <IoSearchOutline style={{
+                      position: "absolute",
+                      left: "20px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      fontSize: "22px",
+                      color: "var(--primary)",
+                    }} />
+                    <input
+                      ref={searchInputRef}
+                      type="text"
+                      placeholder="Search events, artists, or venues"
+                      style={{
+                        width: "100%",
+                        padding: "18px 24px 18px 56px",
+                        borderRadius: "12px",
+                        border: "none",
+                        fontSize: "16px",
+                        backgroundColor: "var(--neutral-50)",
+                        boxShadow: "0 4px 15px rgba(0, 0, 0, 0.1)",
+                      }}
+                    />
+                  </div>
+                  <button type="submit" className="btn btn-primary" style={{
+                    height: "60px",
+                    padding: "0 30px",
+                    fontSize: "16px",
+                  }}>
+                    Search
+                  </button>
+                </form>
+                
+                {/* Quick filters */}
+                <div style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: "10px",
+                  marginTop: "5px",
+                  flexWrap: "wrap",
+                }}>
+                  <Link to="/page-not-found" style={{
+                    textDecoration: "none",
+                    color: "var(--light)",
+                    background: "rgba(255, 255, 255, 0.2)",
+                    padding: "8px 16px",
+                    borderRadius: "30px",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    transition: "all 0.3s ease",
+                  }}>
+                    <IoCalendarOutline /> Events Today
+                  </Link>
+                  <Link to="/page-not-found" style={{
+                    textDecoration: "none",
+                    color: "var(--light)",
+                    background: "rgba(255, 255, 255, 0.2)",
+                    padding: "8px 16px",
+                    borderRadius: "30px",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    transition: "all 0.3s ease",
+                  }}>
+                    <IoLocationOutline /> Near Me
+                  </Link>
+                  <Link to="/page-not-found" style={{
+                    textDecoration: "none",
+                    color: "var(--light)",
+                    background: "rgba(255, 255, 255, 0.2)",
+                    padding: "8px 16px",
+                    borderRadius: "30px",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    transition: "all 0.3s ease",
+                  }}>
+                    <IoTicketOutline /> Free Events
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ScrollAnimation>
+
+      {/* Categories Section */}
+      <ScrollAnimation direction="up" distance={40} duration={1} delay={0.2}>
+        <div className="section-container" style={{
+          marginTop: "-60px",
+          marginBottom: "40px",
+        }}>
+          <div className="container" style={{
+            maxWidth: "1200px",
+            margin: "0 auto",
+            padding: "0 20px",
+          }}>
+            <div style={{
+              background: "var(--light)",
+              borderRadius: "20px",
+              padding: "40px 30px",
+              boxShadow: "0 8px 30px rgba(111, 68, 255, 0.12)",
+            }}>
+              <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "30px",
+              }}>
+                <h2 style={{
+                  fontSize: "28px",
+                  fontWeight: "700",
+                  color: "var(--dark)",
+                }}>
+                  Browse by Category
+                </h2>
+                <Link to="/page-not-found" style={{
+                  textDecoration: "none",
+                  color: "var(--primary)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  fontWeight: "600",
+                  fontSize: "15px",
+                }}>
+                  View All <MdNavigateNext />
+                </Link>
+              </div>
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(175px, 1fr))",
+                gap: "20px",
+              }}>
+                {eventCategories.map((category, index) => (
+                  <Link 
+                    key={index} 
+                    to="/page-not-found"
+                    style={{
+                      textDecoration: "none",
+                      color: "var(--dark)",
+                    }}
+                  >
+                    <div style={{
+                      background: "var(--purple-50)",
+                      padding: "25px 20px",
+                      borderRadius: "12px",
+                      textAlign: "center",
+                      transition: "all 0.3s ease",
+                      border: "1px solid var(--purple-100)",
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}>
+                      <div style={{
+                        fontSize: "32px",
+                        color: "var(--primary)",
+                        marginBottom: "15px",
+                      }}>
+                        {category.icon}
+                      </div>
+                      <h3 style={{
+                        fontSize: "18px",
+                        fontWeight: "600",
+                        marginBottom: "6px",
+                      }}>
+                        {category.name}
+                      </h3>
+                      <p style={{
+                        color: "var(--gray-medium)",
+                        fontSize: "14px",
+                      }}>
+                        {category.count} Events
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </ScrollAnimation>
+
+      {/* Featured Events Section */}
+      <ScrollAnimation direction="up" distance={40} duration={1} delay={0.3}>
+        <div className="section-container" style={{ marginBottom: "40px" }}>
+          <div className="container" style={{
+            maxWidth: "1200px",
+            margin: "0 auto",
+            padding: "0 20px",
+          }}>
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "baseline",
+              marginBottom: "30px",
+            }}>
+              <div>
+                <h2 className="section-title" style={{
+                  marginBottom: "10px",
+                  position: "relative",
+                  display: "inline-block",
+                }}>
+                  <span style={{
+                    position: "absolute",
+                    height: "12px",
+                    width: "100%",
+                    bottom: "8px",
+                    left: "0",
+                    background: "rgba(111, 68, 255, 0.15)",
+                    zIndex: "0",
+                    borderRadius: "4px",
+                  }}></span>
+                  <span style={{ position: "relative", zIndex: "1" }}>
+                    Featured Events
+                  </span>
+                </h2>
+                <p className="section-subtitle" style={{ marginBottom: "20px" }}>
+                  Curated selection of the most exciting events
+                </p>
+              </div>
+              <Link to="/page-not-found" style={{
+                textDecoration: "none",
+                color: "var(--primary)",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                fontWeight: "600",
+                fontSize: "15px",
+              }}>
+                View All <MdNavigateNext />
+              </Link>
+            </div>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))",
+              gap: "30px",
+            }}>
+              {featuredEvents.map((event, index) => (
+                <div key={index} className="fade-in" style={{ animationDelay: `${index * 0.1}s` }}>
+                  <Link to="/page-not-found" style={{ textDecoration: "none" }}>
+                    <div style={{
+                      borderRadius: "12px",
+                      overflow: "hidden",
+                      boxShadow: "var(--card-shadow)",
+                      transition: "all 0.3s ease",
+                      height: "300px",
+                      position: "relative",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "flex-end",
+                    }}>
+                      <div style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        backgroundImage: `url(${event.eventPoster})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        transition: "transform 0.5s ease",
+                      }}></div>
+                      <div style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        background: "linear-gradient(0deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0) 100%)",
+                      }}></div>
+                      <div style={{
+                        position: "relative",
+                        zIndex: 1,
+                        padding: "24px",
+                        color: "white",
+                      }}>
+                        <div style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          marginBottom: "8px",
+                          fontSize: "14px",
+                        }}>
+                          <IoCalendarOutline />
+                          <span>{event.eventDate}</span>
+                        </div>
+                        <h3 style={{
+                          fontSize: "22px",
+                          fontWeight: "700",
+                          marginBottom: "10px",
+                          lineHeight: "1.3",
+                        }}>
+                          {event.eventName}
+                        </h3>
+                        <div style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          marginBottom: "16px",
+                          fontSize: "14px",
+                        }}>
+                          <IoLocationOutline />
+                          <span>{event.eventAddress}</span>
+                        </div>
+                        <div style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}>
+                          <span style={{
+                            background: "var(--primary)",
+                            padding: "6px 12px",
+                            borderRadius: "30px",
+                            fontSize: "14px",
+                            fontWeight: "600",
+                          }}>
+                            ${event.eventPrice}
+                          </span>
+                          <button className="btn-outline" style={{
+                            background: "transparent",
+                            border: "1px solid white",
+                            color: "white",
+                            padding: "6px 16px",
+                            borderRadius: "6px",
+                            fontSize: "14px",
+                            fontWeight: "600",
+                            cursor: "pointer",
+                            transition: "all 0.3s ease",
+                          }}>
+                            View Details
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </ScrollAnimation>
+
+      {/* Main Carousel */}
       <ScrollAnimation direction="down" distance={30} duration={1.2}>
         <FlyerCarousel />
       </ScrollAnimation>
-
       
       {/* Popular Events Section */}
       <ScrollAnimation direction="up" distance={40} duration={1} delay={0.2}>
@@ -382,6 +842,132 @@ function Home() {
           subtitle="Curated selection of must-see events you don't want to miss"
           events={eventsData.slice(0, 8)}
           containerId="trendingRecommendations"
+        />
+      </ScrollAnimation>
+
+      {/* Trending Now Section */}
+      <ScrollAnimation direction="up" distance={40} duration={1} delay={0.4}>
+        <EventsSection
+          title={t("eventsSection.sectionTitles.trending")}
+          location={trendingEventsLocation}
+          events={trendingEventsData}
+          containerId="trendingEventsContainer"
+          onLocationChange={handleTrendingLocationChange}
+          availableLocations={availableLocations}
+        />
+      </ScrollAnimation>
+
+      {/* Subscribe Section */}
+      <ScrollAnimation direction="up" distance={40} duration={1} delay={0.5}>
+        <div className="section-container" style={{ marginBottom: "40px" }}>
+          <div className="container" style={{
+            maxWidth: "1200px",
+            margin: "0 auto",
+            padding: "0 20px",
+          }}>
+            <div style={{
+              background: "linear-gradient(135deg, var(--purple-800) 0%, var(--purple-600) 100%)",
+              borderRadius: "20px",
+              padding: "60px 40px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              position: "relative",
+              overflow: "hidden",
+            }}>
+              {/* Background design elements */}
+              <div style={{
+                position: "absolute",
+                width: "200px",
+                height: "200px",
+                borderRadius: "50%",
+                background: "rgba(255, 255, 255, 0.1)",
+                top: "-100px",
+                right: "10%",
+              }}></div>
+              <div style={{
+                position: "absolute",
+                width: "300px",
+                height: "300px",
+                borderRadius: "50%",
+                background: "rgba(255, 255, 255, 0.05)",
+                bottom: "-150px",
+                left: "-50px",
+              }}></div>
+              
+              <h2 style={{
+                fontSize: "38px",
+                fontWeight: "800",
+                color: "white",
+                marginBottom: "20px",
+                position: "relative",
+                zIndex: 1,
+              }}>
+                Never Miss an Event
+              </h2>
+              <p style={{
+                fontSize: "18px",
+                color: "rgba(255, 255, 255, 0.9)",
+                marginBottom: "40px",
+                maxWidth: "600px",
+                position: "relative",
+                zIndex: 1,
+              }}>
+                Subscribe to get personalized event recommendations and exclusive offers
+              </p>
+              <form style={{
+                display: "flex",
+                gap: "15px",
+                maxWidth: "600px",
+                width: "100%",
+                position: "relative",
+                zIndex: 1,
+              }}>
+                <input
+                  type="email"
+                  placeholder="Your email address"
+                  style={{
+                    flex: "1",
+                    padding: "16px 24px",
+                    borderRadius: "12px",
+                    border: "none",
+                    fontSize: "16px",
+                    boxShadow: "0 4px 15px rgba(0, 0, 0, 0.1)",
+                  }}
+                />
+                <button type="submit" className="btn btn-primary" style={{
+                  padding: "0 30px",
+                  borderRadius: "12px",
+                  backgroundColor: "var(--accent-pink)",
+                  boxShadow: "0 4px 15px rgba(255, 94, 163, 0.25)",
+                }}>
+                  Subscribe
+                </button>
+              </form>
+              <p style={{
+                fontSize: "14px",
+                color: "rgba(255, 255, 255, 0.7)",
+                marginTop: "15px",
+                position: "relative",
+                zIndex: 1,
+              }}>
+                By subscribing, you agree to our Terms of Service and Privacy Policy
+              </p>
+            </div>
+          </div>
+        </div>
+      </ScrollAnimation>
+
+      {/* Upcoming Events Section */}
+      <ScrollAnimation direction="up" distance={40} duration={1} delay={0.6}>
+        <EventsSection
+          title={t("eventsSection.sectionTitles.upcoming")}
+          location={upcomingEventsLocation}
+          events={upcomingEventsData}
+          containerId="upcomingEventsContainer"
+          onLocationChange={handleUpcomingLocationChange}
+          availableLocations={availableLocations}
         />
       </ScrollAnimation>
     </>
