@@ -6,7 +6,12 @@ import { Link, useNavigate } from "react-router-dom";
 import "../i18n";
 import Hamburger from "./Hamburger";
 
-function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSidebarOpen }) {
+function Navbar({
+  toggleScrollPage,
+  isSidebarOpen,
+  toggleUserSidebar,
+  isUserSidebarOpen,
+}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const inputRef = useRef(null);
@@ -37,7 +42,7 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
       inputRef.current.focus();
     }
   };
-  
+
   const handleUserClick = () => {
     if (toggleUserSidebar) {
       toggleUserSidebar();
@@ -47,7 +52,7 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
   };
 
   return (
-    <nav 
+    <nav
       style={{
         display: "flex",
         justifyContent: "space-between",
@@ -62,32 +67,39 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
         position: "fixed",
         zIndex: 100,
         padding: "0 32px",
-        borderBottom: "1px solid",
-        borderColor: scrolled ? "rgba(111, 68, 255, 0.08)" : "transparent",
+        borderBottom: "1px solid rgba(111, 68, 255, 0.08)",
       }}
     >
       {/* Logo on the left */}
-      <div className="nav-left" style={{ display: "flex", alignItems: "center" }}>
-        <h2 style={{
-          fontWeight: "800",
-          color: "var(--primary)",
-          fontSize: isMobile ? "20px" : "24px",
-          fontFamily: "Inter, sans-serif",
-          letterSpacing: "-0.5px"
-        }}>
+      <div
+        className="nav-left"
+        style={{ display: "flex", alignItems: "center" }}
+      >
+        <h2
+          style={{
+            fontWeight: "800",
+            color: "var(--primary)",
+            fontSize: isMobile ? "20px" : "24px",
+            fontFamily: "Inter, sans-serif",
+            letterSpacing: "-0.5px",
+          }}
+        >
           TIXMOJO
         </h2>
       </div>
 
       {/* Right section with search, user icon, and hamburger */}
-      <div className="nav-right" style={{ 
-        display: "flex", 
-        alignItems: "center",
-        gap: isMobile ? "12px" : "16px"
-      }}>
+      <div
+        className="nav-right"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: isMobile ? "12px" : "16px",
+        }}
+      >
         {/* Search bar */}
-        <div 
-          className="search-bar" 
+        <div
+          className="search-bar"
           onClick={handleSearchClick}
           style={{
             display: "flex",
@@ -104,19 +116,23 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = "rgba(111, 68, 255, 0.08)";
-            e.currentTarget.style.boxShadow = "0 2px 8px rgba(111, 68, 255, 0.08)";
+            e.currentTarget.style.boxShadow =
+              "0 2px 8px rgba(111, 68, 255, 0.08)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = "rgba(111, 68, 255, 0.06)";
-            e.currentTarget.style.boxShadow = "0 2px 6px rgba(111, 68, 255, 0.04)";
+            e.currentTarget.style.boxShadow =
+              "0 2px 6px rgba(111, 68, 255, 0.04)";
           }}
         >
-          <IoIosSearch style={{ 
-            color: "var(--primary)",
-            fontSize: "18px",
-            marginRight: isMobile ? "0" : "8px",
-          }} />
-          
+          <IoIosSearch
+            style={{
+              color: "var(--primary)",
+              fontSize: "18px",
+              marginRight: isMobile ? "0" : "8px",
+            }}
+          />
+
           {!isMobile && (
             <input
               ref={inputRef}
@@ -136,7 +152,7 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
         </div>
 
         {/* User icon */}
-        <div 
+        <div
           onClick={handleUserClick}
           style={{
             width: "40px",
@@ -154,39 +170,45 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = "rgba(111, 68, 255, 0.08)";
-            e.currentTarget.style.boxShadow = "0 2px 8px rgba(111, 68, 255, 0.08)";
+            e.currentTarget.style.boxShadow =
+              "0 2px 8px rgba(111, 68, 255, 0.08)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = "rgba(111, 68, 255, 0.06)";
-            e.currentTarget.style.boxShadow = "0 2px 6px rgba(111, 68, 255, 0.04)";
+            e.currentTarget.style.boxShadow =
+              "0 2px 6px rgba(111, 68, 255, 0.04)";
           }}
         >
           <BiUser style={{ color: "var(--primary)", fontSize: "20px" }} />
         </div>
 
         {/* Hamburger menu */}
-        <div style={{
-          width: "40px",
-          height: "40px",
-          borderRadius: "12px",
-          backgroundColor: "rgba(111, 68, 255, 0.06)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-          transition: "all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)",
-          border: "1px solid",
-          borderColor: "rgba(111, 68, 255, 0.1)",
-          boxShadow: "0 2px 6px rgba(111, 68, 255, 0.04)",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = "rgba(111, 68, 255, 0.08)";
-          e.currentTarget.style.boxShadow = "0 2px 8px rgba(111, 68, 255, 0.08)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = "rgba(111, 68, 255, 0.06)";
-          e.currentTarget.style.boxShadow = "0 2px 6px rgba(111, 68, 255, 0.04)";
-        }}>
+        <div
+          style={{
+            width: "40px",
+            height: "40px",
+            borderRadius: "12px",
+            backgroundColor: "rgba(111, 68, 255, 0.06)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            transition: "all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)",
+            border: "1px solid",
+            borderColor: "rgba(111, 68, 255, 0.1)",
+            boxShadow: "0 2px 6px rgba(111, 68, 255, 0.04)",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "rgba(111, 68, 255, 0.08)";
+            e.currentTarget.style.boxShadow =
+              "0 2px 8px rgba(111, 68, 255, 0.08)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "rgba(111, 68, 255, 0.06)";
+            e.currentTarget.style.boxShadow =
+              "0 2px 6px rgba(111, 68, 255, 0.04)";
+          }}
+        >
           <Hamburger
             onToggle={toggleScrollPage}
             isSidebarOpen={isSidebarOpen}
