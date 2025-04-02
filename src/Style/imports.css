@@ -2,19 +2,57 @@
 @import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
 :root {
-  --primary: #6b38fb;
-  --primary-light: #9669ff;
-  --primary-dark: #4d1fc4;
-  --secondary: #ff4672;
-  --light: #ffffff;
-  --dark: #141428;
-  --gray-dark: #2a2a42;
-  --gray-medium: #444460;
-  --gray-light: #8080a0;
-  --accent: #00ddc4;
-  --card-shadow: 0 8px 24px rgba(75, 56, 251, 0.12);
-  --hover-shadow: 0 12px 32px rgba(75, 56, 251, 0.25);
-  --surface: #f7f7ff;
+  /* Primary Purple Color Palette */
+  --purple-50: #F8F5FF;
+  --purple-100: #EEE6FF;
+  --purple-200: #D9C6FF;
+  --purple-300: #C4A7FF;
+  --purple-400: #A988FF;
+  --purple-500: #8A66FF;
+  --purple-600: #6F44FF;
+  --purple-700: #5C31E6;
+  --purple-800: #4A21CC;
+  --purple-900: #3817A3;
+  
+  /* Neutral Color Palette */
+  --neutral-50: #FFFFFF;
+  --neutral-100: #F5F5FA;
+  --neutral-200: #EEEEF5;
+  --neutral-300: #E0E0EB;
+  --neutral-400: #BDBDCE;
+  --neutral-500: #9E9EBA;
+  --neutral-600: #7C7C9F;
+  --neutral-700: #5E5E80;
+  --neutral-800: #36364A;
+  --neutral-900: #16162B;
+  
+  /* Accent Colors */
+  --accent-pink: #FF5EA3;
+  --accent-teal: #2EEBC9;
+  --accent-indigo: #7B61FF;
+  
+  /* Semantic Colors */
+  --success: #2ECB94;
+  --warning: #FFB547;
+  --error: #FF5E5E;
+  --info: #60A5FA;
+
+  /* Functional Color Assignments */
+  --primary: var(--purple-600);
+  --primary-light: var(--purple-500);
+  --primary-dark: var(--purple-700);
+  --secondary: var(--accent-pink);
+  --light: var(--neutral-50);
+  --dark: var(--neutral-900);
+  --gray-dark: var(--neutral-800);
+  --gray-medium: var(--neutral-700);
+  --gray-light: var(--neutral-500);
+  --accent: var(--accent-teal);
+  --surface: var(--purple-50);
+  
+  /* Shadow Effects with the new purple color */
+  --card-shadow: 0 8px 24px rgba(111, 68, 255, 0.12);
+  --hover-shadow: 0 12px 32px rgba(111, 68, 255, 0.25);
 }
 
 * {
@@ -73,9 +111,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-secondary:hover {
-  background-color: #e03a63;
+  background-color: var(--accent-pink);
   transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(255, 70, 114, 0.3);
+  box-shadow: 0 6px 15px rgba(255, 94, 163, 0.3);
 }
 
 .btn-outline {
@@ -145,7 +183,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .filter-tab:hover:not(.active) {
-  background-color: rgba(107, 56, 251, 0.1);
+  background-color: rgba(111, 68, 255, 0.1);
   color: var(--primary);
 }
 
@@ -157,12 +195,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .location-dropdown-item:hover {
-  background-color: rgba(107, 56, 251, 0.05);
+  background-color: rgba(111, 68, 255, 0.05);
   border-left: 3px solid var(--primary-light);
 }
 
 .location-dropdown-item.selected {
-  background-color: rgba(107, 56, 251, 0.1);
+  background-color: rgba(111, 68, 255, 0.1);
   border-left: 3px solid var(--primary);
   font-weight: 600;
 }
@@ -190,7 +228,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .scrollbar-container::-webkit-scrollbar-track {
-  background: rgba(107, 56, 251, 0.1);
+  background: rgba(111, 68, 255, 0.1);
   border-radius: 10px;
 }
 
@@ -227,10 +265,11 @@ h1, h2, h3, h4, h5, h6 {
   width: 320px;
   height: 420px;
   background: var(--light);
-  border-radius: 16px;
+  border-radius: 8px;
   overflow: hidden;
   box-shadow: var(--card-shadow);
   transition: all 0.3s ease;
+  border: 1px solid var(--neutral-300);
 }
 
 .card:hover {
@@ -250,7 +289,7 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(107, 56, 251, 0.15);
+  box-shadow: 0 4px 12px rgba(111, 68, 255, 0.15);
 }
 
 .navigation-btn:hover {
@@ -297,7 +336,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   border-radius: 30px;
   z-index: 10;
-  box-shadow: 0 4px 8px rgba(255, 70, 114, 0.3);
+  box-shadow: 0 4px 8px rgba(255, 94, 163, 0.3);
 }
 
 /* Event section mobile styles */
@@ -436,7 +475,7 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 50px;
   border: none;
   font-size: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgba(92, 49, 230, 0.15);
   outline: none;
 }
 

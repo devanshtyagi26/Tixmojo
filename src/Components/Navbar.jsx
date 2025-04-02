@@ -4,7 +4,6 @@ import { BiUser } from "react-icons/bi";
 import { TbTicket } from "react-icons/tb";
 import { MdLocalActivity } from "react-icons/md";
 import { useTranslation } from "react-i18next";
-import Logo from "../assets/Logo";
 import "../i18n";
 import Hamburger from "./Hamburger";
 
@@ -51,15 +50,23 @@ function Navbar({ toggleScrollPage, isSidebarOpen }) {
         top: "0",
         background: scrolled ? "rgba(255, 255, 255, 0.95)" : "transparent",
         backdropFilter: scrolled ? "blur(10px)" : "none",
-        boxShadow: scrolled ? "0 4px 20px rgba(107, 56, 251, 0.1)" : "none",
+        boxShadow: scrolled ? "0 4px 20px rgba(111, 68, 255, 0.1)" : "none",
         transition: "all 0.3s ease",
         position: "fixed",
         zIndex: 100,
-        padding: "0 24px",
+        padding: "0 32px",
       }}
     >
       <div className="nav-left" style={{ display: "flex", alignItems: "center" }}>
-        <Logo isMobile={isMobile} />
+        <h2 style={{
+          fontWeight: "800",
+          color: "var(--primary)",
+          fontSize: isMobile ? "20px" : "26px",
+          fontFamily: "Raleway, sans-serif",
+          letterSpacing: "-0.5px"
+        }}>
+          TIXMOJO
+        </h2>
         
         {!isMobile && (
           <div className="nav-links" style={{ 
@@ -86,7 +93,7 @@ function Navbar({ toggleScrollPage, isSidebarOpen }) {
           style={{
             display: "flex",
             alignItems: "center",
-            backgroundColor: "rgba(107, 56, 251, 0.08)",
+            backgroundColor: "rgba(111, 68, 255, 0.08)",
             borderRadius: "50px",
             padding: isMobile ? "8px 12px" : "10px 16px",
             width: isMobile ? "40px" : "200px",

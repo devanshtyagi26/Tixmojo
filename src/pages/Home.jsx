@@ -353,7 +353,7 @@ function Home() {
         availableLocations={availableLocations}
       />
       
-      {/* Trending Events Section */}
+      {/* Trending Events Section
       <EventsSection
         title={t("eventsSection.sectionTitles.trending")}
         location={trendingEventsLocation}
@@ -361,9 +361,9 @@ function Home() {
         containerId="trendingEventsContainer"
         onLocationChange={handleTrendingLocationChange}
         availableLocations={availableLocations}
-      />
+      /> */}
       
-      {/* Upcoming Events Section */}
+      {/* Upcoming Events Section
       <EventsSection
         title={t("eventsSection.sectionTitles.upcoming")}
         location={upcomingEventsLocation}
@@ -371,7 +371,7 @@ function Home() {
         containerId="upcomingEventsContainer"
         onLocationChange={handleUpcomingLocationChange}
         availableLocations={availableLocations}
-      />
+      /> */}
     </>
   );
 }

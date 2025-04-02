@@ -2,24 +2,62 @@ import React, { useState, useEffect } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { MdNavigateBefore, MdNavigateNext } from "react-icons/md";
-import { IoIosSearch } from "react-icons/io";
-import { IoLocationOutline } from "react-icons/io5";
+import { MdNavigateBefore } from "react-icons/md"; // Importing the left arrow icon
+import { MdNavigateNext } from "react-icons/md"; // Importing the right arrow icon
 
 // Custom Previous Button
 const CustomPrevArrow = ({ onClick }) => (
   <button
     onClick={onClick}
-    className="navigation-btn"
     style={{
       position: "absolute",
-      left: "20px",
+      left: "-22px",
       top: "50%",
       transform: "translateY(-50%)",
       zIndex: 10,
+      background: "var(--light)",
+      border: "none",
+      borderRadius: "50%",
+      boxShadow: "0 4px 8px rgba(111, 68, 255, 0.15)",
+      width: "40px",
+      height: "40px",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: "24px",
+      zIndex: 10, // Ensure it's above the image
     }}
   >
-    <MdNavigateBefore size={24} />
+    <MdNavigateBefore style={{ zIndex: 2 }} />
+    <span
+      style={{
+        content: '""',
+        position: "absolute",
+        width: "44px",
+        height: "44px",
+        backgroundColor: "var(--purple-200)",
+        borderRadius: "50%",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: 1, // Place it behind the icon
+      }}
+    />
+    <span
+      style={{
+        content: '""',
+        position: "absolute",
+        width: "70px",
+        height: "70px",
+        backgroundColor: "var(--surface)",
+        borderRadius: "50%",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: 0, // Place it behind the icon
+      }}
+    />
   </button>
 );
 
@@ -27,215 +65,127 @@ const CustomPrevArrow = ({ onClick }) => (
 const CustomNextArrow = ({ onClick }) => (
   <button
     onClick={onClick}
-    className="navigation-btn"
     style={{
       position: "absolute",
-      right: "20px",
+      right: "-22px",
       top: "50%",
       transform: "translateY(-50%)",
       zIndex: 10,
+      background: "var(--surface)",
+      border: "none",
+      borderRadius: "50%",
+      boxShadow: "0 4px 8px rgba(111, 68, 255, 0.15)",
+      width: "40px",
+      height: "40px",
+      cursor: "pointer",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: "24px",
+      zIndex: 10, // Ensure it's above the image
     }}
   >
-    <MdNavigateNext size={24} />
+    <MdNavigateNext style={{ zIndex: 2 }} />
+    <span
+      style={{
+        content: '""',
+        position: "absolute",
+        width: "44px",
+        height: "44px",
+        backgroundColor: "var(--purple-200)",
+        borderRadius: "50%",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: 1, // Place it behind the icon
+      }}
+    />
+    <span
+      style={{
+        content: '""',
+        position: "absolute",
+        width: "70px",
+        height: "70px",
+        backgroundColor: "var(--surface)",
+        borderRadius: "50%",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: 0, // Place it behind the icon
+      }}
+    />
   </button>
 );
 
 function FlyerCarousel() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [activeSlide, setActiveSlide] = useState(0);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
   const settings = {
-    dots: true,
-    infinite: true,
-    speed: 600,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 5000,
-    arrows: true,
-    prevArrow: <CustomPrevArrow />,
-    nextArrow: <CustomNextArrow />,
-    beforeChange: (current, next) => setActiveSlide(next),
-    customPaging: i => (
-      <div
-        style={{
-          width: "12px",
-          height: "12px",
-          background: i === activeSlide ? "var(--primary)" : "rgba(107, 56, 251, 0.2)",
-          borderRadius: "50%",
-          transition: "all 0.3s ease",
-          margin: "0 5px",
-        }}
-      />
-    ),
+    dots: true, // Show navigation dots
+    infinite: true, // Infinite scrolling
+    speed: 500, // Transition speed
+    slidesToShow: 1, // Number of slides to show
+    slidesToScroll: 1, // Number of slides to scroll
+    autoplay: true, // Enable autoplay
+    autoplaySpeed: 3000, // Autoplay interval
+    arrows: true, // Enable custom arrows
+    prevArrow: <CustomPrevArrow />, // Custom previous button
+    nextArrow: <CustomNextArrow />, // Custom next button
   };
 
-  // Updated flyer data with more engaging content
   const flyers = [
     {
       id: 1,
-      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=2574&auto=format&fit=crop",
-      title: "EDM Summer Fest 2025",
-      description: "The biggest electronic dance music festival of the year",
-      date: "15 Jun - 17 Jun",
-      location: "Sydney Olympic Park",
+      image:
+        "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=2574&auto=format&fit=crop",
     },
     {
       id: 2,
-      image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=2940&auto=format&fit=crop",
-      title: "Jazz Nights Under the Stars",
-      description: "An unforgettable evening of smooth jazz and fine dining",
-      date: "22 May",
-      location: "Sydney Opera House",
+      image:
+        "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=2940&auto=format&fit=crop",
     },
     {
       id: 3,
-      image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=2940&auto=format&fit=crop",
-      title: "Rock Legends Reunion",
-      description: "The iconic bands reunite for one spectacular night",
-      date: "30 Apr",
-      location: "Sydney Entertainment Centre",
+      image:
+        "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=2940&auto=format&fit=crop",
     },
   ];
 
   return (
-    <div className="hero-container">
-      <div className="hero-content">
-        <h1 className="hero-title">Discover Events Near You</h1>
-        <p className="hero-subtitle">
-          Find the best concerts, festivals, and performances happening in your city
-        </p>
-        
-        <div className="hero-search">
-          <IoIosSearch className="hero-search-icon" />
-          <input 
-            type="text" 
-            placeholder="Search events, artists, or venues..." 
-          />
-        </div>
-      </div>
-      
-      <div
-        style={{
-          width: "100%",
-          maxWidth: "1500px",
-          height: "100%", 
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          opacity: 0.15,
-          overflow: "hidden",
-          zIndex: 0,
-        }}
-      >
-        <Slider {...settings}>
-          {flyers.map((flyer) => (
-            <div key={flyer.id}>
-              <img
-                src={flyer.image}
-                alt={`Flyer ${flyer.id}`}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                }}
-              />
-            </div>
-          ))}
-        </Slider>
-      </div>
-      
-      <div
-        style={{
-          position: "absolute",
-          bottom: "-100px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "100%",
-          maxWidth: "1200px",
-          zIndex: 5,
-          padding: "0 20px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            gap: "20px",
-            overflow: "hidden",
-            justifyContent: "center",
-          }}
-        >
-          {flyers.map((flyer) => (
-            <FeaturedCard 
-              key={flyer.id}
-              image={flyer.image}
-              title={flyer.title}
-              description={flyer.description}
-              date={flyer.date}
-              location={flyer.location}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FeaturedCard({ image, title, description, date, location }) {
-  const [isHovered, setIsHovered] = useState(false);
-  
-  return (
-    <div 
-      className="recommended-card"
+    <div
       style={{
-        maxWidth: "350px",
-        display: window.innerWidth <= 768 ? (title === "Jazz Nights Under the Stars" ? "none" : "block") : "block",
+        width: "100%", // Fit to width
+        maxWidth: "1500px", // Increased size while maintaining the aspect ratio
+        margin: "0 auto",
+        marginTop: "90px", // Add top margin to account for navbar height
+        padding: "20px",
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="recommended-badge">Featured</div>
-      <div className="recommended-image">
-        <img src={image} alt={title} />
-      </div>
-      <div className="recommended-content">
-        <h3 className="recommended-title">{title}</h3>
-        <p style={{ 
-          fontSize: "14px", 
-          color: "var(--gray-medium)", 
-          marginBottom: "15px",
-          lineHeight: 1.4,
-        }}>
-          {description}
-        </p>
-        <div className="recommended-info">
-          <span className="recommended-icon">📅</span>
-          {date}
-        </div>
-        <div className="recommended-info">
-          <IoLocationOutline className="recommended-icon" />
-          {location}
-        </div>
-        
-        <button 
-          className="btn btn-primary"
-          style={{ 
-            marginTop: "15px",
-            width: "100%",
-            transform: isHovered ? "translateY(-5px)" : "translateY(0)",
-            transition: "transform 0.3s ease",
-          }}
-        >
-          View Details
-        </button>
-      </div>
+      <Slider {...settings}>
+        {flyers.map((flyer) => (
+          <div key={flyer.id}>
+            <img
+              className="flyerimage"
+              onClick={() => console.log(flyer.id)}
+              src={flyer.image}
+              alt={`Flyer ${flyer.id}`}
+              style={{
+                width: "100%", // Fit the width of the container
+                height: "auto", // Maintain aspect ratio
+                aspectRatio: windowWidth <= 768 ? "3/2" : "945 / 256", // Enforce the aspect ratio
+                borderRadius: "10px",
+                transition: "transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)", // Add cubic-bezier animation
+                boxShadow: "0 4px 8px rgba(111, 68, 255, 0.15)",
+              }}
+            />
+          </div>
+        ))}
+      </Slider>
     </div>
   );
 }

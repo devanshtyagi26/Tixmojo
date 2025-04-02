@@ -3,9 +3,6 @@ import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import { SlCalender } from "react-icons/sl";
 import { IoLocationOutline } from "react-icons/io5";
-import { HiOutlineTicket } from "react-icons/hi";
-import { FaStar } from "react-icons/fa";
-import { BiTime } from "react-icons/bi";
 
 const Cards = memo(function Cards({
   eventName,
@@ -36,15 +33,7 @@ const Cards = memo(function Cards({
     [eventName, eventPrice]
   );
 
-  // Random values for demo purposes
-  const randomAttending = Math.floor(Math.random() * 200) + 50;
-  const randomHour = Math.floor(Math.random() * 12) + 1;
-  const randomMinute = Math.floor(Math.random() * 60);
-  const randomAmPm = Math.random() > 0.5 ? "PM" : "AM";
-  const randomScore = Math.floor(Math.random() * 5) + 1;
-  
-  // Format the random time
-  const randomTime = `${randomHour}:${randomMinute.toString().padStart(2, '0')} ${randomAmPm}`;
+  // Removed random values for demo purposes
 
   return (
     <div
@@ -65,9 +54,36 @@ const Cards = memo(function Cards({
         }
       }}
     >
-      {/* Featured tag for first 3 items */}
-      {parseInt(eventRanking) <= 3 && isRecommendation && (
-        <div className="featured-tag">Featured</div>
+      {/* Ranking badge with circular background */}
+      {eventRanking && (
+        <div style={{
+          position: "absolute",
+          top: "12px",
+          left: "12px",
+          zIndex: 10,
+          width: "45px",
+          height: "45px",
+          borderRadius: "50%",
+          backgroundColor: "var(--primary-light)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+          border: "1px solid var(--primary)",
+          transition: "transform 0.3s ease",
+        }}>
+          {/* Ranking number */}
+          <span style={{
+            fontSize: "30px",
+            fontWeight: "700",
+            lineHeight: "1",
+            color: "white",
+            fontFamily: "Raleway, sans-serif",
+            marginTop: "-6px" // Slight adjustment to visually center the number
+          }}>
+            {eventRanking}
+          </span>
+        </div>
       )}
 
       {/* Event image */}
@@ -75,7 +91,7 @@ const Cards = memo(function Cards({
         position: "relative",
         height: "55%",
         overflow: "hidden",
-        borderRadius: "16px 16px 0 0",
+        borderRadius: "8px 8px 0 0",
       }}>
         <div style={{
           position: "absolute",
@@ -96,30 +112,10 @@ const Cards = memo(function Cards({
           left: 0,
           width: "100%",
           height: "100%",
-          background: "linear-gradient(0deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 60%)",
-          opacity: isHovered ? 0.8 : 0.5,
+          background: "linear-gradient(0deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.1) 100%)",
+          opacity: isHovered ? 0.9 : 0.6,
           transition: "opacity 0.3s ease",
         }}></div>
-
-        {/* Time of day badge */}
-        <div style={{
-          position: "absolute",
-          top: "12px",
-          right: "12px",
-          backgroundColor: "rgba(255, 255, 255, 0.9)",
-          color: "var(--dark)",
-          padding: "6px 12px",
-          borderRadius: "30px",
-          fontSize: "12px",
-          fontWeight: "600",
-          display: "flex",
-          alignItems: "center",
-          gap: "4px",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-        }}>
-          <BiTime />
-          {randomTime}
-        </div>
       </div>
 
       {/* Content */}
@@ -132,11 +128,14 @@ const Cards = memo(function Cards({
       }}>
         <div>
           <h3 style={{
-            fontSize: "18px",
-            fontWeight: "700",
-            marginBottom: "10px",
+            fontSize: "20px",
+            fontWeight: "800",
+            marginBottom: "12px",
             lineHeight: "1.3",
             color: "var(--dark)",
+            textTransform: "uppercase",
+            letterSpacing: "0.5px",
+            fontFamily: "Raleway, sans-serif",
           }}>
             {eventName}
           </h3>
@@ -144,56 +143,32 @@ const Cards = memo(function Cards({
           <div style={{
             display: "flex",
             alignItems: "center",
-            marginBottom: "8px",
-            fontSize: "13px",
+            marginBottom: "10px",
+            fontSize: "14px",
             color: "var(--gray-medium)",
           }}>
-            <SlCalender style={{ color: "var(--primary)", marginRight: "8px" }} />
-            {eventDate}
+            <SlCalender style={{ color: "var(--primary)", marginRight: "10px", fontSize: "16px" }} />
+            <span style={{ fontWeight: "500" }}>{eventDate}</span>
           </div>
 
           <div style={{
             display: "flex",
             alignItems: "flex-start",
-            fontSize: "13px",
+            fontSize: "14px",
             color: "var(--gray-medium)",
-            marginBottom: "8px",
+            marginBottom: "12px",
           }}>
             <IoLocationOutline style={{ 
               color: "var(--primary)", 
-              marginRight: "8px",
+              marginRight: "10px",
               marginTop: "2px",
               flexShrink: 0,
+              fontSize: "18px"
             }} />
-            <span style={{ lineHeight: "1.4" }}>{eventAddress}</span>
+            <span style={{ lineHeight: "1.4", fontWeight: "500" }}>{eventAddress}</span>
           </div>
 
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}>
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              fontSize: "13px",
-              color: "var(--gray-medium)",
-            }}>
-              <HiOutlineTicket style={{ color: "var(--primary)", marginRight: "8px" }} />
-              {randomAttending} attending
-            </div>
-
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              fontSize: "13px",
-              color: "var(--gray-medium)",
-              gap: "4px",
-            }}>
-              <FaStar style={{ color: "#FFD700" }} />
-              <span>{randomScore}.0</span>
-            </div>
-          </div>
+          {/* Removed attending and rating sections */}
         </div>
 
         <div style={{
@@ -214,6 +189,16 @@ const Cards = memo(function Cards({
             className="price-badge"
             onClick={handleButtonClick}
             aria-label={`Book ticket from AUD ${eventPrice}`}
+            style={{
+              border: "1px solid var(--dark)",
+              background: "var(--light)",
+              color: "var(--dark)",
+              borderRadius: "4px",
+              padding: "8px 12px",
+              fontWeight: "600",
+              fontSize: "14px",
+              boxShadow: "none"
+            }}
           >
             {t("eventsSection.priceLabel", { price: eventPrice })}
           </button>

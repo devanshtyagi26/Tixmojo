@@ -28,50 +28,17 @@ function Footer() {
           gap: "40px",
           marginBottom: "50px",
         }}>
-          {/* Logo and About Us */}
+          {/* Company Name and About Us */}
           <div>
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
+            <h2 style={{
+              fontSize: "24px",
+              fontWeight: "800",
+              fontFamily: "Raleway, sans-serif",
+              color: "white",
               marginBottom: "20px",
             }}>
-              <div style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center", 
-                width: "36px",
-                height: "36px",
-                backgroundColor: "var(--primary)",
-                borderRadius: "10px",
-              }}>
-                <MdLocalActivity style={{ fontSize: "22px", color: "white" }} />
-              </div>
-              <div style={{
-                display: "flex",
-                flexDirection: "column",
-                lineHeight: 1,
-              }}>
-                <span style={{
-                  fontSize: "24px",
-                  fontWeight: "800",
-                  fontFamily: "Raleway, sans-serif",
-                  color: "white",
-                  letterSpacing: "-0.5px",
-                }}>
-                  TIX<span style={{ color: "var(--primary)" }}>MOJO</span>
-                </span>
-                <span style={{
-                  fontSize: "10px",
-                  fontWeight: "500",
-                  color: "var(--gray-light)",
-                  letterSpacing: "1px",
-                  marginTop: "2px",
-                }}>
-                  EVENT TICKETS
-                </span>
-              </div>
-            </div>
+              TIXMOJO
+            </h2>
             
             <p style={{
               fontSize: "14px",
@@ -111,7 +78,7 @@ function Footer() {
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = "var(--primary)";
-                    e.currentTarget.style.color = "white";
+                    e.currentTarget.style.color = "var(--light)";
                     e.currentTarget.style.transform = "translateY(-3px)";
                   }}
                   onMouseLeave={(e) => {
