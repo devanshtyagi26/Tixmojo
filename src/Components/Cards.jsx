@@ -12,6 +12,7 @@ const Cards = memo(function Cards({
   eventPrice,
   eventRanking,
   isRecommendation = false,
+  hideRanking = false,
 }) {
   const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
@@ -57,7 +58,7 @@ const Cards = memo(function Cards({
       }}
     >
       {/* Ranking badge with circular background */}
-      {eventRanking && (
+      {eventRanking && !hideRanking && (
         <div
           style={{
             position: "absolute",
@@ -244,6 +245,7 @@ Cards.propTypes = {
   rankScore: PropTypes.number,
   eventLocation: PropTypes.string,
   isRecommendation: PropTypes.bool,
+  hideRanking: PropTypes.bool,
 };
 
 export default Cards;

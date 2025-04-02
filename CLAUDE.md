@@ -105,15 +105,38 @@ Changed the color theme from green to shades of purple:
 - Enhanced box shadow for a more premium feel
 - Improved hover and selected states
 
+## 6. New Recommendation Section
+
+- Created a new recommendation section that doesn't display ranking numbers
+- Added features:
+  - Implemented as `NewRecommendSection.jsx` component
+  - Horizontal scrollable card carousel with navigation buttons
+  - Enhanced accessibility with keyboard navigation
+  - Smooth scrolling animation
+  - Modified the Cards component to support hiding ranking indicators
+  - Added to the Home page above the Popular Events section
+
+### 6.1 Enhanced Recommendation Section Design
+- Redesigned to be more eye-catching while maintaining minimalism:
+  - Added subtle gradient background with light purple to white fade
+  - Created highlighted title with semi-transparent purple underline
+  - Improved title presentation with centered design and increased font size
+  - Enhanced hover effects on cards with smooth vertical float animation
+  - Upgraded navigation buttons with larger size and interactive hover effects
+  - Added subtle shadows and better spacing throughout the section
+  - Changed title to "Spotlight Events" for better marketing presence
+
 ## Component Files Modified
 
 1. `src/Style/imports.css` - Color system and global styles
 2. `src/Components/Navbar.jsx` - Navbar height and styling
 3. `src/Components/Footer.jsx` - Logo removal
-4. `src/Components/Cards.jsx` - Card redesign and ranking indicator
+4. `src/Components/Cards.jsx` - Card redesign and ranking indicator, added hideRanking prop
 5. `src/Components/Sidebar.jsx` - Position adjustment
 6. `src/Components/FlyerCarousel.jsx` - Margin and color updates
 7. `src/Components/EventsSection.jsx` - Dropdown redesign
+8. `src/Components/NewRecommendSection.jsx` - New component for recommendations without rankings
+9. `src/pages/Home.jsx` - Added new recommendation section
 
 ## Future Enhancement Ideas
 

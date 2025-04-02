@@ -2,13 +2,25 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import EventsSection from "../Components/EventsSection.jsx";
 import FlyerCarousel from "../Components/FlyerCarousel.jsx";
+import NewRecommendSection from "../Components/NewRecommendSection.jsx";
 
+import "../i18n";
 // Get today and tomorrow's dates formatted as "DD MMM"
 const formatDate = (date) => {
   const day = date.getDate();
   const monthNames = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
   const month = monthNames[date.getMonth()];
   return `${day} ${month}`;
@@ -234,7 +246,9 @@ const trendingEventsData = [
 const upcomingEventsData = [
   {
     eventName: "ANNUAL TECH CONFERENCE",
-    eventDate: `${futureFormatted2} - ${formatDate(new Date(futureDate2.getTime() + 86400000 * 3))}`,
+    eventDate: `${futureFormatted2} - ${formatDate(
+      new Date(futureDate2.getTime() + 86400000 * 3)
+    )}`,
     eventRanking: "1",
     eventAddress: "Jacob K. Javits Convention Center, New York",
     eventLocation: "New York",
@@ -256,7 +270,9 @@ const upcomingEventsData = [
   },
   {
     eventName: "NEW YORK FILM FESTIVAL",
-    eventDate: `${futureFormatted2} - ${formatDate(new Date(futureDate2.getTime() + 86400000 * 10))}`,
+    eventDate: `${futureFormatted2} - ${formatDate(
+      new Date(futureDate2.getTime() + 86400000 * 10)
+    )}`,
     eventRanking: "2",
     eventAddress: "Lincoln Center, New York",
     eventLocation: "New York",
@@ -305,11 +321,11 @@ function Home() {
   const [popularEventsLocation, setPopularEventsLocation] = useState(
     t("eventsSection.locations.sydney")
   );
-  
+
   const [trendingEventsLocation, setTrendingEventsLocation] = useState(
     t("eventsSection.locations.melbourne")
   );
-  
+
   const [upcomingEventsLocation, setUpcomingEventsLocation] = useState(
     t("eventsSection.locations.newYork")
   );
@@ -327,12 +343,12 @@ function Home() {
   const handlePopularLocationChange = (newLocation) => {
     setPopularEventsLocation(newLocation);
   };
-  
+
   // Handler for trending events location selector
   const handleTrendingLocationChange = (newLocation) => {
     setTrendingEventsLocation(newLocation);
   };
-  
+
   // Handler for upcoming events location selector
   const handleUpcomingLocationChange = (newLocation) => {
     setUpcomingEventsLocation(newLocation);
@@ -342,6 +358,7 @@ function Home() {
     <>
       {/* Hero Section with Carousel */}
       <FlyerCarousel />
+
       
       {/* Popular Events Section */}
       <EventsSection
@@ -352,26 +369,13 @@ function Home() {
         onLocationChange={handlePopularLocationChange}
         availableLocations={availableLocations}
       />
-      
-      {/* Trending Events Section
-      <EventsSection
-        title={t("eventsSection.sectionTitles.trending")}
-        location={trendingEventsLocation}
-        events={trendingEventsData}
-        containerId="trendingEventsContainer"
-        onLocationChange={handleTrendingLocationChange}
-        availableLocations={availableLocations}
-      /> */}
-      
-      {/* Upcoming Events Section
-      <EventsSection
-        title={t("eventsSection.sectionTitles.upcoming")}
-        location={upcomingEventsLocation}
-        events={upcomingEventsData}
-        containerId="upcomingEventsContainer"
-        onLocationChange={handleUpcomingLocationChange}
-        availableLocations={availableLocations}
-      /> */}
+      {/* New Recommendation Section without rankings */}
+      <NewRecommendSection
+        title="Spotlight Events"
+        subtitle="Curated selection of must-see events you don't want to miss"
+        events={eventsData.slice(0, 8)}
+        containerId="trendingRecommendations"
+      />
     </>
   );
 }
