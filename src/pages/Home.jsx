@@ -359,43 +359,58 @@ function Home() {
     <>
       {/* New Hero Section */}
       <HeroSection />
-      
+
       {/* Featured Events Section */}
-      <div style={{
-        padding: "80px 0 40px 0",
-        background: "linear-gradient(to bottom, var(--purple-50) 0%, white 100%)",
-      }}>
-        <div style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          padding: "0 20px",
-        }}>
-          <div style={{
-            textAlign: "center",
-            marginBottom: "50px",
-          }}>
-            <h2 style={{
-              fontSize: "clamp(2rem, 4vw, 3rem)",
-              fontWeight: "800",
-              color: "var(--dark)",
-              marginBottom: "15px",
-              lineHeight: "1.2",
-              letterSpacing: "-1px",
-            }}>
+      <div
+        style={{
+          padding: "80px 0 40px 0",
+          background: "white",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "1200px",
+            margin: "0 auto",
+            padding: "0 20px",
+          }}
+        >
+          <div
+            style={{
+              textAlign: "center",
+              marginBottom: "50px",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "clamp(2rem, 4vw, 3rem)",
+                fontWeight: "800",
+                color: "var(--dark)",
+                marginBottom: "15px",
+                lineHeight: "1.2",
+                letterSpacing: "-1px",
+              }}
+            >
               Trending Events
             </h2>
-            <p style={{
-              fontSize: "clamp(1rem, 1.5vw, 1.2rem)",
-              color: "var(--gray-medium)",
-              maxWidth: "700px",
-              margin: "0 auto",
-              lineHeight: "1.6",
-            }}>
+            <p
+              style={{
+                fontSize: "clamp(1rem, 1.5vw, 1.2rem)",
+                color: "var(--gray-medium)",
+                maxWidth: "700px",
+                margin: "0 auto",
+                lineHeight: "1.6",
+              }}
+            >
               Discover what's happening this week in your city
             </p>
           </div>
-          
-          <ScrollAnimation direction="up" distance={40} duration={1} delay={0.2}>
+
+          <ScrollAnimation
+            direction="up"
+            distance={40}
+            duration={1}
+            delay={0.2}
+          >
             <EventsSection
               title={t("eventsSection.sectionTitles.popular")}
               location={popularEventsLocation}
@@ -407,61 +422,27 @@ function Home() {
           </ScrollAnimation>
         </div>
       </div>
-      
+
       {/* Divider */}
-      <div style={{
-        height: "1px",
-        background: "linear-gradient(to right, transparent 0%, var(--purple-200) 50%, transparent 100%)",
-        margin: "30px auto",
-        width: "80%",
-        maxWidth: "1000px",
-      }} />
-      
-      {/* Categories Section */}
-      <div style={{
-        padding: "60px 0",
-        background: "white",
-      }}>
-        <div style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          padding: "0 20px",
-        }}>
-          <div style={{
-            textAlign: "center",
-            marginBottom: "50px",
-          }}>
-            <h2 style={{
-              fontSize: "clamp(2rem, 4vw, 3rem)",
-              fontWeight: "800",
-              color: "var(--dark)",
-              marginBottom: "15px",
-              lineHeight: "1.2",
-              letterSpacing: "-1px",
-            }}>
-              Discover Events
-            </h2>
-            <p style={{
-              fontSize: "clamp(1rem, 1.5vw, 1.2rem)",
-              color: "var(--gray-medium)",
-              maxWidth: "700px",
-              margin: "0 auto",
-              lineHeight: "1.6",
-            }}>
-              Curated selection of must-see events you don't want to miss
-            </p>
-          </div>
-          
-          <ScrollAnimation direction="up" distance={40} duration={1} delay={0.3}>
-            <NewRecommendSection
-              title="Spotlight Events"
-              subtitle="Curated selection of must-see events you don't want to miss"
-              events={eventsData.slice(0, 8)}
-              containerId="trendingRecommendations"
-            />
-          </ScrollAnimation>
-        </div>
-      </div>
+      <div
+        style={{
+          height: "1px",
+          background:
+            "linear-gradient(to right, transparent 0%, var(--purple-200) 50%, transparent 100%)",
+          margin: "0px auto",
+          width: "80%",
+          maxWidth: "1000px",
+        }}
+      />
+
+      <ScrollAnimation direction="up" distance={40} duration={1} delay={0.3}>
+        <NewRecommendSection
+          title="Spotlight Events"
+          subtitle="Curated selection of must-see events you don't want to miss"
+          events={eventsData.slice(0, 8)}
+          containerId="trendingRecommendations"
+        />
+      </ScrollAnimation>
     </>
   );
 }

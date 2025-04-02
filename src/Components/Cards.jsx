@@ -55,8 +55,8 @@ const Cards = memo(function Cards({
         overflow: "hidden",
         backgroundColor: "var(--neutral-50)",
         boxShadow: isHovered
-          ? "0 15px 30px rgba(111, 68, 255, 0.15)"
-          : "0 8px 20px rgba(111, 68, 255, 0.08)",
+          ? "0 15px 30px rgba(22, 22, 43, 0.08)"
+          : "0 8px 20px rgba(22, 22, 43, 0.04)",
         transition: "all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)",
         transform: isHovered ? "translateY(-8px)" : "translateY(0)",
         cursor: "pointer",

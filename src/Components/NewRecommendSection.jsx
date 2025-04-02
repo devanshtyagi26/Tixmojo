@@ -80,9 +80,10 @@ function NewRecommendSection({
       style={{
         padding: "20px 0",
         marginBottom: "40px",
-        background: "linear-gradient(170deg, var(--purple-50) 0%, var(--neutral-50) 100%)",
-        borderRadius: "30px",
-        boxShadow: "0 5px 20px rgba(111, 68, 255, 0.05)",
+        background: "white",
+        borderRadius: "20px",
+        boxShadow: "0 5px 20px rgba(22, 22, 43, 0.03)",
+        border: "1px solid rgba(22, 22, 43, 0.04)",
       }}
     >
       <div
@@ -188,7 +189,7 @@ function NewRecommendSection({
                 justifyContent: "center",
                 cursor: "pointer",
                 transition: "all 0.3s ease",
-                boxShadow: "0 4px 20px rgba(111, 68, 255, 0.2)",
+                boxShadow: "0 4px 20px rgba(22, 22, 43, 0.08)",
                 opacity: showLeftButton ? 1 : 0,
                 pointerEvents: showLeftButton ? "auto" : "none",
                 transform: showLeftButton ? "scale(1)" : "scale(0.9)",
@@ -227,7 +228,7 @@ function NewRecommendSection({
                 justifyContent: "center",
                 cursor: "pointer",
                 transition: "all 0.3s ease",
-                boxShadow: "0 4px 20px rgba(111, 68, 255, 0.2)",
+                boxShadow: "0 4px 20px rgba(22, 22, 43, 0.08)",
                 opacity: showRightButton ? 1 : 0,
                 pointerEvents: showRightButton ? "auto" : "none",
                 transform: showRightButton ? "scale(1)" : "scale(0.9)",
