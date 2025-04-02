@@ -1,13 +1,14 @@
 import React, { useRef, useState, useEffect } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { BiUser } from "react-icons/bi";
-import { TbTicket } from "react-icons/tb";
 import { useTranslation } from "react-i18next";
+import { Link, useNavigate } from "react-router-dom";
 import "../i18n";
 import Hamburger from "./Hamburger";
 
-function Navbar({ toggleScrollPage, isSidebarOpen }) {
+function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSidebarOpen }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const inputRef = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [scrolled, setScrolled] = useState(false);
@@ -36,6 +37,14 @@ function Navbar({ toggleScrollPage, isSidebarOpen }) {
       inputRef.current.focus();
     }
   };
+  
+  const handleUserClick = () => {
+    if (toggleUserSidebar) {
+      toggleUserSidebar();
+    } else {
+      navigate("/page-not-found");
+    }
+  };
 
   return (
     <nav 
@@ -44,7 +53,7 @@ function Navbar({ toggleScrollPage, isSidebarOpen }) {
         justifyContent: "space-between",
         alignItems: "center",
         width: "100vw",
-        height: "70px",
+        height: "60px",
         left: "0",
         top: "0",
         background: scrolled ? "rgba(255, 255, 255, 0.95)" : "transparent",
@@ -56,6 +65,7 @@ function Navbar({ toggleScrollPage, isSidebarOpen }) {
         padding: "0 32px",
       }}
     >
+      {/* Logo on the left */}
       <div className="nav-left" style={{ display: "flex", alignItems: "center" }}>
         <h2 style={{
           fontWeight: "800",
@@ -66,26 +76,15 @@ function Navbar({ toggleScrollPage, isSidebarOpen }) {
         }}>
           TIXMOJO
         </h2>
-        
-        {!isMobile && (
-          <div className="nav-links" style={{ 
-            display: "flex", 
-            marginLeft: "40px", 
-            gap: "24px"
-          }}>
-            <NavLink active={true}>Events</NavLink>
-            <NavLink>Venues</NavLink>
-            <NavLink>Artists</NavLink>
-            <NavLink>Promoters</NavLink>
-          </div>
-        )}
       </div>
 
+      {/* Right section with search, user icon, and hamburger */}
       <div className="nav-right" style={{ 
         display: "flex", 
-        alignItems: "center", 
-        gap: isMobile ? "16px" : "24px" 
+        alignItems: "center",
+        gap: isMobile ? "12px" : "20px"
       }}>
+        {/* Search bar */}
         <div 
           className="search-bar" 
           onClick={handleSearchClick}
@@ -95,7 +94,7 @@ function Navbar({ toggleScrollPage, isSidebarOpen }) {
             backgroundColor: "rgba(111, 68, 255, 0.08)",
             borderRadius: "50px",
             padding: isMobile ? "8px 12px" : "10px 16px",
-            width: isMobile ? "40px" : "200px",
+            width: isMobile ? "40px" : "240px",
             transition: "all 0.3s ease",
             cursor: "pointer",
           }}
@@ -123,39 +122,35 @@ function Navbar({ toggleScrollPage, isSidebarOpen }) {
           )}
         </div>
 
-        {!isMobile && (
-          <button className="btn btn-outline" style={{ 
-            display: "flex", 
-            alignItems: "center", 
-            gap: "8px",
-            padding: "8px 16px",
-          }}>
-            <TbTicket />
-            My Tickets
-          </button>
-        )}
-
-
+        {/* User icon */}
         <div 
-          onClick={toggleScrollPage}
-          style={{ 
-            width: "40px", 
-            height: "40px", 
-            borderRadius: "50%", 
-            backgroundColor: isSidebarOpen ? "var(--primary)" : "var(--primary-light)", 
-            display: "flex", 
-            alignItems: "center", 
+          onClick={handleUserClick}
+          style={{
+            width: "38px",
+            height: "38px",
+            borderRadius: "50%",
+            backgroundColor: "var(--purple-100)",
+            display: "flex",
+            alignItems: "center",
             justifyContent: "center",
             cursor: "pointer",
-            transition: "background-color 0.3s ease",
-            boxShadow: isSidebarOpen ? "0 2px 10px rgba(111, 68, 255, 0.25)" : "none",
+            transition: "all 0.3s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "var(--purple-200)";
+            e.currentTarget.style.transform = "scale(1.05)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "var(--purple-100)";
+            e.currentTarget.style.transform = "scale(1)";
           }}
         >
-          <BiUser style={{ color: "white", fontSize: "20px" }} />
+          <BiUser style={{ color: "var(--primary)", fontSize: "22px" }} />
         </div>
 
+        {/* Hamburger menu */}
         <div style={{
-          display: isMobile ? "flex" : "none",
+          display: "flex",
           alignItems: "center",
           justifyContent: "center",
         }}>
@@ -166,36 +161,6 @@ function Navbar({ toggleScrollPage, isSidebarOpen }) {
         </div>
       </div>
     </nav>
-  );
-}
-
-function NavLink({ children, active }) {
-  return (
-    <a 
-      href="#"
-      style={{
-        color: active ? "var(--primary)" : "var(--dark)",
-        fontWeight: active ? "600" : "500",
-        fontSize: "15px",
-        textDecoration: "none",
-        position: "relative",
-        padding: "4px 0",
-        transition: "all 0.3s ease",
-      }}
-    >
-      {children}
-      {active && (
-        <span style={{
-          position: "absolute",
-          bottom: "-2px",
-          left: "0",
-          width: "100%",
-          height: "3px",
-          background: "var(--primary)",
-          borderRadius: "2px",
-        }}></span>
-      )}
-    </a>
   );
 }
 

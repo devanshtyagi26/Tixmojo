@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import { SlCalender } from "react-icons/sl";
 import { IoLocationOutline } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 
 const Cards = memo(function Cards({
   eventName,
@@ -16,14 +17,16 @@ const Cards = memo(function Cards({
 }) {
   const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate();
 
   const handleMouseEnter = useCallback(() => setIsHovered(true), []);
   const handleMouseLeave = useCallback(() => setIsHovered(false), []);
 
   const handleClick = useCallback(() => {
     console.log(`Viewing details for ${eventName}`);
-    // In a real app, this could navigate to event details page
-  }, [eventName]);
+    // Navigate to 404 page
+    navigate("/page-not-found");
+  }, [eventName, navigate]);
 
   const handleButtonClick = useCallback(
     (e) => {
@@ -31,9 +34,10 @@ const Cards = memo(function Cards({
       console.log(
         `Booking ticket for ${eventName} at price: AUD ${eventPrice}`
       );
-      // In a real app, this could open a booking modal or navigate to a checkout page
+      // Navigate to 404 page
+      navigate("/page-not-found");
     },
-    [eventName, eventPrice]
+    [eventName, eventPrice, navigate]
   );
 
   // Removed random values for demo purposes

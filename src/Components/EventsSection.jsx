@@ -345,7 +345,7 @@ const EventsSection = ({
             </p>
           </div>
 
-          {/* Filter options and navigation controls */}
+          {/* Filter options */}
           <div
             style={{
               display: "flex",
@@ -378,104 +378,194 @@ const EventsSection = ({
                 </button>
               ))}
             </div>
-
-            <div style={{ display: "flex", gap: "10px" }}>
-              <button
-                className="navigation-btn"
-                onClick={handleScrollLeft}
-                disabled={!showLeftButton}
-                aria-label="Scroll left"
-              >
-                <MdNavigateBefore size={24} />
-              </button>
-              <button
-                className="navigation-btn"
-                onClick={handleScrollRight}
-                disabled={!showRightButton}
-                aria-label="Scroll right"
-              >
-                <MdNavigateNext size={24} />
-              </button>
-            </div>
           </div>
         </div>
 
-        {/* Horizontal scrollable container */}
+        {/* Horizontal scrollable container with side navigation buttons */}
         <div
-          id={containerId}
-          ref={scrollContainerRef}
-          className="scrollbar-container"
           style={{
-            display: "flex",
-            overflowX: "auto",
-            gap: "20px",
-            padding: "10px 0 30px 0",
-            scrollbarWidth: "thin",
-            scrollBehavior: "smooth",
+            position: "relative",
           }}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowLeft") {
+              handleScrollLeft();
+            } else if (e.key === "ArrowRight") {
+              handleScrollRight();
+            }
+          }}
+          tabIndex="0"
         >
-          {/* Display empty state if no events */}
-          {filteredEvents.length === 0 ? (
-            <div
+          {/* Navigation Buttons */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              position: "absolute",
+              top: "50%",
+              left: "-24px",
+              right: "-24px",
+              transform: "translateY(-50%)",
+              zIndex: 5,
+              pointerEvents: "none",
+            }}
+          >
+            <button
+              onClick={handleScrollLeft}
+              disabled={!showLeftButton}
+              aria-label="Scroll left"
               style={{
-                width: "100%",
-                textAlign: "center",
-                padding: "60px 0",
-                color: "var(--gray-medium)",
+                width: "56px",
+                height: "56px",
+                borderRadius: "50%",
+                background: "var(--light)",
+                color: "var(--primary)",
+                border: "none",
                 display: "flex",
-                flexDirection: "column",
                 alignItems: "center",
-                gap: "15px",
+                justifyContent: "center",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+                boxShadow: "0 4px 20px rgba(111, 68, 255, 0.2)",
+                opacity: showLeftButton ? 1 : 0,
+                pointerEvents: showLeftButton ? "auto" : "none",
+                transform: showLeftButton ? "scale(1)" : "scale(0.9)",
+              }}
+              onMouseEnter={(e) => {
+                if (showLeftButton) {
+                  e.currentTarget.style.background = "var(--primary)";
+                  e.currentTarget.style.color = "var(--light)";
+                  e.currentTarget.style.transform = "scale(1.1)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (showLeftButton) {
+                  e.currentTarget.style.background = "var(--light)";
+                  e.currentTarget.style.color = "var(--primary)";
+                  e.currentTarget.style.transform = "scale(1)";
+                }
               }}
             >
+              <MdNavigateBefore style={{ fontSize: "28px" }} />
+            </button>
+            
+            <button
+              onClick={handleScrollRight}
+              disabled={!showRightButton}
+              aria-label="Scroll right"
+              style={{
+                width: "56px",
+                height: "56px",
+                borderRadius: "50%",
+                background: "var(--light)",
+                color: "var(--primary)",
+                border: "none",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+                boxShadow: "0 4px 20px rgba(111, 68, 255, 0.2)",
+                opacity: showRightButton ? 1 : 0,
+                pointerEvents: showRightButton ? "auto" : "none",
+                transform: showRightButton ? "scale(1)" : "scale(0.9)",
+              }}
+              onMouseEnter={(e) => {
+                if (showRightButton) {
+                  e.currentTarget.style.background = "var(--primary)";
+                  e.currentTarget.style.color = "var(--light)";
+                  e.currentTarget.style.transform = "scale(1.1)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (showRightButton) {
+                  e.currentTarget.style.background = "var(--light)";
+                  e.currentTarget.style.color = "var(--primary)";
+                  e.currentTarget.style.transform = "scale(1)";
+                }
+              }}
+            >
+              <MdNavigateNext style={{ fontSize: "28px" }} />
+            </button>
+          </div>
+
+          {/* Scrollable content */}
+          <div
+            id={containerId}
+            ref={scrollContainerRef}
+            className="scrollbar-container"
+            style={{
+              display: "flex",
+              overflowX: "auto",
+              gap: "20px",
+              padding: "10px 0 30px 0",
+              scrollbarWidth: "thin",
+              scrollBehavior: "smooth",
+              position: "relative",
+            }}
+          >
+            {/* Display empty state if no events */}
+            {filteredEvents.length === 0 ? (
               <div
                 style={{
-                  fontSize: "24px",
-                  marginBottom: "10px",
-                  color: "var(--dark)",
+                  width: "100%",
+                  textAlign: "center",
+                  padding: "60px 0",
+                  color: "var(--gray-medium)",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "15px",
                 }}
               >
-                {t("eventsSection.noEvents.title")}
+                <div
+                  style={{
+                    fontSize: "24px",
+                    marginBottom: "10px",
+                    color: "var(--dark)",
+                  }}
+                >
+                  {t("eventsSection.noEvents.title")}
+                </div>
+                <div>
+                  {t("eventsSection.noEvents.message", {
+                    location: location,
+                    filter: activeFilter,
+                  })}
+                </div>
+                <button
+                  className="btn btn-primary"
+                  style={{ marginTop: "15px" }}
+                  onClick={() => handleFilterClick("All")}
+                >
+                  {t("eventsSection.noEvents.viewAll")}
+                </button>
               </div>
-              <div>
-                {t("eventsSection.noEvents.message", {
-                  location: location,
-                  filter: activeFilter,
-                })}
-              </div>
-              <button
-                className="btn btn-primary"
-                style={{ marginTop: "15px" }}
-                onClick={() => handleFilterClick("All")}
-              >
-                {t("eventsSection.noEvents.viewAll")}
-              </button>
-            </div>
-          ) : (
-            /* Display all event cards */
-            filteredEvents.map((event, index) => (
-              <div
-                key={index}
-                className="fade-in"
-                style={{
-                  flex: "0 0 auto",
-                  animationDelay: `${index * 0.1}s`,
-                }}
-              >
-                <Cards
-                  eventName={event.eventName}
-                  eventDate={event.eventDate}
-                  eventAddress={event.eventAddress}
-                  eventPrice={event.eventPrice}
-                  eventPoster={event.eventPoster}
-                  eventRanking={event.eventRanking}
-                  rankScore={event.rankScore}
-                  eventLocation={event.eventLocation}
-                  isRecommendation={true}
-                />
-              </div>
-            ))
-          )}
+            ) : (
+              /* Display all event cards */
+              filteredEvents.map((event, index) => (
+                <div
+                  key={index}
+                  className="fade-in"
+                  style={{
+                    flex: "0 0 auto",
+                    animationDelay: `${index * 0.1}s`,
+                  }}
+                >
+                  <Cards
+                    eventName={event.eventName}
+                    eventDate={event.eventDate}
+                    eventAddress={event.eventAddress}
+                    eventPrice={event.eventPrice}
+                    eventPoster={event.eventPoster}
+                    eventRanking={event.eventRanking}
+                    rankScore={event.rankScore}
+                    eventLocation={event.eventLocation}
+                    isRecommendation={true}
+                  />
+                </div>
+              ))
+            )}
+          </div>
         </div>
       </div>
     </div>

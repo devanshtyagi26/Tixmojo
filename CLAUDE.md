@@ -126,7 +126,18 @@ Changed the color theme from green to shades of purple:
   - Added subtle shadows and better spacing throughout the section
   - Changed title to "Spotlight Events" for better marketing presence
 
-## 7. Scroll Animations
+## 7. Link Redirects to 404 Page
+
+- Modified all clickable links to redirect to the 404 page for better user experience:
+  - Updated the Navbar navigation links to use React Router's Link component 
+  - Redirected the "My Tickets" button to the 404 page
+  - Modified all sidebar links to point to the 404 page
+  - Updated Cards component to navigate to 404 page on click
+  - Redirected card booking buttons to the 404 page
+  - Modified carousel flyer images to navigate to 404 page when clicked
+  - Ensured all links maintain their styling and hover effects
+
+## 8. Scroll Animations
 
 Added scroll-triggered animations throughout the application for a more dynamic user experience:
   - Created a ScrollAnimation utility (src/utils/ScrollAnimation.jsx) with:
@@ -148,11 +159,11 @@ Added scroll-triggered animations throughout the application for a more dynamic 
 ## Component Files Modified
 
 1. `src/Style/imports.css` - Color system and global styles, animation classes
-2. `src/Components/Navbar.jsx` - Navbar height and styling
+2. `src/Components/Navbar.jsx` - Navbar height and styling, link redirects
 3. `src/Components/Footer.jsx` - Logo removal
-4. `src/Components/Cards.jsx` - Card redesign and ranking indicator, added hideRanking prop
-5. `src/Components/Sidebar.jsx` - Position adjustment
-6. `src/Components/FlyerCarousel.jsx` - Margin and color updates
+4. `src/Components/Cards.jsx` - Card redesign and ranking indicator, added hideRanking prop, link redirects
+5. `src/Components/Sidebar.jsx` - Position adjustment, link redirects
+6. `src/Components/FlyerCarousel.jsx` - Margin and color updates, link redirects
 7. `src/Components/EventsSection.jsx` - Dropdown redesign
 8. `src/Components/NewRecommendSection.jsx` - New component for recommendations without rankings, added scroll animations
 9. `src/pages/Home.jsx` - Added new recommendation section, implemented scroll animations

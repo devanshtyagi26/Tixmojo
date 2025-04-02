@@ -4,6 +4,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { MdNavigateBefore } from "react-icons/md"; // Importing the left arrow icon
 import { MdNavigateNext } from "react-icons/md"; // Importing the right arrow icon
+import { useNavigate } from "react-router-dom";
 
 // Custom Previous Button
 const CustomPrevArrow = ({ onClick }) => (
@@ -119,6 +120,7 @@ const CustomNextArrow = ({ onClick }) => (
 
 function FlyerCarousel() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -171,7 +173,7 @@ function FlyerCarousel() {
           <div key={flyer.id}>
             <img
               className="flyerimage"
-              onClick={() => console.log(flyer.id)}
+              onClick={() => navigate("/page-not-found")}
               src={flyer.image}
               alt={`Flyer ${flyer.id}`}
               style={{
