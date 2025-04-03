@@ -40,11 +40,9 @@ const Cards = memo(function Cards({
     [eventName, eventPrice, navigate]
   );
 
-  // Removed random values for demo purposes
-
+  // Lu.ma inspired card design
   return (
     <div
-      className="card"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
@@ -52,7 +50,17 @@ const Cards = memo(function Cards({
       aria-label={`Event: ${eventName}`}
       tabIndex={0}
       style={{
+        width: "330px",
+        borderRadius: "16px",
+        overflow: "hidden",
+        backgroundColor: "var(--neutral-50)",
+        boxShadow: isHovered
+          ? "0 15px 30px rgba(22, 22, 43, 0.08)"
+          : "0 8px 20px rgba(22, 22, 43, 0.04)",
+        transition: "all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)",
+        transform: isHovered ? "translateY(-8px)" : "translateY(0)",
         cursor: "pointer",
+        border: "1px solid var(--neutral-200)",
       }}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -100,9 +108,8 @@ const Cards = memo(function Cards({
       <div
         style={{
           position: "relative",
-          height: "55%",
+          height: "200px",
           overflow: "hidden",
-          borderRadius: "8px 8px 0 0",
         }}
       >
         <div
@@ -115,8 +122,8 @@ const Cards = memo(function Cards({
             backgroundImage: `url(${eventPoster})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
-            transition: "transform 0.5s ease",
-            transform: isHovered ? "scale(1.1)" : "scale(1)",
+            transition: "transform 0.8s cubic-bezier(0.165, 0.84, 0.44, 1)",
+            transform: isHovered ? "scale(1.08)" : "scale(1)",
           }}
         ></div>
 
@@ -128,110 +135,121 @@ const Cards = memo(function Cards({
             width: "100%",
             height: "100%",
             background:
-              "linear-gradient(0deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.4) 50%, rgba(0, 0, 0, 0.1) 100%)",
-            opacity: isHovered ? 0.9 : 0.6,
+              "linear-gradient(0deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0.1) 100%)",
+            opacity: 0.6,
             transition: "opacity 0.3s ease",
           }}
         ></div>
+
+        {/* Price badge on image */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: "12px",
+            right: "12px",
+            zIndex: 10,
+            backgroundColor: "rgba(0, 0, 0, 0.75)",
+            color: "white",
+            borderRadius: "30px",
+            padding: "6px 12px",
+            fontSize: "14px",
+            fontWeight: "600",
+            backdropFilter: "blur(5px)",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.2)",
+          }}
+        >
+          AUD {eventPrice}
+        </div>
       </div>
 
       {/* Content */}
       <div
         style={{
           padding: "20px",
-          height: "45%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
+          gap: "12px",
         }}
       >
-        <div>
-          <h3
-            style={{
-              fontSize: "20px",
-              fontWeight: "800",
-              marginBottom: "12px",
-              lineHeight: "1.3",
-              color: "var(--dark)",
-              textTransform: "uppercase",
-              letterSpacing: "0.5px",
-              fontFamily: "Raleway, sans-serif",
-            }}
-          >
-            {eventName}
-          </h3>
-
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginBottom: "10px",
-              fontSize: "14px",
-              color: "var(--gray-medium)",
-            }}
-          >
-            <SlCalender
-              style={{
-                color: "var(--primary)",
-                marginRight: "10px",
-                fontSize: "16px",
-              }}
-            />
-            <span style={{ fontWeight: "500" }}>{eventDate}</span>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              alignItems: "flex-start",
-              fontSize: "14px",
-              color: "var(--gray-medium)",
-              marginBottom: "12px",
-            }}
-          >
-            <IoLocationOutline
-              style={{
-                color: "var(--primary)",
-                marginRight: "10px",
-                marginTop: "2px",
-                flexShrink: 0,
-                fontSize: "18px",
-              }}
-            />
-            <span style={{ lineHeight: "1.4", fontWeight: "500" }}>
-              {eventAddress}
-            </span>
-          </div>
-
-          {/* Removed attending and rating sections */}
-        </div>
-
+        {/* Date */}
         <div
           style={{
             display: "flex",
-            justifyContent: "right",
             alignItems: "center",
-            marginTop: "10px",
+            fontSize: "14px",
+            color: "var(--primary)",
+            fontWeight: "600",
           }}
         >
-          <button
-            className="price-badge"
-            onClick={handleButtonClick}
-            aria-label={`Book ticket from AUD ${eventPrice}`}
+          <SlCalender
             style={{
-              border: "1px solid var(--dark)",
-              background: "var(--light)",
-              color: "var(--dark)",
-              borderRadius: "4px",
-              padding: "8px 12px",
-              fontWeight: "600",
+              marginRight: "8px",
               fontSize: "14px",
-              boxShadow: "none",
             }}
-          >
-            {t("eventsSection.priceLabel", { price: eventPrice })}
-          </button>
+          />
+          <span>{eventDate}</span>
         </div>
+
+        {/* Title */}
+        <h3
+          style={{
+            fontSize: "18px",
+            fontWeight: "700",
+            lineHeight: "1.4",
+            color: "var(--dark)",
+            margin: "0",
+            transition: "color 0.3s ease",
+            color: isHovered ? "var(--primary)" : "var(--dark)",
+          }}
+        >
+          {eventName}
+        </h3>
+
+        {/* Location */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            fontSize: "14px",
+            color: "var(--gray-medium)",
+          }}
+        >
+          <IoLocationOutline
+            style={{
+              color: "var(--gray-medium)",
+              marginRight: "8px",
+              marginTop: "4px",
+              flexShrink: 0,
+              fontSize: "16px",
+            }}
+          />
+          <span style={{ lineHeight: "1.4" }}>{eventAddress}</span>
+        </div>
+
+        {/* Button */}
+        <button
+          onClick={handleButtonClick}
+          aria-label={`Book ticket for ${eventName}`}
+          style={{
+            marginTop: "10px",
+            backgroundColor: isHovered
+              ? "var(--primary)"
+              : "var(--neutral-100)",
+            color: isHovered ? "white" : "var(--dark)",
+            border: "none",
+            borderRadius: "10px",
+            padding: "12px",
+            fontWeight: "600",
+            fontSize: "15px",
+            cursor: "pointer",
+            transition: "all 0.3s ease",
+            width: "100%",
+            textAlign: "center",
+          }}
+        >
+          Get Tickets
+        </button>
       </div>
     </div>
   );
