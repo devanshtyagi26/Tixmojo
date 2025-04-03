@@ -6,6 +6,7 @@ import Footer from "./Components/Footer";
 import { useState } from "react";
 import { SidebarScroll } from "./Components/Sidebar";
 import { UserSidebar } from "./Components/UserSidebar";
+import { DefaultSEO } from "./utils/SEO";
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -13,6 +14,7 @@ function App() {
   
   return (
     <>
+      <DefaultSEO />
       <BrowserRouter>
         <Navbar
           isSidebarOpen={isSidebarOpen}

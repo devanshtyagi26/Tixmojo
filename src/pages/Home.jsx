@@ -4,6 +4,7 @@ import EventsSection from "../Components/EventsSection.jsx";
 import FlyerCarousel from "../Components/FlyerCarousel.jsx";
 import NewRecommendSection from "../Components/NewRecommendSection.jsx";
 import { ScrollAnimation } from "../utils/ScrollAnimation.jsx";
+import { PageSEO } from "../utils/SEO.jsx";
 
 import "../i18n";
 
@@ -105,6 +106,13 @@ function Home() {
 
   return (
     <>
+      <PageSEO 
+        title="Find and Book Amazing Events" 
+        description="Discover top events, concerts, and shows in your area. TixMojo helps you find tickets for the best live entertainment experiences."
+        path="/"
+        keywords="events, tickets, concerts, shows, festivals, entertainment, live music"
+      />
+      
       {/* Hero Section with Carousel */}
       <ScrollAnimation direction="down" distance={30} duration={1.2}>
         <FlyerCarousel />

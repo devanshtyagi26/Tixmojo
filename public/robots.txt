@@ -1,0 +1,9 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow page-not-found
+Disallow: /page-not-found
+
+# Sitemap location
+Sitemap: https://tixmojo.com/sitemap.xml
