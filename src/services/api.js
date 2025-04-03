@@ -46,13 +46,25 @@ export const getAllEvents = async (location) => {
 };
 
 /**
- * Get events directly from the server's eventsData array
+ * Get events directly from the server's locationEvents data
  * @param {string} location - Optional location filter
  * @returns {Promise<Array>} - Raw events data from server
  */
 export const getEventsFromServer = async (location) => {
   const query = location ? `?location=${encodeURIComponent(location)}` : '';
   return fetchAPI(`/events/server-data${query}`);
+};
+
+/**
+ * Get location-specific events (uses custom events for each location)
+ * @param {string} location - Location name (e.g., 'sydney', 'singapore')
+ * @returns {Promise<Array>} - Location-specific events data
+ */
+export const getLocationEvents = async (location) => {
+  if (!location) {
+    throw new Error('Location parameter is required');
+  }
+  return fetchAPI(`/events/location/${encodeURIComponent(location.toLowerCase())}`);
 };
 
 /**
@@ -99,6 +111,14 @@ export const getLocationDetails = async (location) => {
   return fetchAPI(`/events/locations/${location ? encodeURIComponent(location) : ''}`);
 };
 
+/**
+ * Get all application data in a single request
+ * @returns {Promise<Object>} - All app data including events, locations, and metadata
+ */
+export const getAllAppData = async () => {
+  return fetchAPI('/events/app-data');
+};
+
 // Export all API functions
 export default {
   getAllEvents,
@@ -107,5 +127,7 @@ export default {
   getEventById,
   getLocations,
   getLocationDetails,
-  getEventsFromServer
+  getEventsFromServer,
+  getLocationEvents,
+  getAllAppData
 };

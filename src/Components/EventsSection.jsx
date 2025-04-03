@@ -26,7 +26,7 @@ const EventsSection = ({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(location);
   const [locationData, setLocationData] = useState({
-    title: `Events in`,
+    title: `Event in`,
     subtitle: `Discover the most popular events happening in ${location} right now`,
     image: "",
     description: "",
@@ -48,7 +48,7 @@ const EventsSection = ({
         console.error("Error fetching location data:", error);
         // Fallback to basic data if API fails
         setLocationData({
-          title: `Events in`,
+          title: `Event in`,
           subtitle: `Discover the most popular events happening in ${selectedLocation} right now`,
           image: "",
           description: "",
@@ -291,20 +291,36 @@ const EventsSection = ({
   // Handle location selection
   const handleLocationSelect = useCallback(
     (newLocation) => {
+      // Don't do anything if the location is the same
+      if (selectedLocation === newLocation) {
+        setIsDropdownOpen(false);
+        return;
+      }
+      
+      // Update local state
       setSelectedLocation(newLocation);
       setIsDropdownOpen(false);
 
-      // Call the parent's location change handler with the new location
-      if (onLocationChange) {
-        onLocationChange(newLocation);
-      }
-
+      // Show loading state temporarily while we transition data
+      // This will be brief since we're using cached data
+      // setLoading(true);
+      
       // Reset filter to "All" when location changes
       if (handleFilterClickRef.current) {
         handleFilterClickRef.current("All");
       }
+
+      // Scroll container back to start
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollLeft = 0;
+      }
+      
+      // Call the parent's location change handler with the new location
+      if (onLocationChange) {
+        onLocationChange(newLocation);
+      }
     },
-    [onLocationChange]
+    [selectedLocation, onLocationChange]
   );
 
   // Navigation handlers with useRef instead of direct DOM manipulation
@@ -379,7 +395,7 @@ const EventsSection = ({
         >
           <div style={{ maxWidth: "600px", position: "relative", zIndex: 10 }}>
             <h2 className="section-title slide-up">
-              {locationData.title}{" "}
+              {title}
               <span
                 ref={dropdownRef}
                 style={{

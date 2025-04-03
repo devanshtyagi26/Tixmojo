@@ -6,6 +6,7 @@ import { MdNavigateBefore } from "react-icons/md"; // Importing the left arrow i
 import { MdNavigateNext } from "react-icons/md"; // Importing the right arrow icon
 import { useNavigate } from "react-router-dom";
 import { getFlyers } from "../services/api.js";
+import PropTypes from "prop-types";
 
 // Custom Previous Button
 const CustomPrevArrow = ({ onClick }) => (
@@ -119,7 +120,7 @@ const CustomNextArrow = ({ onClick }) => (
   </button>
 );
 
-function FlyerCarousel() {
+function FlyerCarousel({ flyers: propFlyers }) {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [flyers, setFlyers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -131,8 +132,16 @@ function FlyerCarousel() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Fetch flyers data from API
+  // Use provided flyers or fetch them if not provided
   useEffect(() => {
+    // If flyers are provided via props, use them directly
+    if (propFlyers && propFlyers.length > 0) {
+      setFlyers(propFlyers);
+      setLoading(false);
+      return;
+    }
+    
+    // Otherwise fetch flyers from API (backward compatibility)
     const fetchFlyers = async () => {
       try {
         setLoading(true);
@@ -220,5 +229,25 @@ function FlyerCarousel() {
     </div>
   );
 }
+
+// Define prop types
+FlyerCarousel.propTypes = {
+  flyers: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      image: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired, 
+      location: PropTypes.string,
+      date: PropTypes.string,
+      ticketLink: PropTypes.string,
+      ticketSite: PropTypes.string
+    })
+  )
+};
+
+// Default props
+FlyerCarousel.defaultProps = {
+  flyers: [] // Empty array as default
+};
 
 export default FlyerCarousel;
