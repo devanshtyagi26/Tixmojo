@@ -382,6 +382,29 @@ Added Google Maps location functionality to enhance venue information:
   - Added proper security attributes to external links
   - Ensured consistent styling with the design system
 
+## 17. Scroll-to-Top Behavior
+
+Implemented automatic scroll-to-top functionality across the application:
+
+- User Experience Improvements:
+  - Pages automatically scroll to top on refresh
+  - Navigation between routes resets scroll position
+  - Browser back/forward buttons trigger scroll reset
+  - Greatly improves usability when moving between pages
+  
+- Technical Implementation:
+  - Created a reusable ScrollToTop utility component
+  - Used React Router's useLocation hook to detect route changes
+  - Added event listeners for browser navigation events
+  - Applied sessionStorage to track page refresh state
+  - Overrode default browser scrollRestoration behavior
+  
+- Integration Points:
+  - Added component to BrowserRouter in App.jsx
+  - Enhanced main.jsx with global scroll reset
+  - Applied history.scrollRestoration = 'manual' for complete control
+  - Created clean abstraction that works across the entire app
+
 ## 16. Enhanced Ticket Pricing Display
 
 Redesigned the ticket pricing section to match the provided design:

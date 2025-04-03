@@ -8,6 +8,7 @@ import { useState } from "react";
 import { SidebarScroll } from "./Components/Sidebar";
 import { UserSidebar } from "./Components/UserSidebar";
 import { DefaultSEO } from "./utils/SEO";
+import ScrollToTop from "./utils/ScrollToTop";
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -17,6 +18,7 @@ function App() {
     <>
       <DefaultSEO />
       <BrowserRouter>
+        <ScrollToTop />
         <Navbar
           isSidebarOpen={isSidebarOpen}
           toggleScrollPage={() => setIsSidebarOpen((prev) => !prev)}
