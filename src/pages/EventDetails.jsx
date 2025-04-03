@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { HiOutlineLocationMarker, HiOutlineExternalLink } from "react-icons/hi";
 import { BsCalendar2Date } from "react-icons/bs";
 import { ScrollAnimation } from "../utils/ScrollAnimation.jsx";
-import { PageSEO } from "../utils/SEO.jsx";
+import { EventSEO } from "../utils/SEO.jsx";
 import { getEventById } from "../services/api.js";
 import { IoTicketOutline } from "react-icons/io5";
 
@@ -164,13 +164,34 @@ const EventDetails = () => {
 
   return (
     <>
-      <PageSEO
-        title={event.title}
-        description={`Join us for ${event.title} - ${event.tags[0]} on ${event.date}. Get tickets now!`}
+      <EventSEO 
+        event={{
+          title: event.title,
+          description: `Join us for ${event.title} - ${event.tags[0]} on ${event.date}. Get tickets now!`,
+          date: event.date,
+          endDate: event.date, // If no specific end date is available
+          location: { 
+            name: event.venueName, 
+            address: event.venueAddress 
+          },
+          image: event.image,
+          price: { 
+            currency: event.price.currency, 
+            value: event.price.value 
+          },
+          performer: { 
+            name: event.organizer, 
+            type: "Organization" 
+          },
+          // Add any specific offers if you have them
+          offers: [
+            { 
+              name: "Standard Ticket", 
+              price: event.price.value 
+            }
+          ]
+        }}
         path={`/events/${eventId}`}
-        keywords={`events, ${event.tags
-          .map((t) => t.toLowerCase())
-          .join(", ")}, ${event.title.toLowerCase()}, tickets`}
       />
 
       <div
