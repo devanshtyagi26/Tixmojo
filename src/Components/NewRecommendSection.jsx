@@ -19,7 +19,8 @@ function NewRecommendSection({
   // Update navigation buttons based on scroll position
   const updateNavigationButtons = useCallback(() => {
     if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      const { scrollLeft, scrollWidth, clientWidth } =
+        scrollContainerRef.current;
       setShowLeftButton(scrollLeft > 0);
       setShowRightButton(scrollLeft < scrollWidth - clientWidth - 10);
     }
@@ -29,16 +30,16 @@ function NewRecommendSection({
   const handleScrollLeft = useCallback(() => {
     if (scrollContainerRef.current) {
       const container = scrollContainerRef.current;
-      const cardWidth = container.querySelector('div')?.offsetWidth || 320;
-      container.scrollBy({ left: -cardWidth, behavior: 'smooth' });
+      const cardWidth = container.querySelector("div")?.offsetWidth || 320;
+      container.scrollBy({ left: -cardWidth, behavior: "smooth" });
     }
   }, []);
 
   const handleScrollRight = useCallback(() => {
     if (scrollContainerRef.current) {
       const container = scrollContainerRef.current;
-      const cardWidth = container.querySelector('div')?.offsetWidth || 320;
-      container.scrollBy({ left: cardWidth, behavior: 'smooth' });
+      const cardWidth = container.querySelector("div")?.offsetWidth || 320;
+      container.scrollBy({ left: cardWidth, behavior: "smooth" });
     }
   }, []);
 
@@ -55,23 +56,26 @@ function NewRecommendSection({
   }, [updateNavigationButtons]);
 
   // Handle keyboard navigation
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === "ArrowLeft") {
-      handleScrollLeft();
-    } else if (e.key === "ArrowRight") {
-      handleScrollRight();
-    }
-  }, [handleScrollLeft, handleScrollRight]);
-  
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === "ArrowLeft") {
+        handleScrollLeft();
+      } else if (e.key === "ArrowRight") {
+        handleScrollRight();
+      }
+    },
+    [handleScrollLeft, handleScrollRight]
+  );
+
   // Scroll animations
   const [cardsContainerRef, isCardsContainerVisible] = useScrollAnimation({
     threshold: 0.1,
-    once: true
+    once: true,
   });
-  
+
   const [titleRef, isTitleVisible] = useScrollAnimation({
     threshold: 0.1,
-    once: true
+    once: true,
   });
 
   return (
@@ -80,7 +84,8 @@ function NewRecommendSection({
       style={{
         padding: "20px 0",
         marginBottom: "40px",
-        background: "linear-gradient(170deg, var(--purple-50) 0%, var(--neutral-50) 100%)",
+        background:
+          "linear-gradient(170deg, var(--purple-50) 0%, var(--neutral-50) 100%)",
         borderRadius: "30px",
         boxShadow: "0 5px 20px rgba(111, 68, 255, 0.05)",
       }}
@@ -104,7 +109,7 @@ function NewRecommendSection({
             textAlign: "center",
           }}
         >
-          <div 
+          <div
             ref={titleRef}
             style={{
               position: "relative",
@@ -127,7 +132,7 @@ function NewRecommendSection({
                 borderRadius: "4px",
               }}
             ></span>
-            <h2 
+            <h2
               className="section-title slide-up"
               style={{
                 position: "relative",
@@ -140,7 +145,7 @@ function NewRecommendSection({
               {title}
             </h2>
           </div>
-          <p 
+          <p
             className="section-subtitle slide-up"
             style={{
               maxWidth: "600px",
@@ -210,7 +215,7 @@ function NewRecommendSection({
             >
               <MdNavigateBefore style={{ fontSize: "28px" }} />
             </button>
-            
+
             <button
               onClick={handleScrollRight}
               disabled={!showRightButton}
@@ -268,7 +273,9 @@ function NewRecommendSection({
               position: "relative",
               marginTop: "10px",
               opacity: isCardsContainerVisible ? 1 : 0,
-              transform: isCardsContainerVisible ? "translateY(0)" : "translateY(30px)",
+              transform: isCardsContainerVisible
+                ? "translateY(0)"
+                : "translateY(30px)",
               transition: "opacity 0.8s ease, transform 0.8s ease",
             }}
           >
@@ -279,12 +286,12 @@ function NewRecommendSection({
                 style={{
                   flex: "0 0 auto",
                   opacity: isCardsContainerVisible ? 1 : 0,
-                  transform: isCardsContainerVisible 
-                    ? "translateY(0)" 
+                  transform: isCardsContainerVisible
+                    ? "translateY(0)"
                     : "translateY(40px)",
                   transition: `opacity 0.6s ease, 
                              transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)`,
-                  transitionDelay: `${0.1 + (index * 0.1)}s`,
+                  transitionDelay: `${0.1 + index * 0.1}s`,
                 }}
                 onMouseEnter={(e) => {
                   // Only apply hover effect if animation has completed
@@ -299,15 +306,22 @@ function NewRecommendSection({
                 {/* Pass hideRanking=true to hide the ranking indicator */}
                 <Cards
                   eventName={event.eventName}
-                  eventDate={event.eventDate}
-                  eventAddress={event.eventAddress}
-                  eventPrice={event.eventPrice}
-                  eventPoster={event.eventPoster}
-                  eventRanking={event.eventRanking}
-                  rankScore={event.rankScore}
-                  eventLocation={event.eventLocation}
-                  isRecommendation={false}
-                  hideRanking={true}  // This flag will hide the ranking
+                  eventDate={event.eventDate || "Upcoming"}
+                  eventAddress={
+                    event.eventAddress ||
+                    `${event.venueName || ""}, ${event.venueAddress || ""}`
+                  }
+                  eventPrice={event.eventPrice || "Free"}
+                  eventPoster={
+                    event.eventPoster ||
+                    "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3"
+                  }
+                  eventRanking={event.eventRanking || String(index + 1)}
+                  rankScore={event.rankScore || 100 - index}
+                  eventLocation={event.eventLocation || "TBA"}
+                  isRecommendation={true}
+                  hideRanking={true}
+                  id={event.id}
                 />
               </div>
             ))}

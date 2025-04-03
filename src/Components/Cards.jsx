@@ -26,7 +26,7 @@ const Cards = memo(function Cards({
   const handleClick = useCallback(() => {
     console.log(`Viewing details for ${eventName}`);
     // Navigate to event details page using id if available or create from event name
-    const eventId = id || eventName.toLowerCase().replace(/\s+/g, '-');
+    const eventId = id || eventName.toLowerCase().replace(/\s+/g, "-");
     navigate(`/events/${eventId}`);
   }, [eventName, navigate, id]);
 
@@ -37,7 +37,7 @@ const Cards = memo(function Cards({
         `Booking ticket for ${eventName} at price: AUD ${eventPrice}`
       );
       // Convert event name to URL-friendly format
-      const eventId = eventName.toLowerCase().replace(/\s+/g, '-');
+      const eventId = eventName.toLowerCase().replace(/\s+/g, "-");
       // Navigate to event details page
       navigate(`/events/${eventId}`);
     },

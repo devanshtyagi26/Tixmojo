@@ -701,7 +701,7 @@ const EventsSection = ({
                       eventPoster={event.eventPoster || "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3"}
                       eventRanking={event.eventRanking || String(index + 1)}
                       rankScore={event.rankScore || 100 - index}
-                      eventLocation={event.eventLocation || "Sydney"}
+                      eventLocation={event.eventLocation || "TBA"}
                       isRecommendation={true}
                       id={event.id}
                     />

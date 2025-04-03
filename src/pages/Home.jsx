@@ -198,17 +198,13 @@ function Home() {
     return getEventsForLocation(popularEventsLocation);
   }, [popularEventsLocation, getEventsForLocation]);
 
-  // Get filtered spotlight events for current location
+  // Get spotlight events (no location filtering)
   const currentSpotlightEvents = useMemo(() => {
     if (!allAppData || !allAppData.spotlightEvents) return [];
 
-    // Filter spotlight events for the selected location
-    return allAppData.spotlightEvents.filter(
-      (event) =>
-        event.eventLocation.toLowerCase() ===
-        popularEventsLocation.toLowerCase()
-    );
-  }, [allAppData, popularEventsLocation]);
+    // Format the dates properly for the spotlight events
+    return formatServerEvents(allAppData.spotlightEvents);
+  }, [allAppData]);
 
   // Get available locations
   const availableLocations = useMemo(() => {
