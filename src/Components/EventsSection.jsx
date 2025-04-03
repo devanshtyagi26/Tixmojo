@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
 import { IoFilter } from "react-icons/io5";
 import Cards from "./Cards.jsx";
+import { getLocationDetails } from "../services/api.js";
 
 const EventsSection = ({
   title,
@@ -19,20 +20,51 @@ const EventsSection = ({
   onLocationChange = () => {},
   availableLocations,
 }) => {
+  // Set default filter to "All"
   const [activeFilter, setActiveFilter] = useState("All");
+  console.log("Initial activeFilter set to:", "All");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(location);
+  const [locationData, setLocationData] = useState({
+    title: `Events in`,
+    subtitle: `Discover the most popular events happening in ${location} right now`,
+    image: "",
+    description: "",
+  });
   const scrollContainerRef = useRef(null);
   const dropdownRef = useRef(null);
 
   const { t } = useTranslation();
 
-  // Filter options
+  // Fetch location data from backend
+  useEffect(() => {
+    const fetchLocationData = async () => {
+      try {
+        const data = await getLocationDetails(selectedLocation);
+        if (data) {
+          setLocationData(data);
+        }
+      } catch (error) {
+        console.error("Error fetching location data:", error);
+        // Fallback to basic data if API fails
+        setLocationData({
+          title: `Events in`,
+          subtitle: `Discover the most popular events happening in ${selectedLocation} right now`,
+          image: "",
+          description: "",
+        });
+      }
+    };
+
+    fetchLocationData();
+  }, [selectedLocation]);
+
+  // Filter options - keep them consistent with what's expected in the filter logic
   const filterOptions = [
-    t("eventsSection.filters.all"),
-    t("eventsSection.filters.today"),
-    t("eventsSection.filters.tomorrow"),
-    t("eventsSection.filters.thisWeek"),
+    "All",
+    "Today",
+    "Tomorrow", 
+    "This Week"
   ];
 
   // Keep selectedLocation in sync with location prop
@@ -57,6 +89,16 @@ const EventsSection = ({
   // Define handleFilterClick forward declaration to avoid dependency issues
   const handleFilterClickRef = useRef(null);
 
+  // Debug the events prop
+  useEffect(() => {
+    console.log("Events passed to EventsSection:", events);
+  }, [events]);
+
+  // Debug activeFilter changes
+  useEffect(() => {
+    console.log("Active filter changed to:", activeFilter);
+  }, [activeFilter]);
+
   // Filter the events based on the selected filter, location, and reassign sequential rankings
   const filteredEvents = useMemo(() => {
     const today = new Date();
@@ -68,15 +110,32 @@ const EventsSection = ({
     const nextWeek = new Date(today);
     nextWeek.setDate(nextWeek.getDate() + 7);
 
-    // First, filter all events by location
+    // First, filter all events by location with better handling of data structure
     let locationFilteredEvents = events.filter(
-      (event) =>
-        // If an event has an eventLocation property, check if it matches the selected location
-        // Otherwise check if the eventAddress contains the location name
-        (event.eventLocation && event.eventLocation === location) ||
-        (!event.eventLocation &&
-          event.eventAddress &&
-          event.eventAddress.includes(location))
+      (event) => {
+        // If event is null or undefined, skip it
+        if (!event) return false;
+        
+        // Check eventLocation property (primary method)
+        if (event.eventLocation && 
+            event.eventLocation.toLowerCase() === location.toLowerCase()) {
+          return true;
+        }
+        
+        // Check eventAddress if eventLocation is not available
+        if (!event.eventLocation && event.eventAddress && 
+            event.eventAddress.toLowerCase().includes(location.toLowerCase())) {
+          return true;
+        }
+        
+        // Check venueAddress as fallback (from server data format)
+        if (event.venueAddress && 
+            event.venueAddress.toLowerCase().includes(location.toLowerCase())) {
+          return true;
+        }
+        
+        return false;
+      }
     );
 
     // Then apply date filter
@@ -88,48 +147,112 @@ const EventsSection = ({
     } else {
       // For other filters, filter by date
       dateFilteredEvents = locationFilteredEvents.filter((event) => {
-        // Extract start date from format like "25 Mar - 27 Mar"
-        const dateParts = event.eventDate.split(" - ")[0].split(" ");
-        const day = parseInt(dateParts[0], 10);
-
-        // Convert month abbreviation to month number (0-11)
-        const monthMap = {
-          Jan: 0,
-          Feb: 1,
-          Mar: 2,
-          Apr: 3,
-          May: 4,
-          Jun: 5,
-          Jul: 6,
-          Aug: 7,
-          Sep: 8,
-          Oct: 9,
-          Nov: 10,
-          Dec: 11,
-        };
-        const month = monthMap[dateParts[1]];
-
-        // Create a date object for the event start date (use current year)
-        const eventDate = new Date(today.getFullYear(), month, day);
-
-        // Adjust for next year if the month is earlier than current (for events at end/beginning of year)
-        if (month < today.getMonth()) {
-          eventDate.setFullYear(today.getFullYear() + 1);
+        // Handle server data format which might have full date as a string
+        let eventDate;
+        
+        try {
+          if (event.date && typeof event.date === 'string' && event.date.includes(',')) {
+            // Format like "Thursday, 3 Apr, 2025"
+            const serverDateParts = event.date.split(', ');
+            if (serverDateParts.length >= 2) {
+              const dayMonth = serverDateParts[1].split(' ');
+              const day = parseInt(dayMonth[0], 10);
+              const month = dayMonth[1];
+              const year = serverDateParts[2] ? parseInt(serverDateParts[2], 10) : today.getFullYear();
+              
+              // Convert month name to month number (0-11)
+              const monthMap = {
+                Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+                Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11,
+              };
+              
+              // Create date object
+              eventDate = new Date(year, monthMap[month], day);
+            }
+          }
+          // Fall back to original format if server format not recognized
+          else if (event.eventDate) {
+            // Extract start date from format like "25 Mar - 27 Mar"
+            const dateParts = event.eventDate.split(" - ")[0].split(" ");
+            const day = parseInt(dateParts[0], 10);
+            
+            // Convert month abbreviation to month number (0-11)
+            const monthMap = {
+              Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+              Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11,
+            };
+            const month = monthMap[dateParts[1]];
+            
+            // Create a date object for the event start date (use current year)
+            eventDate = new Date(today.getFullYear(), month, day);
+          } else {
+            // Default to today if no date information is available
+            eventDate = new Date(today);
+          }
+        } catch (error) {
+          console.error("Error parsing event date:", error, event);
+          // Default to today's date on error
+          eventDate = new Date(today);
         }
 
-        // Filter based on the selected option
-        switch (activeFilter) {
-          case "Today":
-            return eventDate.getTime() === today.getTime();
-          case "Tomorrow":
-            return eventDate.getTime() === tomorrow.getTime();
-          case "This Week":
-            return eventDate >= today && eventDate < nextWeek;
-          default:
+        // Adjust for next year if month exists and is earlier than current (for events at end/beginning of year)
+        try {
+          if (typeof month !== 'undefined' && month < today.getMonth()) {
+            eventDate.setFullYear(today.getFullYear() + 1);
+          }
+        } catch (error) {
+          console.error("Error adjusting year:", error);
+        }
+
+        // First check if the server event has a specific eventDateType property we can use directly
+        if (event.eventDateType) {
+          console.log(`Event ${event.eventName} has eventDateType: ${event.eventDateType}, comparing against filter: ${activeFilter}`);
+          
+          // Early exit for "All" filter - show everything
+          if (activeFilter === "All") {
             return true;
+          }
+          
+          // Direct comparison of filters to eventDateType
+          if (activeFilter === "Today" && event.eventDateType === 'today') {
+            return true;
+          }
+          if (activeFilter === "Tomorrow" && event.eventDateType === 'tomorrow') {
+            return true;
+          }
+          if (activeFilter === "This Week" && event.eventDateType === 'thisWeek') {
+            return true;
+          }
+          
+          // If we have a specific filter but this event doesn't match, filter it out
+          return false;
+        }
+        
+        // Fall back to date comparison if no eventDateType is available
+        try {
+          switch (activeFilter) {
+            case "Today":
+              return eventDate.getTime() === today.getTime();
+            case "Tomorrow":
+              return eventDate.getTime() === tomorrow.getTime();
+            case "This Week":
+              return eventDate >= today && eventDate < nextWeek;
+            default:
+              return true;
+          }
+        } catch (error) {
+          console.error("Error filtering event by date:", error, event);
+          // Default to showing the event if there's an error with date parsing
+          return true;
         }
       });
     }
+
+    // Log filtering results
+    console.log(`Filter: ${activeFilter} - Found ${dateFilteredEvents.length} events.`);
+    dateFilteredEvents.forEach(event => {
+      console.log(`- ${event.eventName} (${event.eventDateType || 'no type'})`);
+    });
 
     // Sort filtered events by rankScore
     dateFilteredEvents.sort((a, b) => (b.rankScore || 0) - (a.rankScore || 0));
@@ -151,6 +274,7 @@ const EventsSection = ({
 
   // Handle filter click
   const handleFilterClick = useCallback((filter) => {
+    console.log("Filter clicked:", filter);
     setActiveFilter(filter);
 
     // Scroll to the top of the container
@@ -255,7 +379,7 @@ const EventsSection = ({
         >
           <div style={{ maxWidth: "600px", position: "relative", zIndex: 10 }}>
             <h2 className="section-title slide-up">
-              {title}{" "}
+              {locationData.title}{" "}
               <span
                 ref={dropdownRef}
                 style={{
@@ -338,8 +462,8 @@ const EventsSection = ({
               className="section-subtitle slide-up"
               style={{ position: "relative", zIndex: -1 }}
             >
-              Discover the most popular events happening in {selectedLocation}{" "}
-              right now
+              {locationData.subtitle ||
+                `Discover the most popular events happening in ${selectedLocation} right now`}
             </p>
           </div>
 
@@ -445,7 +569,7 @@ const EventsSection = ({
             >
               <MdNavigateBefore style={{ fontSize: "28px" }} />
             </button>
-            
+
             <button
               onClick={handleScrollRight}
               disabled={!showRightButton}
@@ -540,28 +664,34 @@ const EventsSection = ({
               </div>
             ) : (
               /* Display all event cards */
-              filteredEvents.map((event, index) => (
-                <div
-                  key={index}
-                  className="fade-in"
-                  style={{
-                    flex: "0 0 auto",
-                    animationDelay: `${index * 0.1}s`,
-                  }}
-                >
-                  <Cards
-                    eventName={event.eventName}
-                    eventDate={event.eventDate}
-                    eventAddress={event.eventAddress}
-                    eventPrice={event.eventPrice}
-                    eventPoster={event.eventPoster}
-                    eventRanking={event.eventRanking}
-                    rankScore={event.rankScore}
-                    eventLocation={event.eventLocation}
-                    isRecommendation={true}
-                  />
-                </div>
-              ))
+              filteredEvents.map((event, index) => {
+                // Log each event for debugging
+                console.log("Rendering event:", event.id, event.eventName);
+                
+                return (
+                  <div
+                    key={index}
+                    className="fade-in"
+                    style={{
+                      flex: "0 0 auto",
+                      animationDelay: `${index * 0.1}s`,
+                    }}
+                  >
+                    <Cards
+                      eventName={event.eventName}
+                      eventDate={event.eventDate || "Upcoming"}
+                      eventAddress={event.eventAddress || `${event.venueName || ''}, ${event.venueAddress || ''}`}
+                      eventPrice={event.eventPrice || "Free"}
+                      eventPoster={event.eventPoster || "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3"}
+                      eventRanking={event.eventRanking || String(index + 1)}
+                      rankScore={event.rankScore || 100 - index}
+                      eventLocation={event.eventLocation || "Sydney"}
+                      isRecommendation={true}
+                      id={event.id}
+                    />
+                  </div>
+                );
+              })
             )}
           </div>
         </div>

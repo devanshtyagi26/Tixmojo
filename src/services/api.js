@@ -46,6 +46,16 @@ export const getAllEvents = async (location) => {
 };
 
 /**
+ * Get events directly from the server's eventsData array
+ * @param {string} location - Optional location filter
+ * @returns {Promise<Array>} - Raw events data from server
+ */
+export const getEventsFromServer = async (location) => {
+  const query = location ? `?location=${encodeURIComponent(location)}` : '';
+  return fetchAPI(`/events/server-data${query}`);
+};
+
+/**
  * Get spotlight events
  * @param {string} location - Optional location filter
  * @returns {Promise<Array>} - Spotlight events data
@@ -80,11 +90,22 @@ export const getLocations = async () => {
   return fetchAPI('/events/locations');
 };
 
+/**
+ * Get location details with metadata
+ * @param {string} location - Optional location name
+ * @returns {Promise<Object>} - Location details or all locations if none specified
+ */
+export const getLocationDetails = async (location) => {
+  return fetchAPI(`/events/locations/${location ? encodeURIComponent(location) : ''}`);
+};
+
 // Export all API functions
 export default {
   getAllEvents,
   getSpotlightEvents,
   getFlyers,
   getEventById,
-  getLocations
+  getLocations,
+  getLocationDetails,
+  getEventsFromServer
 };

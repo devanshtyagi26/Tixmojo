@@ -14,6 +14,7 @@ const Cards = memo(function Cards({
   eventRanking,
   isRecommendation = false,
   hideRanking = false,
+  id, // Added id prop
 }) {
   const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
@@ -24,11 +25,10 @@ const Cards = memo(function Cards({
 
   const handleClick = useCallback(() => {
     console.log(`Viewing details for ${eventName}`);
-    // Navigate to event details page
-    // Convert event name to URL-friendly format
-    const eventId = eventName.toLowerCase().replace(/\s+/g, '-');
+    // Navigate to event details page using id if available or create from event name
+    const eventId = id || eventName.toLowerCase().replace(/\s+/g, '-');
     navigate(`/events/${eventId}`);
-  }, [eventName, navigate]);
+  }, [eventName, navigate, id]);
 
   const handleButtonClick = useCallback(
     (e) => {
@@ -271,6 +271,7 @@ Cards.propTypes = {
   eventLocation: PropTypes.string,
   isRecommendation: PropTypes.bool,
   hideRanking: PropTypes.bool,
+  id: PropTypes.string, // Added id prop
 };
 
 export default Cards;
