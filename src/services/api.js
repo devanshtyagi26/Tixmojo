@@ -15,23 +15,53 @@ const API_BASE_URL =
 const fetchAPI = async (endpoint, options = {}) => {
   try {
     const url = `${API_BASE_URL}${endpoint}`;
+    console.log(`Fetching from: ${url}`);
+    
     const response = await fetch(url, {
       ...options,
       headers: {
         "Content-Type": "application/json",
         ...options.headers,
       },
+      mode: 'cors',
+      credentials: 'include'
     });
 
-    const data = await response.json();
+    console.log(`Response status: ${response.status} ${response.statusText}`);
+    
+    // Check response headers for debugging
+    const headers = {};
+    response.headers.forEach((value, key) => {
+      headers[key] = value;
+    });
+    console.log('Response headers:', headers);
 
     if (!response.ok) {
-      throw new Error(data.message || "API request failed");
+      // Try to get error message from response
+      let errorMessage;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || `HTTP error ${response.status}`;
+      } catch (e) {
+        errorMessage = `HTTP error ${response.status}`;
+      }
+      throw new Error(errorMessage);
     }
+
+    const data = await response.json();
+    
+    // Log a sample of the response data
+    console.log('API response received:', 
+      data && typeof data === 'object' 
+        ? (Array.isArray(data.data) 
+            ? `Array with ${data.data.length} items` 
+            : Object.keys(data))
+        : typeof data
+    );
 
     return data.data; // Our API returns data in a 'data' property
   } catch (error) {
-    console.error(`API Error: ${error.message}`);
+    console.error(`API Error for ${endpoint}:`, error);
     throw error;
   }
 };

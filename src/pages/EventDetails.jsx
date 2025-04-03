@@ -14,6 +14,13 @@ const EventDetails = () => {
   const navigate = useNavigate();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // Define default tag colors
+  const tagColor = {
+    background: "#e0f2f1",
+    text: "#00695c",
+    shadow: "none"
+  };
 
   useEffect(() => {
     // Fetch event details from API
@@ -208,22 +215,18 @@ const EventDetails = () => {
                       fontSize: "12px",
                       fontWeight: "600",
                       transition: "all 0.2s ease",
-                      cursor: "default",
-                      background: "#e0f2f1",
-                      text: "#00695c",
-                      shadow: "none",
                       cursor: "pointer",
+                      backgroundColor: "#e0f2f1",
+                      color: "#00695c",
+                      boxShadow: "none"
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = "translateY(-2px)";
-                      e.currentTarget.style.boxShadow =
-                        tagColor.shadow !== "none"
-                          ? tagColor.shadow.replace("0.15", "0.25")
-                          : "0 2px 8px rgba(0, 0, 0, 0.1)";
+                      e.currentTarget.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.1)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.style.boxShadow = tagColor.shadow;
+                      e.currentTarget.style.boxShadow = "none";
                     }}
                   >
                     # {tag}
