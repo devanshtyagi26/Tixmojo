@@ -29,10 +29,6 @@ const EventDetails = () => {
       try {
         const eventData = await getEventById(eventId);
 
-        // Log the raw event data from the API to debug
-        console.log("Raw event data from API:", eventData);
-        console.log("Tags from API:", eventData.tags);
-
         // Create a properly formatted event object from API data
         // Generate tags based on event data
         let eventTags = [];
@@ -130,7 +126,6 @@ const EventDetails = () => {
   }, [eventId, navigate]);
 
   const handleGetTickets = () => {
-    console.log("Getting tickets for:", event?.title);
     // In a real app, this would navigate to checkout
     navigate("/page-not-found");
   };

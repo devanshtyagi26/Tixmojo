@@ -22,7 +22,6 @@ const EventsSection = ({
 }) => {
   // Set default filter to "All"
   const [activeFilter, setActiveFilter] = useState("All");
-  console.log("Initial activeFilter set to:", "All");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(location);
   const [locationData, setLocationData] = useState({
@@ -89,15 +88,6 @@ const EventsSection = ({
   // Define handleFilterClick forward declaration to avoid dependency issues
   const handleFilterClickRef = useRef(null);
 
-  // Debug the events prop
-  useEffect(() => {
-    console.log("Events passed to EventsSection:", events);
-  }, [events]);
-
-  // Debug activeFilter changes
-  useEffect(() => {
-    console.log("Active filter changed to:", activeFilter);
-  }, [activeFilter]);
 
   // Filter the events based on the selected filter, location, and reassign sequential rankings
   const filteredEvents = useMemo(() => {
@@ -206,8 +196,6 @@ const EventsSection = ({
 
         // First check if the server event has a specific eventDateType property we can use directly
         if (event.eventDateType) {
-          console.log(`Event ${event.eventName} has eventDateType: ${event.eventDateType}, comparing against filter: ${activeFilter}`);
-          
           // Early exit for "All" filter - show everything
           if (activeFilter === "All") {
             return true;
@@ -248,12 +236,6 @@ const EventsSection = ({
       });
     }
 
-    // Log filtering results
-    console.log(`Filter: ${activeFilter} - Found ${dateFilteredEvents.length} events.`);
-    dateFilteredEvents.forEach(event => {
-      console.log(`- ${event.eventName} (${event.eventDateType || 'no type'})`);
-    });
-
     // Sort filtered events by rankScore
     dateFilteredEvents.sort((a, b) => (b.rankScore || 0) - (a.rankScore || 0));
 
@@ -274,7 +256,6 @@ const EventsSection = ({
 
   // Handle filter click
   const handleFilterClick = useCallback((filter) => {
-    console.log("Filter clicked:", filter);
     setActiveFilter(filter);
 
     // Scroll to the top of the container
@@ -681,8 +662,6 @@ const EventsSection = ({
             ) : (
               /* Display all event cards */
               filteredEvents.map((event, index) => {
-                // Log each event for debugging
-                console.log("Rendering event:", event.id, event.eventName);
                 
                 return (
                   <div

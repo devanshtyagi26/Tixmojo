@@ -93,7 +93,6 @@ function Home() {
         if (!event) return null;
 
         try {
-          console.log("Processing event:", event.id);
 
           // Handle different possible data structures safely
           const address =
@@ -154,7 +153,6 @@ function Home() {
       try {
         // Get all data in a single API call
         const appData = await getAllAppData();
-        console.log("All app data retrieved:", appData);
 
         // Store the complete data set
         setAllAppData(appData);
