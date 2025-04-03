@@ -5,6 +5,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { MdNavigateBefore } from "react-icons/md"; // Importing the left arrow icon
 import { MdNavigateNext } from "react-icons/md"; // Importing the right arrow icon
 import { useNavigate } from "react-router-dom";
+import { getFlyers } from "../services/api.js";
 
 // Custom Previous Button
 const CustomPrevArrow = ({ onClick }) => (
@@ -120,6 +121,8 @@ const CustomNextArrow = ({ onClick }) => (
 
 function FlyerCarousel() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [flyers, setFlyers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -127,6 +130,33 @@ function FlyerCarousel() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // Fetch flyers data from API
+  useEffect(() => {
+    const fetchFlyers = async () => {
+      try {
+        setLoading(true);
+        const data = await getFlyers();
+        setFlyers(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching flyers:", error);
+        setLoading(false);
+        // Fallback to default flyers if API fails
+        setFlyers([
+          {
+            id: "love-is-blind",
+            image: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=2940&auto=format&fit=crop",
+            title: "Love is Blind",
+            eventId: "love-is-blind"
+          }
+        ]);
+      }
+    };
+    
+    fetchFlyers();
+  }, []);
+  
   const settings = {
     dots: true, // Show navigation dots
     infinite: true, // Infinite scrolling
@@ -140,24 +170,6 @@ function FlyerCarousel() {
     nextArrow: <CustomNextArrow />, // Custom next button
   };
 
-  const flyers = [
-    {
-      id: 1,
-      image:
-        "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=2574&auto=format&fit=crop",
-    },
-    {
-      id: 2,
-      image:
-        "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=2940&auto=format&fit=crop",
-    },
-    {
-      id: 3,
-      image:
-        "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=2940&auto=format&fit=crop",
-    },
-  ];
-
   return (
     <div
       style={{
@@ -169,26 +181,42 @@ function FlyerCarousel() {
         padding: "20px",
       }}
     >
-      <Slider {...settings}>
-        {flyers.map((flyer) => (
-          <div key={flyer.id}>
-            <img
-              className="flyerimage"
-              onClick={() => navigate("/page-not-found")}
-              src={flyer.image}
-              alt={`Flyer ${flyer.id}`}
-              style={{
-                width: "100%", // Fit the width of the container
-                height: "auto", // Maintain aspect ratio
-                aspectRatio: windowWidth <= 768 ? "3/2" : "1000 / 400", // Enforce the aspect ratio
-                borderRadius: "10px",
-                transition: "transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)", // Add cubic-bezier animation
-                boxShadow: "0 4px 8px rgba(111, 68, 255, 0.15)",
-              }}
-            />
-          </div>
-        ))}
-      </Slider>
+      {loading ? (
+        // Loading placeholder with correct dimensions
+        <div style={{
+          width: "100%",
+          height: windowWidth <= 768 ? "200px" : "400px",
+          backgroundColor: "var(--neutral-200)",
+          borderRadius: "10px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          color: "var(--primary)"
+        }}>
+          Loading events...
+        </div>
+      ) : (
+        <Slider {...settings}>
+          {flyers.map((flyer) => (
+            <div key={flyer.id}>
+              <img
+                className="flyerimage"
+                onClick={() => navigate(`/events/${flyer.id}`)}
+                src={flyer.image}
+                alt={flyer.title || `Event ${flyer.id}`}
+                style={{
+                  width: "100%", // Fit the width of the container
+                  height: "auto", // Maintain aspect ratio
+                  aspectRatio: windowWidth <= 768 ? "3/2" : "1000 / 400", // Enforce the aspect ratio
+                  borderRadius: "10px",
+                  transition: "transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)", // Add cubic-bezier animation
+                  boxShadow: "0 4px 8px rgba(111, 68, 255, 0.15)",
+                }}
+              />
+            </div>
+          ))}
+        </Slider>
+      )}
     </div>
   );
 }

@@ -5,22 +5,19 @@ import FlyerCarousel from "../Components/FlyerCarousel.jsx";
 import NewRecommendSection from "../Components/NewRecommendSection.jsx";
 import { ScrollAnimation } from "../utils/ScrollAnimation.jsx";
 import { PageSEO } from "../utils/SEO.jsx";
+import { getAllEvents, getSpotlightEvents, getFlyers, getLocations } from "../services/api.js";
 
 import "../i18n";
 
 function Home() {
   const { t, i18n } = useTranslation();
-  const [popularEventsLocation, setPopularEventsLocation] = useState(
-    t("eventsSection.locations.default")
-  );
+  const [popularEventsLocation, setPopularEventsLocation] = useState("Sydney");
+  const [events, setEvents] = useState([]);
+  const [spotlightEvents, setSpotlightEvents] = useState([]);
+  const [availableLocations, setAvailableLocations] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Get events data from i18n
-  const eventsData = t("eventsSection.eventsData", { returnObjects: true });
-  
-  // Get spotlight events data from i18n
-  const spotlightEventsData = t("eventsSection.spotlightEvents", { returnObjects: true });
-
-  // Format date based on current locale
+  // Format date for display
   const formatDate = (date) => {
     const day = date.getDate();
     const monthNames = t("eventsSection.dateFormat.months", { returnObjects: true });
@@ -81,21 +78,32 @@ function Home() {
     });
   };
 
-  // Add dynamic dates to regular events data based on eventDateType
-  const eventsWithDates = useMemo(() => {
-    return addDatesToEvents(eventsData);
-  }, [eventsData, dates, i18n.language]);
-  
-  // Add dynamic dates to spotlight events data
-  const spotlightEventsWithDates = useMemo(() => {
-    return addDatesToEvents(spotlightEventsData);
-  }, [spotlightEventsData, dates, i18n.language]);
-
-  // Get available locations for dropdowns from i18n
-  const locationKeys = t("eventsSection.availableLocations", { returnObjects: true });
-  const availableLocations = useMemo(() => {
-    return locationKeys.map(key => t(`eventsSection.locations.${key}`));
-  }, [t, locationKeys]);
+  // Fetch data from the API
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Fetch all data in parallel
+        const [eventsData, spotlightData, locationsData] = await Promise.all([
+          getAllEvents(popularEventsLocation),
+          getSpotlightEvents(popularEventsLocation),
+          getLocations()
+        ]);
+        
+        // Process and set the fetched data
+        setEvents(addDatesToEvents(eventsData));
+        setSpotlightEvents(addDatesToEvents(spotlightData));
+        setAvailableLocations(locationsData);
+        
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, [popularEventsLocation, dates]);
 
   // Handler for popular events location selector
   const handlePopularLocationChange = (newLocation) => {
@@ -113,33 +121,51 @@ function Home() {
         keywords="events, tickets, concerts, shows, festivals, entertainment, live music"
       />
       
-      {/* Hero Section with Carousel */}
-      <ScrollAnimation direction="down" distance={30} duration={1.2}>
-        <FlyerCarousel />
-      </ScrollAnimation>
-
-      
-      {/* Popular Events Section */}
-      <ScrollAnimation direction="up" distance={40} duration={1} delay={0.2}>
-        <EventsSection
-          title={t("eventsSection.sectionTitles.popular")}
-          location={popularEventsLocation}
-          events={eventsWithDates}
-          containerId="popularEventsContainer"
-          onLocationChange={handlePopularLocationChange}
-          availableLocations={availableLocations}
-        />
-      </ScrollAnimation>
-      
-      {/* New Recommendation Section without rankings - using spotlight events data */}
-      <ScrollAnimation direction="up" distance={40} duration={1} delay={0.3}>
-        <NewRecommendSection
-          title={t("eventsSection.sectionTitles.spotlight")}
-          subtitle={t("eventsSection.subtitle.spotlight")}
-          events={spotlightEventsWithDates}
-          containerId="trendingRecommendations"
-        />
-      </ScrollAnimation>
+      {loading ? (
+        <div style={{ 
+          display: "flex", 
+          justifyContent: "center", 
+          alignItems: "center", 
+          height: "70vh" 
+        }}>
+          <div style={{ 
+            color: "var(--primary)",
+            fontSize: "18px",
+            fontWeight: "500"
+          }}>
+            Loading events...
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Hero Section with Carousel */}
+          <ScrollAnimation direction="down" distance={30} duration={1.2}>
+            <FlyerCarousel />
+          </ScrollAnimation>
+          
+          {/* Popular Events Section */}
+          <ScrollAnimation direction="up" distance={40} duration={1} delay={0.2}>
+            <EventsSection
+              title={t("eventsSection.sectionTitles.popular")}
+              location={popularEventsLocation}
+              events={events}
+              containerId="popularEventsContainer"
+              onLocationChange={handlePopularLocationChange}
+              availableLocations={availableLocations}
+            />
+          </ScrollAnimation>
+          
+          {/* New Recommendation Section without rankings - using spotlight events data */}
+          <ScrollAnimation direction="up" distance={40} duration={1} delay={0.3}>
+            <NewRecommendSection
+              title={t("eventsSection.sectionTitles.spotlight")}
+              subtitle={t("eventsSection.subtitle.spotlight")}
+              events={spotlightEvents}
+              containerId="trendingRecommendations"
+            />
+          </ScrollAnimation>
+        </>
+      )}
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import PageNotFound from "./pages/PageNotFound";
+import EventDetails from "./pages/EventDetails";
 import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
 import { useState } from "react";
@@ -36,6 +37,7 @@ function App() {
         )}
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/events/:eventId" element={<EventDetails />} />
           <Route path="/page-not-found" element={<PageNotFound />} />
         </Routes>
         <Footer />

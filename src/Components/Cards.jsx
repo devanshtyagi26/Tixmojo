@@ -24,8 +24,10 @@ const Cards = memo(function Cards({
 
   const handleClick = useCallback(() => {
     console.log(`Viewing details for ${eventName}`);
-    // Navigate to 404 page
-    navigate("/page-not-found");
+    // Navigate to event details page
+    // Convert event name to URL-friendly format
+    const eventId = eventName.toLowerCase().replace(/\s+/g, '-');
+    navigate(`/events/${eventId}`);
   }, [eventName, navigate]);
 
   const handleButtonClick = useCallback(
@@ -34,8 +36,10 @@ const Cards = memo(function Cards({
       console.log(
         `Booking ticket for ${eventName} at price: AUD ${eventPrice}`
       );
-      // Navigate to 404 page
-      navigate("/page-not-found");
+      // Convert event name to URL-friendly format
+      const eventId = eventName.toLowerCase().replace(/\s+/g, '-');
+      // Navigate to event details page
+      navigate(`/events/${eventId}`);
     },
     [eventName, eventPrice, navigate]
   );

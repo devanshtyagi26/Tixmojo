@@ -6,7 +6,12 @@ import { Link, useNavigate } from "react-router-dom";
 import "../i18n";
 import Hamburger from "./Hamburger";
 
-function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSidebarOpen }) {
+function Navbar({
+  toggleScrollPage,
+  isSidebarOpen,
+  toggleUserSidebar,
+  isUserSidebarOpen,
+}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const inputRef = useRef(null);
@@ -48,7 +53,7 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
       inputRef.current.focus();
     }
   };
-  
+
   const handleUserClick = () => {
     if (toggleUserSidebar) {
       toggleUserSidebar();
@@ -58,7 +63,7 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
   };
 
   return (
-    <nav 
+    <nav
       style={{
         display: "flex",
         justifyContent: "space-between",
@@ -77,58 +82,76 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
       }}
     >
       {/* Logo on the left */}
-      <div className="nav-left" style={{ display: "flex", alignItems: "center" }}>
-        <h2 style={{
-          fontWeight: "800",
-          color: "var(--primary)",
-          fontSize: isMobile ? "20px" : "26px",
-          fontFamily: "Raleway, sans-serif",
-          letterSpacing: "-0.5px"
-        }}>
-          TIXMOJO
-        </h2>
+      <div
+        className="nav-left"
+        style={{ display: "flex", alignItems: "center" }}
+      >
+        <Link to="/" style={{ textDecoration: "none" }}>
+          <h2
+            style={{
+              fontWeight: "800",
+              color: "var(--primary)",
+              fontSize: isMobile ? "20px" : "26px",
+              fontFamily: "Raleway, sans-serif",
+              letterSpacing: "-0.5px",
+              userSelect: "none",
+              cursor: "pointer",
+            }}
+          >
+            TIXMOJO
+          </h2>
+        </Link>
       </div>
 
       {/* Right section with search, user icon, and hamburger */}
-      <div className="nav-right" style={{ 
-        display: "flex", 
-        alignItems: "center",
-        gap: isMobile ? (searchFocused ? "8px" : "12px") : "20px",
-        transition: "all 0.3s ease"
-      }}>
+      <div
+        className="nav-right"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: isMobile ? (searchFocused ? "8px" : "12px") : "20px",
+          transition: "all 0.3s ease",
+        }}
+      >
         {/* Search bar */}
-        <div 
-          className="search-bar" 
+        <div
+          className="search-bar"
           onClick={handleSearchClick}
           ref={inputRef}
           style={{
             display: "flex",
             alignItems: "center",
-            backgroundColor: searchFocused 
-              ? "rgba(111, 68, 255, 0.12)" 
+            backgroundColor: searchFocused
+              ? "rgba(111, 68, 255, 0.12)"
               : "rgba(111, 68, 255, 0.08)",
             borderRadius: "50px",
             padding: isMobile ? "8px 12px" : "10px 16px",
-            width: isMobile 
-              ? (searchFocused ? "180px" : "40px") 
-              : (searchFocused ? "320px" : "240px"),
+            width: isMobile
+              ? searchFocused
+                ? "180px"
+                : "40px"
+              : searchFocused
+              ? "320px"
+              : "240px",
             transition: "all 0.3s cubic-bezier(0.19, 1, 0.22, 1)",
             cursor: "pointer",
-            boxShadow: searchFocused 
-              ? "0 4px 12px rgba(111, 68, 255, 0.15)" 
+            boxShadow: searchFocused
+              ? "0 4px 12px rgba(111, 68, 255, 0.15)"
               : "none",
-            border: searchFocused 
-              ? "1px solid rgba(111, 68, 255, 0.3)" 
+            border: searchFocused
+              ? "1px solid rgba(111, 68, 255, 0.3)"
               : "1px solid transparent",
           }}
         >
-          <IoIosSearch style={{ 
-            color: "var(--primary)",
-            fontSize: searchFocused ? "22px" : "20px",
-            marginRight: (isMobile && !searchFocused) ? "0" : "8px",
-            transition: "all 0.3s ease",
-          }} />
-          
+          <IoIosSearch
+            style={{
+              color: "var(--primary)",
+              fontSize: searchFocused ? "22px" : "20px",
+              marginRight: isMobile && !searchFocused ? "0" : "8px",
+              transition: "all 0.3s ease",
+            }}
+          />
+
           {(!isMobile || searchFocused) && (
             <input
               type="text"
@@ -145,10 +168,10 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
               }}
             />
           )}
-          
+
           {/* Close button when search is focused */}
           {searchFocused && (
-            <IoMdClose 
+            <IoMdClose
               onClick={(e) => {
                 e.stopPropagation(); // Prevent triggering the search bar click
                 setSearchFocused(false);
@@ -174,7 +197,7 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
 
         {/* User icon - hide on mobile when search is focused */}
         {!(isMobile && searchFocused) && (
-          <div 
+          <div
             onClick={handleUserClick}
             style={{
               width: "38px",
@@ -203,13 +226,15 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
 
         {/* Hamburger menu - hide on mobile when search is focused */}
         {!(isMobile && searchFocused) && (
-          <div style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            opacity: searchFocused && !isMobile ? "0.7" : "1",
-            transition: "opacity 0.3s ease",
-          }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              opacity: searchFocused && !isMobile ? "0.7" : "1",
+              transition: "opacity 0.3s ease",
+            }}
+          >
             <Hamburger
               onToggle={toggleScrollPage}
               isSidebarOpen={isSidebarOpen}
