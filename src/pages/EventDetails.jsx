@@ -14,12 +14,12 @@ const EventDetails = () => {
   const navigate = useNavigate();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   // Define default tag colors
   const tagColor = {
     background: "#e0f2f1",
     text: "#00695c",
-    shadow: "none"
+    shadow: "none",
   };
 
   useEffect(() => {
@@ -159,32 +159,32 @@ const EventDetails = () => {
 
   return (
     <>
-      <EventSEO 
+      <EventSEO
         event={{
           title: event.title,
           description: `Join us for ${event.title} - ${event.tags[0]} on ${event.date}. Get tickets now!`,
           date: event.date,
           endDate: event.date, // If no specific end date is available
-          location: { 
-            name: event.venueName, 
-            address: event.venueAddress 
+          location: {
+            name: event.venueName,
+            address: event.venueAddress,
           },
           image: event.image,
-          price: { 
-            currency: event.price.currency, 
-            value: event.price.value 
+          price: {
+            currency: event.price.currency,
+            value: event.price.value,
           },
-          performer: { 
-            name: event.organizer, 
-            type: "Organization" 
+          performer: {
+            name: event.organizer,
+            type: "Organization",
           },
           // Add any specific offers if you have them
           offers: [
-            { 
-              name: "Standard Ticket", 
-              price: event.price.value 
-            }
-          ]
+            {
+              name: "Standard Ticket",
+              price: event.price.value,
+            },
+          ],
         }}
         path={`/events/${eventId}`}
       />
@@ -204,7 +204,7 @@ const EventDetails = () => {
                 fontSize: "42px",
                 fontWeight: "800",
                 color: "var(--dark)",
-                fontFamily: "Raleway, sans-serif",
+                fontFamily: "var(--font-primary)",
               }}
             >
               {event.title}
@@ -234,11 +234,12 @@ const EventDetails = () => {
                       cursor: "pointer",
                       backgroundColor: "#e0f2f1",
                       color: "#00695c",
-                      boxShadow: "none"
+                      boxShadow: "none",
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.transform = "translateY(-2px)";
-                      e.currentTarget.style.boxShadow = "0 2px 8px rgba(0, 0, 0, 0.1)";
+                      e.currentTarget.style.boxShadow =
+                        "0 2px 8px rgba(0, 0, 0, 0.1)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.transform = "translateY(0)";
@@ -283,7 +284,7 @@ const EventDetails = () => {
                   height: "100%",
                   objectFit: "cover",
                   display: "block",
-                  width: "700px",
+                  width: "730px",
                   minHeight: "300px",
                   maxHeight: window.innerWidth < 768 ? "300px" : "350px",
                 }}
@@ -472,7 +473,7 @@ const EventDetails = () => {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    gap: "3px",
+                    width: "fit-content",
                   }}
                 >
                   <div
@@ -512,7 +513,7 @@ const EventDetails = () => {
                           fontWeight: "800",
                           fontSize: "35px",
                           color: "black",
-                          fontFamily: "Raleway, sans-serif",
+                          fontFamily: "var(--font-primary)",
                           lineHeight: "1",
                         }}
                       >
@@ -544,7 +545,7 @@ const EventDetails = () => {
                       cursor: "pointer",
                       transition: "all 0.3s ease",
                       boxShadow: "0px 4px 10px rgba(255, 87, 87, 0.3)",
-                      fontFamily: "Raleway, sans-serif",
+                      fontFamily: "var(--font-primary)",
                       letterSpacing: "0.5px",
                     }}
                   >
@@ -620,7 +621,7 @@ const EventDetails = () => {
                   color: "white",
                   fontWeight: "700",
                   fontSize: "20px",
-                  fontFamily: "Raleway, sans-serif",
+                  fontFamily: "var(--font-primary)",
                   borderRadius: "12px",
                   boxShadow: "0 6px 15px rgba(111, 68, 255, 0.25)",
                   position: "relative",
@@ -894,7 +895,7 @@ const EventDetails = () => {
                   color: "white",
                   fontWeight: "600",
                   fontSize: "15px",
-                  fontFamily: "Raleway, sans-serif",
+                  fontFamily: "var(--font-primary)",
                   boxShadow: "0 5px 15px rgba(111, 68, 255, 0.25)",
                   display: "flex",
                   alignItems: "center",
@@ -962,7 +963,7 @@ const EventDetails = () => {
                     fontSize: "28px",
                     fontWeight: "700",
                     color: "var(--dark)",
-                    fontFamily: "Raleway, sans-serif",
+                    fontFamily: "var(--font-primary)",
                     letterSpacing: "0.5px",
                   }}
                 >

@@ -1,11 +1,11 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { useTranslation } from "react-i18next";
 import { MdLocalActivity } from "react-icons/md";
-import '../i18n';
+import "../i18n";
 
 function Logo({ isMobile }) {
   const { t } = useTranslation();
-  
+
   return (
     <div
       style={{
@@ -27,11 +27,11 @@ function Logo({ isMobile }) {
           boxShadow: "0 4px 12px rgba(107, 56, 251, 0.2)",
         }}
       >
-        <MdLocalActivity 
-          style={{ 
-            fontSize: "22px", 
+        <MdLocalActivity
+          style={{
+            fontSize: "22px",
             color: "white",
-          }} 
+          }}
         />
       </div>
       <div
@@ -45,7 +45,7 @@ function Logo({ isMobile }) {
           style={{
             fontSize: isMobile ? "18px" : "22px",
             fontWeight: "800",
-            fontFamily: "Raleway, sans-serif",
+            fontFamily: "var(--font-primary)",
             color: "var(--primary)",
             letterSpacing: "-0.5px",
           }}

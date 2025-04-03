@@ -92,7 +92,7 @@ function Navbar({
               fontWeight: "800",
               color: "var(--primary)",
               fontSize: isMobile ? "20px" : "26px",
-              fontFamily: "Raleway, sans-serif",
+              fontFamily: "var(--font-primary)",
               letterSpacing: "-0.5px",
               userSelect: "none",
               cursor: "pointer",

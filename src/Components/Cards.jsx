@@ -96,7 +96,7 @@ const Cards = memo(function Cards({
               fontWeight: "700",
               lineHeight: "1",
               color: "white",
-              fontFamily: "Raleway, sans-serif",
+              fontFamily: "var(--font-primary)",
             }}
           >
             #{eventRanking}
