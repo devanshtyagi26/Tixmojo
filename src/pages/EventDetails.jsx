@@ -456,27 +456,134 @@ const EventDetails = () => {
           duration={0.8}
           delay={0.3}
         >
-          <div style={{ marginTop: "50px" }}>
-            <h2
-              style={{
-                fontSize: "24px",
+          <div style={{ 
+            marginTop: "60px",
+            position: "relative",
+            background: "linear-gradient(165deg, var(--purple-50) 0%, white 100%)",
+            borderRadius: "18px",
+            padding: "40px 35px 35px",
+            boxShadow: "0 15px 35px rgba(111, 68, 255, 0.1)",
+            border: "1px solid var(--purple-100)",
+            overflow: "hidden"
+          }}>
+            {/* Decorative accent elements */}
+            <div style={{
+              position: "absolute",
+              top: "0",
+              left: "0",
+              width: "100%",
+              height: "6px",
+              background: "linear-gradient(90deg, var(--purple-300) 0%, var(--primary) 100%)",
+            }}></div>
+            
+            <div style={{
+              position: "absolute",
+              top: "20px",
+              right: "20px",
+              width: "200px",
+              height: "200px",
+              borderRadius: "50%",
+              background: "radial-gradient(circle, var(--purple-100) 0%, transparent 70%)",
+              opacity: "0.4",
+              zIndex: 0
+            }}></div>
+            
+            {/* Title element with decorative shape */}
+            <div style={{
+              position: "relative",
+              marginBottom: "25px",
+              display: "inline-flex",
+              alignItems: "center"
+            }}>
+              <div style={{
+                backgroundColor: "var(--primary)",
+                padding: "10px 22px",
+                color: "white",
                 fontWeight: "700",
-                marginBottom: "20px",
-                color: "var(--dark)",
+                fontSize: "20px",
                 fontFamily: "Raleway, sans-serif",
-              }}
-            >
-              About This Event
-            </h2>
-            <div
-              className="event-description"
-              style={{
-                lineHeight: "1.7",
-                color: "var(--neutral-800)",
-                fontSize: "16px",
-              }}
-              dangerouslySetInnerHTML={{ __html: event.description }}
-            />
+                borderRadius: "12px",
+                boxShadow: "0 6px 15px rgba(111, 68, 255, 0.25)",
+                position: "relative",
+                zIndex: 2,
+                display: "flex",
+                alignItems: "center"
+              }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style={{ marginRight: "10px" }}>
+                  <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M12 16V12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M12 8H12.01" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                About This Event
+              </div>
+              <div style={{
+                position: "absolute",
+                right: "-15px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                width: "30px",
+                height: "30px",
+                background: "var(--purple-200)",
+                borderRadius: "50%",
+                zIndex: 1,
+                opacity: 0.7
+              }}></div>
+            </div>
+            
+            {/* Content with enhanced design */}
+            <div style={{
+              position: "relative",
+              zIndex: 1,
+              background: "rgba(255, 255, 255, 0.7)",
+              borderRadius: "14px",
+              padding: "25px",
+              boxShadow: "0 4px 15px rgba(111, 68, 255, 0.06)",
+              border: "1px solid var(--purple-100)"
+            }}>
+              {/* Decorative quotation marks */}
+              <div style={{
+                position: "absolute",
+                top: "-5px",
+                left: "10px",
+                fontSize: "60px",
+                fontFamily: "Georgia, serif",
+                color: "var(--purple-200)",
+                opacity: "0.7",
+                zIndex: 0,
+                lineHeight: 0.8,
+                pointerEvents: "none"
+              }}>
+                "
+              </div>
+              <div style={{
+                position: "absolute",
+                bottom: "-30px",
+                right: "10px",
+                fontSize: "60px",
+                fontFamily: "Georgia, serif",
+                color: "var(--purple-200)",
+                opacity: "0.7",
+                zIndex: 0,
+                lineHeight: 0.8,
+                pointerEvents: "none"
+              }}>
+                "
+              </div>
+              
+              <div
+                className="event-description"
+                style={{
+                  lineHeight: "1.9",
+                  color: "var(--neutral-800)",
+                  fontSize: "16px",
+                  position: "relative",
+                  zIndex: 1,
+                  fontWeight: "400",
+                  letterSpacing: "0.2px"
+                }}
+                dangerouslySetInnerHTML={{ __html: event.description }}
+              />
+            </div>
           </div>
         </ScrollAnimation>
 
@@ -487,49 +594,278 @@ const EventDetails = () => {
           duration={0.8}
           delay={0.4}
         >
-          <div style={{ marginTop: "40px" }}>
-            <h2
-              style={{
-                fontSize: "24px",
-                fontWeight: "700",
-                marginBottom: "20px",
-                color: "var(--dark)",
-                fontFamily: "Raleway, sans-serif",
-              }}
-            >
-              Organizer
-            </h2>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <div
-                style={{
-                  width: "50px",
-                  height: "50px",
+          <div style={{ 
+            marginTop: "50px",
+            marginBottom: "40px",
+            display: "flex",
+            flexDirection: window.innerWidth < 768 ? "column" : "row",
+            gap: "30px",
+            alignItems: window.innerWidth < 768 ? "flex-start" : "center",
+            background: "linear-gradient(145deg, var(--purple-50) 0%, white 100%)",
+            borderRadius: "18px",
+            padding: "35px",
+            boxShadow: "0 15px 35px rgba(111, 68, 255, 0.12)",
+            border: "1px solid var(--purple-100)",
+            position: "relative",
+            overflow: "hidden"
+          }}>
+            {/* Decorative elements */}
+            <div style={{
+              position: "absolute",
+              top: "0",
+              right: "0",
+              width: "120px",
+              height: "120px",
+              background: "radial-gradient(circle, var(--purple-200) 0%, transparent 70%)",
+              opacity: "0.4",
+              zIndex: 0
+            }} />
+            
+            <div style={{
+              position: "absolute",
+              left: "-60px",
+              bottom: "-60px",
+              width: "150px",
+              height: "150px",
+              borderRadius: "50%",
+              background: "radial-gradient(circle, var(--purple-100) 0%, transparent 70%)",
+              opacity: "0.5",
+              zIndex: 0
+            }} />
+            
+            <div style={{
+              position: "absolute",
+              right: "80px",
+              bottom: "20px",
+              width: "15px",
+              height: "15px",
+              borderRadius: "50%",
+              backgroundColor: "var(--purple-300)",
+              opacity: "0.6",
+              zIndex: 0
+            }} />
+            
+            <div style={{
+              position: "absolute",
+              right: "40px",
+              top: "60px",
+              width: "10px",
+              height: "10px",
+              borderRadius: "50%",
+              backgroundColor: "var(--purple-400)",
+              opacity: "0.5",
+              zIndex: 0
+            }} />
+            
+            {/* Organizer avatar section with enhanced styling */}
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              zIndex: 1,
+              position: "relative"
+            }}>
+              {/* Avatar container with decorative ring */}
+              <div style={{
+                position: "relative",
+                width: "100px",
+                height: "100px",
+                marginBottom: "18px",
+                padding: "5px",
+                background: "linear-gradient(135deg, var(--purple-200) 0%, var(--purple-400) 100%)",
+                borderRadius: "50%",
+                boxShadow: "0 8px 25px rgba(111, 68, 255, 0.25)"
+              }}>
+                {/* Glowing effect behind avatar */}
+                <div style={{
+                  position: "absolute",
+                  top: "-8px",
+                  left: "-8px",
+                  right: "-8px",
+                  bottom: "-8px",
                   borderRadius: "50%",
-                  backgroundColor: "var(--primary-light)",
+                  background: "radial-gradient(circle, rgba(111, 68, 255, 0.2) 0%, transparent 70%)",
+                  zIndex: 0
+                }} />
+                
+                {/* Actual avatar */}
+                <div style={{
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "50%",
+                  background: "linear-gradient(135deg, var(--primary) 0%, var(--purple-800) 100%)",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  marginRight: "15px",
                   color: "white",
-                  fontWeight: "bold",
-                  fontSize: "18px",
-                }}
-              >
-                {event.organizer.charAt(0)}
+                  fontWeight: "800",
+                  fontSize: "36px",
+                  position: "relative",
+                  zIndex: 1,
+                  boxShadow: "inset 0 4px 10px rgba(0, 0, 0, 0.2)"
+                }}>
+                  {event.organizer.charAt(0)}
+                </div>
               </div>
-              <div
-                style={{
-                  fontSize: "16px",
+              
+              {/* Badge with enhanced styling */}
+              <div style={{
+                position: "relative",
+                backgroundColor: "var(--primary)",
+                borderRadius: "30px",
+                padding: "8px 20px 8px 40px",
+                color: "white",
+                fontWeight: "600",
+                fontSize: "15px",
+                fontFamily: "Raleway, sans-serif",
+                boxShadow: "0 5px 15px rgba(111, 68, 255, 0.25)",
+                display: "flex",
+                alignItems: "center"
+              }}>
+                {/* Verified icon */}
+                <div style={{
+                  position: "absolute",
+                  left: "15px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="white" strokeWidth="2"/>
+                    <path d="M7.5 12L10.5 15L16.5 9" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                Verified Organizer
+              </div>
+            </div>
+            
+            {/* Organizer content with enhanced styling */}
+            <div style={{ 
+              zIndex: 1, 
+              flex: 1,
+              background: "rgba(255, 255, 255, 0.7)",
+              borderRadius: "14px",
+              padding: "25px",
+              boxShadow: "0 8px 25px rgba(111, 68, 255, 0.08)",
+              border: "1px solid var(--purple-100)"
+            }}>
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "15px"
+              }}>
+                <div style={{
+                  width: "4px",
+                  height: "25px",
+                  borderRadius: "2px",
+                  backgroundColor: "var(--primary)",
+                  marginRight: "12px"
+                }} />
+                <div
+                  style={{
+                    fontSize: "28px",
+                    fontWeight: "700",
+                    color: "var(--dark)",
+                    fontFamily: "Raleway, sans-serif",
+                    letterSpacing: "0.5px"
+                  }}
+                >
+                  {event.organizer}
+                </div>
+              </div>
+              
+              <div style={{
+                fontSize: "16px",
+                lineHeight: "1.7",
+                color: "var(--gray-medium)",
+                marginBottom: "22px",
+                position: "relative",
+                paddingLeft: "15px"
+              }}>
+                <div style={{
+                  position: "absolute",
+                  left: "0",
+                  top: "0",
+                  bottom: "0",
+                  width: "3px",
+                  borderRadius: "3px",
+                  background: "linear-gradient(to bottom, var(--purple-300), transparent)",
+                  opacity: "0.5"
+                }} />
+                Verified event creator with a track record of organizing exceptional experiences.
+                <strong style={{ color: "var(--purple-700)" }}> {event.organizer}</strong> is known for 
+                attention to detail and creating memorable events in Sydney. 
+                Contact for any questions about this experience.
+              </div>
+              
+              <div style={{
+                display: "flex",
+                gap: "15px",
+                flexWrap: "wrap"
+              }}>
+                <button style={{
+                  backgroundColor: "var(--primary)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "10px",
+                  padding: "12px 22px",
                   fontWeight: "600",
-                  color: "var(--dark)",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  transition: "all 0.3s ease",
+                  boxShadow: "0 6px 15px rgba(111, 68, 255, 0.25)"
                 }}
-              >
-                {event.organizer}
+                onMouseEnter={e => {
+                  e.currentTarget.style.transform = "translateY(-3px) scale(1.02)";
+                  e.currentTarget.style.boxShadow = "0 8px 20px rgba(111, 68, 255, 0.35)";
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.transform = "translateY(0) scale(1)";
+                  e.currentTarget.style.boxShadow = "0 6px 15px rgba(111, 68, 255, 0.25)";
+                }}
+                onClick={() => navigate("/page-not-found")}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.908.339 1.85.573 2.81.7A2 2 0 0122 16.92z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Contact Organizer
+                </button>
+                <button style={{
+                  backgroundColor: "white",
+                  color: "var(--primary)",
+                  border: "1px solid var(--purple-300)",
+                  borderRadius: "10px",
+                  padding: "12px 22px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  transition: "all 0.3s ease",
+                  boxShadow: "0 4px 12px rgba(111, 68, 255, 0.08)"
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.backgroundColor = "var(--purple-50)";
+                  e.currentTarget.style.borderColor = "var(--primary)";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.boxShadow = "0 6px 15px rgba(111, 68, 255, 0.12)";
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.backgroundColor = "white";
+                  e.currentTarget.style.borderColor = "var(--purple-300)";
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(111, 68, 255, 0.08)";
+                }}
+                onClick={() => navigate("/page-not-found")}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M19 21v-2a4 4 0 00-4-4H9a4 4 0 00-4 4v2" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M12 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  View More Events
+                </button>
               </div>
             </div>
           </div>
