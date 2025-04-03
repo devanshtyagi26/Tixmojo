@@ -204,6 +204,44 @@ Added comprehensive SEO features to improve search engine visibility and social 
 7. `public/sitemap.xml` - Added new sitemap file
 8. `public/robots.txt` - Added new robots file
 
+## 10. Sidebar Font Update
+
+Updated the font in both sidebar components for a more modern, clean look:
+
+- Added the Inter font to the project imports
+- Changed the font family in the Sidebar and UserSidebar components from "Poppins" to "Inter"
+- Adjusted typography for better readability:
+  - Reduced font sizes slightly (16px to 15px for Sidebar, 15px to 14px for UserSidebar)
+  - Added negative letter spacing (-0.01em) for a more contemporary look
+  - Enhanced font weight consistency across both sidebar components
+  - Updated heading and section title styles to match the Inter font's characteristics
+  - Refined user profile text styling for better visual hierarchy
+
+## 11. Expanding Search Bar
+
+Implemented an expanding search bar that increases in width when clicked:
+
+- Added a smooth expansion animation for the search bar:
+  - Desktop: Expands from 240px to 320px when focused
+  - Mobile: Expands from icon-only (40px) to 180px with input field when focused
+  
+- Enhanced search bar interaction:
+  - Added focus state with improved visual feedback
+  - Slightly darker background color when focused
+  - Added subtle box shadow and border when expanded
+  - Included a close button to easily exit search mode
+  - Made search icon slightly larger during focus state
+  
+- Improved responsive behavior:
+  - On mobile, temporarily hides user icon and hamburger menu when search is focused
+  - Reduces spacing between elements when search bar expands
+  - Automatically collapses when clicking outside the search area
+  
+- Added smooth transitions:
+  - Used cubic-bezier timing function for natural motion
+  - Applied subtle opacity changes to surrounding elements
+  - Ensured smooth animation on both expand and collapse
+
 ## Future Enhancement Ideas
 
 - Consider adding animation to the ranking numbers

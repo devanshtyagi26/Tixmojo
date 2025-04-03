@@ -18,7 +18,7 @@ const styles = {
     right: "0",
     top: "calc(90px - 10px)",
     zIndex: "1000",
-    fontFamily: "Poppins",
+    fontFamily: "'Inter', sans-serif",
     borderRadius: "13px",
     border: "1px solid var(--purple-100)",
     boxShadow: "0px 4px 4px 0px rgba(111, 68, 255, 0.1)",
@@ -33,7 +33,9 @@ const styles = {
     padding: "12px 15px",
     textDecoration: "none",
     color: "var(--neutral-800)",
-    fontSize: "16px",
+    fontSize: "15px",
+    fontWeight: "500",
+    letterSpacing: "-0.01em",
     borderRadius: "8px",
     transition: "all 0.3s ease",
     margin: "4px 0",
@@ -118,12 +120,14 @@ export function SidebarScroll({ toggleScrollPage, isSidebarOpen }) {
           <div>
             <div style={{
               fontWeight: "700",
-              fontSize: "16px",
+              fontSize: "15px",
               color: "var(--dark)",
+              letterSpacing: "-0.01em",
             }}>Guest User</div>
             <div style={{
-              fontSize: "14px",
+              fontSize: "13px",
               color: "var(--gray-light)",
+              letterSpacing: "-0.01em",
             }}>Not signed in</div>
           </div>
         </div>

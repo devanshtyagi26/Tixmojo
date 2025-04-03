@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { IoIosSearch } from "react-icons/io";
+import { IoIosSearch, IoMdClose } from "react-icons/io";
 import { BiUser } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,6 +12,7 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
   const inputRef = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [scrolled, setScrolled] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -26,13 +27,23 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
     };
     window.addEventListener("scroll", handleScroll);
 
+    // Add click outside listener to collapse search bar when clicking elsewhere
+    const handleClickOutside = (event) => {
+      if (inputRef.current && !inputRef.current.contains(event.target)) {
+        setSearchFocused(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+
     return () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("scroll", handleScroll);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   const handleSearchClick = () => {
+    setSearchFocused(true);
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -82,34 +93,47 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
       <div className="nav-right" style={{ 
         display: "flex", 
         alignItems: "center",
-        gap: isMobile ? "12px" : "20px"
+        gap: isMobile ? (searchFocused ? "8px" : "12px") : "20px",
+        transition: "all 0.3s ease"
       }}>
         {/* Search bar */}
         <div 
           className="search-bar" 
           onClick={handleSearchClick}
+          ref={inputRef}
           style={{
             display: "flex",
             alignItems: "center",
-            backgroundColor: "rgba(111, 68, 255, 0.08)",
+            backgroundColor: searchFocused 
+              ? "rgba(111, 68, 255, 0.12)" 
+              : "rgba(111, 68, 255, 0.08)",
             borderRadius: "50px",
             padding: isMobile ? "8px 12px" : "10px 16px",
-            width: isMobile ? "40px" : "240px",
-            transition: "all 0.3s ease",
+            width: isMobile 
+              ? (searchFocused ? "180px" : "40px") 
+              : (searchFocused ? "320px" : "240px"),
+            transition: "all 0.3s cubic-bezier(0.19, 1, 0.22, 1)",
             cursor: "pointer",
+            boxShadow: searchFocused 
+              ? "0 4px 12px rgba(111, 68, 255, 0.15)" 
+              : "none",
+            border: searchFocused 
+              ? "1px solid rgba(111, 68, 255, 0.3)" 
+              : "1px solid transparent",
           }}
         >
           <IoIosSearch style={{ 
             color: "var(--primary)",
-            fontSize: "20px",
-            marginRight: isMobile ? "0" : "8px",
+            fontSize: searchFocused ? "22px" : "20px",
+            marginRight: (isMobile && !searchFocused) ? "0" : "8px",
+            transition: "all 0.3s ease",
           }} />
           
-          {!isMobile && (
+          {(!isMobile || searchFocused) && (
             <input
-              ref={inputRef}
               type="text"
               placeholder={t("navbar.search")}
+              onFocus={() => setSearchFocused(true)}
               style={{
                 border: "none",
                 background: "transparent",
@@ -117,48 +141,81 @@ function Navbar({ toggleScrollPage, isSidebarOpen, toggleUserSidebar, isUserSide
                 fontSize: "14px",
                 width: "100%",
                 color: "var(--dark)",
+                transition: "all 0.3s ease",
+              }}
+            />
+          )}
+          
+          {/* Close button when search is focused */}
+          {searchFocused && (
+            <IoMdClose 
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent triggering the search bar click
+                setSearchFocused(false);
+              }}
+              style={{
+                color: "var(--neutral-600)",
+                fontSize: "18px",
+                cursor: "pointer",
+                marginLeft: "8px",
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "var(--primary)";
+                e.currentTarget.style.transform = "scale(1.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "var(--neutral-600)";
+                e.currentTarget.style.transform = "scale(1)";
               }}
             />
           )}
         </div>
 
-        {/* User icon */}
-        <div 
-          onClick={handleUserClick}
-          style={{
-            width: "38px",
-            height: "38px",
-            borderRadius: "50%",
-            backgroundColor: "var(--purple-100)",
+        {/* User icon - hide on mobile when search is focused */}
+        {!(isMobile && searchFocused) && (
+          <div 
+            onClick={handleUserClick}
+            style={{
+              width: "38px",
+              height: "38px",
+              borderRadius: "50%",
+              backgroundColor: "var(--purple-100)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+              opacity: searchFocused && !isMobile ? "0.7" : "1",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--purple-200)";
+              e.currentTarget.style.transform = "scale(1.05)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--purple-100)";
+              e.currentTarget.style.transform = "scale(1)";
+            }}
+          >
+            <BiUser style={{ color: "var(--primary)", fontSize: "22px" }} />
+          </div>
+        )}
+
+        {/* Hamburger menu - hide on mobile when search is focused */}
+        {!(isMobile && searchFocused) && (
+          <div style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            cursor: "pointer",
-            transition: "all 0.3s ease",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--purple-200)";
-            e.currentTarget.style.transform = "scale(1.05)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--purple-100)";
-            e.currentTarget.style.transform = "scale(1)";
-          }}
-        >
-          <BiUser style={{ color: "var(--primary)", fontSize: "22px" }} />
-        </div>
-
-        {/* Hamburger menu */}
-        <div style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}>
-          <Hamburger
-            onToggle={toggleScrollPage}
-            isSidebarOpen={isSidebarOpen}
-          />
-        </div>
+            opacity: searchFocused && !isMobile ? "0.7" : "1",
+            transition: "opacity 0.3s ease",
+          }}>
+            <Hamburger
+              onToggle={toggleScrollPage}
+              isSidebarOpen={isSidebarOpen}
+            />
+          </div>
+        )}
       </div>
     </nav>
   );
