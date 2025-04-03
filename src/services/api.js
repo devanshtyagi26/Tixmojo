@@ -3,7 +3,8 @@
  */
 
 // API base URL - use environment variable in production
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 /**
  * Generic fetch handler with error handling
@@ -17,15 +18,15 @@ const fetchAPI = async (endpoint, options = {}) => {
     const response = await fetch(url, {
       ...options,
       headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-      }
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || 'API request failed');
+      throw new Error(data.message || "API request failed");
     }
 
     return data.data; // Our API returns data in a 'data' property
@@ -37,11 +38,11 @@ const fetchAPI = async (endpoint, options = {}) => {
 
 /**
  * Get all events
- * @param {string} location - Optional location filter 
+ * @param {string} location - Optional location filter
  * @returns {Promise<Array>} - Events data
  */
 export const getAllEvents = async (location) => {
-  const query = location ? `?location=${encodeURIComponent(location)}` : '';
+  const query = location ? `?location=${encodeURIComponent(location)}` : "";
   return fetchAPI(`/events${query}`);
 };
 
@@ -51,7 +52,7 @@ export const getAllEvents = async (location) => {
  * @returns {Promise<Array>} - Raw events data from server
  */
 export const getEventsFromServer = async (location) => {
-  const query = location ? `?location=${encodeURIComponent(location)}` : '';
+  const query = location ? `?location=${encodeURIComponent(location)}` : "";
   return fetchAPI(`/events/server-data${query}`);
 };
 
@@ -62,9 +63,11 @@ export const getEventsFromServer = async (location) => {
  */
 export const getLocationEvents = async (location) => {
   if (!location) {
-    throw new Error('Location parameter is required');
+    throw new Error("Location parameter is required");
   }
-  return fetchAPI(`/events/location/${encodeURIComponent(location.toLowerCase())}`);
+  return fetchAPI(
+    `/events/location/${encodeURIComponent(location.toLowerCase())}`
+  );
 };
 
 /**
@@ -73,7 +76,7 @@ export const getLocationEvents = async (location) => {
  * @returns {Promise<Array>} - Spotlight events data
  */
 export const getSpotlightEvents = async (location) => {
-  const query = location ? `?location=${encodeURIComponent(location)}` : '';
+  const query = location ? `?location=${encodeURIComponent(location)}` : "";
   return fetchAPI(`/events/spotlight${query}`);
 };
 
@@ -82,7 +85,7 @@ export const getSpotlightEvents = async (location) => {
  * @returns {Promise<Array>} - Flyers data
  */
 export const getFlyers = async () => {
-  return fetchAPI('/events/flyers');
+  return fetchAPI("/events/flyers");
 };
 
 /**
@@ -99,7 +102,7 @@ export const getEventById = async (id) => {
  * @returns {Promise<Array>} - Available locations
  */
 export const getLocations = async () => {
-  return fetchAPI('/events/locations');
+  return fetchAPI("/events/locations");
 };
 
 /**
@@ -108,7 +111,9 @@ export const getLocations = async () => {
  * @returns {Promise<Object>} - Location details or all locations if none specified
  */
 export const getLocationDetails = async (location) => {
-  return fetchAPI(`/events/locations/${location ? encodeURIComponent(location) : ''}`);
+  return fetchAPI(
+    `/events/locations/${location ? encodeURIComponent(location) : ""}`
+  );
 };
 
 /**
@@ -116,7 +121,7 @@ export const getLocationDetails = async (location) => {
  * @returns {Promise<Object>} - All app data including events, locations, and metadata
  */
 export const getAllAppData = async () => {
-  return fetchAPI('/events/app-data');
+  return fetchAPI("/events/app-data");
 };
 
 // Export all API functions
@@ -129,5 +134,5 @@ export default {
   getLocationDetails,
   getEventsFromServer,
   getLocationEvents,
-  getAllAppData
+  getAllAppData,
 };
