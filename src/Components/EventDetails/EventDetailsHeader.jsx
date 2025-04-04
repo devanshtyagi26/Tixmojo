@@ -7,7 +7,7 @@ const EventDetailsHeader = ({ event }) => {
       <div style={{ marginBottom: "10px" }}>
         <h1
           style={{
-            fontSize: "42px",
+            fontSize: window.innerWidth > 768 ? "42px" : "24px",
             fontWeight: "800",
             color: "var(--dark)",
             fontFamily: "var(--font-heading)",
@@ -33,8 +33,8 @@ const EventDetailsHeader = ({ event }) => {
                   display: "inline-flex",
                   alignItems: "center",
                   borderRadius: "50px",
-                  padding: "4px 12px",
-                  fontSize: "12px",
+                  padding: window.innerWidth > 768 ? "4px 12px" : "2px 8px",
+                  fontSize: window.innerWidth > 768 ? "12px" : "10px",
                   fontWeight: "600",
                   transition: "all 0.2s ease",
                   cursor: "pointer",

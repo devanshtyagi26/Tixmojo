@@ -10,7 +10,7 @@ const EventMainInfo = ({ event, handleGetTickets }) => {
       style={{
         display: "flex",
         flexDirection: window.innerWidth < 768 ? "column" : "row",
-        gap: "30px",
+        gap: window.innerWidth < 768 ? "0px" : "30px",
         marginTop: "30px",
       }}
     >
@@ -36,9 +36,8 @@ const EventMainInfo = ({ event, handleGetTickets }) => {
               height: "100%",
               objectFit: "cover",
               display: "block",
-              width: "700px",
-              minHeight: "300px",
-              maxHeight: window.innerWidth < 768 ? "300px" : "350px",
+              width: window.innerWidth < 768 ? "100%" : "700px",
+              aspectRatio:"700 / 350",
             }}
           />
         </div>
@@ -63,7 +62,7 @@ const EventMainInfo = ({ event, handleGetTickets }) => {
             style={{
               display: "flex",
               flexDirection: "column",
-              gap: "3rem",
+              gap: window.innerWidth < 768 ? "2rem" : "3rem",
               marginTop: "2rem",
             }}
           >
@@ -236,7 +235,7 @@ const EventMainInfo = ({ event, handleGetTickets }) => {
               >
                 <div
                   style={{
-                    fontSize: "18px",
+                    fontSize: window.innerWidth < 768 ? "16px" : "18px",
                     color: "var(--neutral-800)",
                     fontWeight: "500",
                   }}
@@ -252,7 +251,7 @@ const EventMainInfo = ({ event, handleGetTickets }) => {
                   <IoTicketOutline
                     style={{
                       color: "var(--primary)",
-                      fontSize: "32px",
+                      fontSize: window.innerWidth < 768 ? "28px" : "32px",
                       marginRight: "5px",
                     }}
                   >
@@ -261,7 +260,7 @@ const EventMainInfo = ({ event, handleGetTickets }) => {
                   <span
                     style={{
                       fontWeight: "800",
-                      fontSize: "35px",
+                      fontSize: window.innerWidth < 768 ? "32px" : "35px",
                       color: "black",
                       fontFamily: "var(--font-heading)",
                       lineHeight: "1",
@@ -289,8 +288,8 @@ const EventMainInfo = ({ event, handleGetTickets }) => {
                   color: "white",
                   border: "none",
                   borderRadius: "12px",
-                  padding: "15px",
-                  fontSize: "20px",
+                  padding: window.innerWidth < 768 ? "10px" : "15px",
+                  fontSize:"20px",
                   fontWeight: "600",
                   cursor: "pointer",
                   transition: "all 0.3s ease",
