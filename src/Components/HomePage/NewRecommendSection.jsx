@@ -164,7 +164,7 @@ function NewRecommendSection({
           tabIndex="0"
         >
           {/* Navigation Buttons */}
-          <div
+          {window.innerWidth > 768 && <div
             style={{
               display: "flex",
               justifyContent: "space-between",
@@ -254,7 +254,7 @@ function NewRecommendSection({
             >
               <MdNavigateNext style={{ fontSize: "28px" }} />
             </button>
-          </div>
+          </div>}
 
           {/* Scrollable Container */}
           <div

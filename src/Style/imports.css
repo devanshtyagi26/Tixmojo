@@ -465,6 +465,20 @@ h6 {
   .section-subtitle {
     font-size: 16px;
   }
+
+  .filter-tab {
+    padding: 4px 8px;
+    cursor: pointer;
+    font-family: var(--font-primary);
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    background: none;
+    border: none;
+    outline: none;
+    position: relative;
+    border-radius: 30px;
+  }
 }
 
 /* Animation classes */

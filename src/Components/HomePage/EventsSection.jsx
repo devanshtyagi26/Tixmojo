@@ -515,7 +515,7 @@ const EventsSection = ({
           tabIndex="0"
         >
           {/* Navigation Buttons */}
-          <div
+          {window.innerWidth > 768 && <div
             style={{
               display: "flex",
               justifyContent: "space-between",
@@ -605,7 +605,7 @@ const EventsSection = ({
             >
               <MdNavigateNext style={{ fontSize: "28px" }} />
             </button>
-          </div>
+          </div>}
 
           {/* Scrollable content */}
           <div
