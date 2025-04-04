@@ -18,9 +18,11 @@ The EventDetails page has been completely refactored into a modular component st
   - `TabHighlights.jsx`: Event highlights extraction
   - `TabMoreInfo.jsx`: Additional event information tabs
   - `OrganizerInfo.jsx`: Organizer profile and related events
+  - `NewOrganizerInfo.jsx`: Modern design for organizer information section
   - `EventFAQSection.jsx`: Frequently asked questions
   - `EventSponsors.jsx`: Event sponsors display
   - `ContactPopup.jsx`: Organizer contact popup modal
+  - `OrgContactPopup.jsx`: Enhanced modern contact popup with improved UI
   - `LoadingIndicator.jsx`: Loading state component
   - `EventContainer.jsx`: Main page container wrapper
   - `EventSEOWrapper.jsx`: SEO metadata component
