@@ -122,10 +122,9 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer }) => {
         position: 'relative',
       }}
     >
-      {/* Compact timer positioned in the ticket selection header */}
+      {/* Header with title only */}
       <div style={{ 
         display: 'flex',
-        justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: '15px'
       }}>
@@ -161,66 +160,6 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer }) => {
             Select Your Tickets
           </h2>
         </div>
-        
-        {/* Compact horizontal timer */}
-        {showTimer && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            background: 'var(--purple-50)',
-            padding: '6px 10px',
-            borderRadius: '8px',
-            border: '1px solid var(--purple-100)'
-          }}>
-            <span style={{
-              fontSize: '12px',
-              fontWeight: '600',
-              color: 'var(--purple-700)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '5px'
-            }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-              Time left:
-            </span>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '3px',
-              fontFamily: 'var(--font-heading)'
-            }}>
-              <span style={{
-                background: 'var(--purple-600)',
-                color: 'white',
-                borderRadius: '4px',
-                padding: '1px 4px',
-                fontSize: '14px',
-                fontWeight: '700',
-                minWidth: '24px',
-                textAlign: 'center'
-              }}>
-                {String(Math.floor((expiryTime - new Date()) / (1000 * 60))).padStart(2, '0')}
-              </span>
-              <span style={{ color: 'var(--purple-700)', fontWeight: '600' }}>:</span>
-              <span style={{
-                background: 'var(--purple-600)',
-                color: 'white',
-                borderRadius: '4px',
-                padding: '1px 4px',
-                fontSize: '14px',
-                fontWeight: '700',
-                minWidth: '24px',
-                textAlign: 'center'
-              }}>
-                {String(Math.floor(((expiryTime - new Date()) / 1000) % 60)).padStart(2, '0')}
-              </span>
-            </div>
-          </div>
-        )}
       </div>
       
       <p
@@ -240,10 +179,10 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer }) => {
           justifyContent: 'space-between',
           alignItems: 'flex-start',
           gap: '30px',
+          position: 'relative'
         }}
       >
         {/* Left side - Ticket table */}
-
         <TicketTable
           tickets={tickets}
           onAddToCart={handleAddToCart}
@@ -251,14 +190,101 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer }) => {
           ticketQuantities={ticketQuantities}
         />
 
-
-        {/* Right side - Ticket cart */}
-
-        <TicketCart
-          cartItems={cartItems}
-          onRemoveItem={handleRemoveFromCart}
-          onProceedToCheckout={handleProceedToCheckout}
-        />
+        {/* Right side - Ticket cart with positioned timer */}
+        <div style={{ position: 'relative', width: '35%' }}>
+          {/* Timer positioned over the cart */}
+          {showTimer && (
+            <div style={{
+              position: 'relative',
+              width: '100%',
+              zIndex: 5,
+              background: 'linear-gradient(135deg, var(--purple-100), var(--purple-200))',
+              borderRadius: '10px 10px 0 0',
+              padding: '10px 15px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              boxShadow: '0 -2px 10px rgba(0,0,0,0.05)'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--purple-800)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10 2h4a2 2 0 0 1 2 2v2H8V4a2 2 0 0 1 2-2z"></path>
+                  <path d="M8 4L6 7.5 8 10 6 13.5 8 16l-2 3.5 2 2.5"></path>
+                  <path d="M16 4l2 3.5-2 2.5 2 3.5-2 2.5 2 3.5-2 2.5"></path>
+                  <rect x="4" y="18" width="16" height="4" rx="2"></rect>
+                </svg>
+                <span style={{
+                  fontSize: '16px',
+                  fontWeight: '700',
+                  color: 'var(--purple-800)'
+                }}>
+                  Session Expires In
+                </span>
+              </div>
+              
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                fontFamily: 'var(--font-heading)',
+                animation: Math.floor((expiryTime - new Date()) / 1000) < 120 ? 'pulse 1.5s infinite' : 'none'
+              }}>
+                <span style={{
+                  background: 'var(--purple-600)',
+                  color: 'white',
+                  borderRadius: '6px',
+                  padding: '5px 8px',
+                  fontSize: '18px',
+                  fontWeight: '700',
+                  minWidth: '36px',
+                  textAlign: 'center',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}>
+                  {String(Math.floor((expiryTime - new Date()) / (1000 * 60))).padStart(2, '0')}
+                </span>
+                <span style={{ 
+                  color: 'var(--purple-900)', 
+                  fontWeight: '700',
+                  fontSize: '18px'
+                }}>:</span>
+                <span style={{
+                  background: 'var(--purple-600)',
+                  color: 'white',
+                  borderRadius: '6px',
+                  padding: '5px 8px',
+                  fontSize: '18px',
+                  fontWeight: '700',
+                  minWidth: '36px',
+                  textAlign: 'center',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}>
+                  {String(Math.floor(((expiryTime - new Date()) / 1000) % 60)).padStart(2, '0')}
+                </span>
+              </div>
+              
+              {/* Add animation keyframes */}
+              <style>
+                {`
+                  @keyframes pulse {
+                    0% { opacity: 1; transform: scale(1); }
+                    50% { opacity: 0.9; transform: scale(1.02); }
+                    100% { opacity: 1; transform: scale(1); }
+                  }
+                `}
+              </style>
+            </div>
+          )}
+          
+          <TicketCart
+            cartItems={cartItems}
+            onRemoveItem={handleRemoveFromCart}
+            onProceedToCheckout={handleProceedToCheckout}
+          />
+        </div>
 
       </div>
     </div>

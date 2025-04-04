@@ -675,18 +675,18 @@ Added a comprehensive ticket selection and purchase system to the Event Details 
   - Automatic smooth scrolling to ticket selection when button clicked
   - Close button to hide ticket selection section
 
-- **Dual-Mode Context-Aware Countdown Timer**:
-  - Position-switching timer with different designs based on context
-  - Full featured floating timer in top-right corner when browsing other sections
-  - Compact horizontal design integrated into the section header when viewing tickets
-  - Space-efficient inline design that doesn't take up vertical space
-  - Elegant animations when switching between display modes
+- **Context-Adaptive Premium Countdown Timer**:
+  - Position-switching timer with distinct designs based on user's viewing context
+  - Full-featured floating timer in top-right corner when browsing other sections
+  - Premium banner-style timer positioned above the cart when viewing tickets
+  - Perfect alignment with the cart component for visual harmony
+  - Gradient background and ticket-themed icon for visual appeal
+  - Larger, more readable time digits with premium styling
+  - Animation effects that intensify when time is running low
   - Smart position tracking using Intersection Observer technology
-  - Color-coded time indicators for urgency awareness
-  - Mobile-responsive design that adapts to screen sizes
-  - Seamlessly integrated with the ticket selection UI
-  - Persistent visibility throughout the entire ticket purchase process
-  - Enhanced visual hierarchy in both display modes
+  - Carefully selected color scheme that matches the application theme
+  - Visually prominent without being intrusive to the user experience
+  - Enhanced visual hierarchy in both display contexts
 
 - **User Experience**:
   - Intuitive ticket selection with +/- controls

@@ -33,13 +33,12 @@ const TicketCart = ({ cartItems, onRemoveItem, onProceedToCheckout }) => {
   return (
     <div
       style={{
-        borderRadius: '16px',
+        borderRadius: '0 0 16px 16px',
         overflow: 'hidden',
         boxShadow: '0 5px 20px rgba(0, 0, 0, 0.05)',
         background: 'white',
         border: '1px solid var(--purple-100)',
         padding: '20px',
-        width: '35%',
       }}
     >
       {cartItems.length > 0 ? (
