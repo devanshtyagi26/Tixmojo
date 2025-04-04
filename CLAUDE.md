@@ -675,18 +675,18 @@ Added a comprehensive ticket selection and purchase system to the Event Details 
   - Automatic smooth scrolling to ticket selection when button clicked
   - Close button to hide ticket selection section
 
-- **Context-Aware Countdown Timer**:
-  - Position-switching timer that changes location based on user's scroll position
-  - Fixed position in top-right corner when browsing other sections of the page
-  - Embedded within the ticket selection section when viewing tickets
-  - Visual progress bar showing time remaining
-  - Color changes based on urgency (purple → darker purple → primary purple)
-  - Pulsing animation effect when time is running low
-  - Elegant slide-in animation when activated
-  - Intersection Observer technology to detect viewing position
+- **Dual-Mode Context-Aware Countdown Timer**:
+  - Position-switching timer with different designs based on context
+  - Full featured floating timer in top-right corner when browsing other sections
+  - Compact horizontal design integrated into the section header when viewing tickets
+  - Space-efficient inline design that doesn't take up vertical space
+  - Elegant animations when switching between display modes
+  - Smart position tracking using Intersection Observer technology
+  - Color-coded time indicators for urgency awareness
   - Mobile-responsive design that adapts to screen sizes
-  - Clear typography with readable digits
-  - Persistent visibility throughout the ticket selection process
+  - Seamlessly integrated with the ticket selection UI
+  - Persistent visibility throughout the entire ticket purchase process
+  - Enhanced visual hierarchy in both display modes
 
 - **User Experience**:
   - Intuitive ticket selection with +/- controls

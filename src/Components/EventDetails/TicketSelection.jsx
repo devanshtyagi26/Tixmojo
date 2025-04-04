@@ -122,32 +122,18 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer }) => {
         position: 'relative',
       }}
     >
-      {/* Timer positioned inside the ticket selection when viewing this section */}
-      {showTimer && (
-        <div style={{ 
-          marginBottom: '20px',
-          width: '100%',
-          maxWidth: '350px',
-          margin: '0 auto 25px auto'
+      {/* Compact timer positioned in the ticket selection header */}
+      <div style={{ 
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '15px'
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px'
         }}>
-          <CountdownTimer expiryTime={expiryTime} onExpire={onExpire} />
-        </div>
-      )}
-      
-      <div style={{ paddingTop: '10px' }}>
-        <h2
-          style={{
-            fontSize: '28px',
-            fontWeight: '800',
-            color: 'var(--neutral-800)',
-            marginBottom: '18px',
-            fontFamily: 'var(--font-heading)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            letterSpacing: '-0.01em',
-          }}
-        >
           <svg
             width="28"
             height="28"
@@ -162,20 +148,91 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer }) => {
             <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
           </svg>
-          Select Your Tickets
-        </h2>
-
-        <p
-          style={{
-            color: 'var(--neutral-600)',
-            marginBottom: '30px',
-            fontSize: '16px',
-            maxWidth: '80%',
-          }}
-        >
-          Choose the tickets you want to purchase for {event.title}
-        </p>
+          <h2
+            style={{
+              fontSize: '28px',
+              fontWeight: '800',
+              color: 'var(--neutral-800)',
+              fontFamily: 'var(--font-heading)',
+              letterSpacing: '-0.01em',
+              margin: 0
+            }}
+          >
+            Select Your Tickets
+          </h2>
+        </div>
+        
+        {/* Compact horizontal timer */}
+        {showTimer && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            background: 'var(--purple-50)',
+            padding: '6px 10px',
+            borderRadius: '8px',
+            border: '1px solid var(--purple-100)'
+          }}>
+            <span style={{
+              fontSize: '12px',
+              fontWeight: '600',
+              color: 'var(--purple-700)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px'
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              Time left:
+            </span>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '3px',
+              fontFamily: 'var(--font-heading)'
+            }}>
+              <span style={{
+                background: 'var(--purple-600)',
+                color: 'white',
+                borderRadius: '4px',
+                padding: '1px 4px',
+                fontSize: '14px',
+                fontWeight: '700',
+                minWidth: '24px',
+                textAlign: 'center'
+              }}>
+                {String(Math.floor((expiryTime - new Date()) / (1000 * 60))).padStart(2, '0')}
+              </span>
+              <span style={{ color: 'var(--purple-700)', fontWeight: '600' }}>:</span>
+              <span style={{
+                background: 'var(--purple-600)',
+                color: 'white',
+                borderRadius: '4px',
+                padding: '1px 4px',
+                fontSize: '14px',
+                fontWeight: '700',
+                minWidth: '24px',
+                textAlign: 'center'
+              }}>
+                {String(Math.floor(((expiryTime - new Date()) / 1000) % 60)).padStart(2, '0')}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
+      
+      <p
+        style={{
+          color: 'var(--neutral-600)',
+          marginBottom: '25px',
+          fontSize: '15px',
+          maxWidth: '80%',
+        }}
+      >
+        Choose the tickets you want to purchase for {event.title}
+      </p>
 
       <div
         style={{

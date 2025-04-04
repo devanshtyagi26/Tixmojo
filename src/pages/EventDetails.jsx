@@ -179,10 +179,12 @@ const EventDetails = () => {
             right: '20px',
             zIndex: 1000,
             width: '280px',
-            transform: 'scale(0.85)',
+            transform: 'scale(0.85) translateX(0)',
             transformOrigin: 'top right',
             transition: 'all 0.3s ease',
             filter: 'drop-shadow(0 4px 20px rgba(0,0,0,0.15))',
+            opacity: 1,
+            animation: 'slideInFixed 0.3s ease-out'
           }}
         >
           <CountdownTimer expiryTime={expiryTime} onExpire={handleTimerExpire} />
@@ -190,6 +192,17 @@ const EventDetails = () => {
           {/* Responsive styles */}
           <style>
             {`
+              @keyframes slideInFixed {
+                from {
+                  opacity: 0;
+                  transform: scale(0.85) translateX(50px);
+                }
+                to {
+                  opacity: 1;
+                  transform: scale(0.85) translateX(0);
+                }
+              }
+              
               @media (max-width: 768px) {
                 .fixed-timer {
                   top: 70px;
