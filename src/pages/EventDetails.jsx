@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getEventById, getEventsByOrganizer } from "../services/api.js";
+import { ScrollAnimation } from "../utils/ScrollAnimation.jsx";
 
 // Import Modular Components
 import EventDetailsHeader from "../Components/EventDetails/EventDetailsHeader.jsx";
@@ -12,6 +13,7 @@ import LoadingIndicator from "../Components/EventDetails/LoadingIndicator.jsx";
 import EventContainer from "../Components/EventDetails/EventContainer.jsx";
 import EventSEOWrapper from "../Components/EventDetails/EventSEOWrapper.jsx";
 import NewOrganizerInfo from "../Components/EventDetails/NewOrganizerInfo.jsx";
+import TicketSelection from "../Components/EventDetails/TicketSelection.jsx";
 
 const EventDetails = () => {
   const { t } = useTranslation();
@@ -20,6 +22,7 @@ const EventDetails = () => {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showContactPopup, setShowContactPopup] = useState(false);
+  const [showTicketSelection, setShowTicketSelection] = useState(false);
   const [organizerEvents, setOrganizerEvents] = useState([]);
 
   useEffect(() => {
@@ -99,8 +102,16 @@ const EventDetails = () => {
 
   const handleGetTickets = () => {
     console.log("Getting tickets for:", event?.title);
-    // In a real app, this would navigate to checkout
-    navigate("/page-not-found");
+    // Show the ticket selection section
+    setShowTicketSelection(true);
+    
+    // Scroll to ticket selection section
+    setTimeout(() => {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: 'smooth'
+      });
+    }, 100);
   };
 
   if (loading) {
@@ -134,6 +145,56 @@ const EventDetails = () => {
           setShowContactPopup={setShowContactPopup}
           navigate={navigate}
         />
+        
+        {/* Ticket Selection Component - Only shown when Get Tickets is clicked */}
+        {showTicketSelection && (
+          <ScrollAnimation
+            direction="up"
+            distance={20}
+            duration={0.8}
+            delay={0.5}
+          >
+            <div style={{ 
+              position: 'relative',
+              marginBottom: '50px'
+            }}>
+              <button
+                onClick={() => setShowTicketSelection(false)}
+                style={{
+                  position: 'absolute',
+                  top: '15px',
+                  right: '15px',
+                  background: 'white',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '36px',
+                  height: '36px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                  zIndex: 20,
+                  color: 'var(--neutral-700)',
+                  fontSize: '20px',
+                  fontWeight: 'bold',
+                  transition: 'all 0.2s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.05)';
+                  e.currentTarget.style.color = 'var(--primary)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  e.currentTarget.style.color = 'var(--neutral-700)';
+                }}
+              >
+                ✕
+              </button>
+              <TicketSelection event={event} />
+            </div>
+          </ScrollAnimation>
+        )}
 
         {/* Contact Popup */}
         {showContactPopup && (

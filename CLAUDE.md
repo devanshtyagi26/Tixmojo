@@ -23,6 +23,13 @@ The EventDetails page has been completely refactored into a modular component st
   - `EventSponsors.jsx`: Event sponsors display
   - `ContactPopup.jsx`: Organizer contact popup modal
   - `OrgContactPopup.jsx`: Enhanced modern contact popup with improved UI
+  - `TicketSelection.jsx`: Interactive ticket selection and purchase system
+  - `TicketTable.jsx`: Left-side table displaying available ticket types
+  - `TicketType.jsx`: Individual ticket type row with add/remove controls
+  - `TicketCart.jsx`: Right-side cart summary with ticket details
+  - `CartItem.jsx`: Individual cart item component
+  - `PromoCode.jsx`: Promo code application component
+  - `CountdownTimer.jsx`: Session timeout countdown timer
   - `LoadingIndicator.jsx`: Loading state component
   - `EventContainer.jsx`: Main page container wrapper
   - `EventSEOWrapper.jsx`: SEO metadata component
@@ -644,3 +651,46 @@ Completely redesigned the Event Details page with a rich, data-driven tabbed int
 - Create a reviews and ratings section for events
 - Add social sharing functionality for events
 - Implement an event calendar view option
+
+## 18. Interactive Ticket Selection System
+
+Added a comprehensive ticket selection and purchase system to the Event Details page:
+
+- **System Components**:
+  - Ticket selection table with multiple ticket types and quantities
+  - Interactive shopping cart with real-time total calculation
+  - Enhanced session countdown timer with visual progress indicator
+  - Promo code functionality with validation and discount application
+  - Responsive design for all device sizes
+
+- **Key Features**:
+  - Real-time cart updates when adding or modifying ticket quantities
+  - Support for different ticket types with varying prices
+  - Dynamic ticket availability tracking
+  - Promo code validation with percentage-based discounts
+  - Session expiration with automatic page refresh
+  - Clear visual feedback for all user actions
+  - Fully modular component structure for maintainability
+  - Conditional display triggered by "Get Tickets" button
+  - Automatic smooth scrolling to ticket selection when button clicked
+  - Close button to hide ticket selection section
+
+- **Enhanced Countdown Timer**:
+  - Modern card-based design with improved visibility
+  - Visual progress bar showing time remaining
+  - Color changes based on urgency (purple → orange → red)
+  - Pulsing animation effect when time is running low
+  - Positioned prominently at the top of the ticket selection container
+  - Backdrop blur effect for visual appeal
+  - Clear typography with larger, more readable digits
+  - Better responsive design for all screen sizes
+
+- **User Experience**:
+  - Intuitive ticket selection with +/- controls
+  - Seamless addition and removal of items from cart
+  - Real-time price calculations with discount application
+  - Visual urgency indicators and progress tracking
+  - Mobile-friendly responsive design
+  - Full keyboard accessibility
+  - Clean, uncluttered interface until user explicitly chooses to buy tickets
+  - Ability to close ticket selection and return to event details
