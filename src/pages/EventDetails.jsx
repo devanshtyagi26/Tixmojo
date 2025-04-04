@@ -29,88 +29,27 @@ const EventDetails = () => {
       try {
         const eventData = await getEventById(eventId);
 
-        // Log the raw event data from the API to debug
-        console.log("Raw event data from API:", eventData);
-        console.log("Tags from API:", eventData.tags);
-
-        // Create a properly formatted event object from API data
-        // Generate tags based on event data
-        let eventTags = [];
-
-        // Add basic tag from event type
-        if (eventData.eventDateType === "today") {
-          eventTags.push("Today's Event");
-        } else if (eventData.eventDateType === "tomorrow") {
-          eventTags.push("Tomorrow's Event");
-        } else {
-          eventTags.push("Featured Event");
-        }
-
-        // Add tags based on event name
-        if (eventData.eventName.toLowerCase().includes("concert")) {
-          eventTags.push("Music", "Live Concert");
-        }
-        if (eventData.eventName.toLowerCase().includes("dance")) {
-          eventTags.push("Dance", "Nightlife");
-        }
-        if (eventData.eventName.toLowerCase().includes("festival")) {
-          eventTags.push("Festival", "Music");
-        }
-        if (eventData.eventName.toLowerCase().includes("jazz")) {
-          eventTags.push("Jazz", "Music");
-        }
-        if (eventData.eventName.toLowerCase().includes("art")) {
-          eventTags.push("Art", "Exhibition");
-        }
-        if (eventData.eventName.toLowerCase().includes("love")) {
-          eventTags.push("Themed", "Special");
-        }
-
-        // Add location as a tag
-        eventTags.push(eventData.eventLocation);
-
-        // Add API tags if available
-        if (eventData.tags) {
-          if (Array.isArray(eventData.tags)) {
-            eventTags.push(...eventData.tags);
-          } else {
-            eventTags.push(eventData.tags);
-          }
-        }
-
-        // Remove duplicates and keep unique tags
-        const uniqueTags = [...new Set(eventTags)];
-
-        // Fixed tags for testing (ensure multiple tags are shown)
-        const testTags = [
-          "Music",
-          "Featured Event",
-          "Live Performance",
-          eventData.eventLocation,
-          "Weekend",
-        ];
-
+        // Format the event data from the API
         const formattedEvent = {
           id: eventData.id,
           title: eventData.eventName,
-          // Use unique generated tags or the test tags
-          tags: testTags,
+          tags: Array.isArray(eventData.tags) ? eventData.tags : [eventData.tags],
           image: eventData.eventPoster,
           date: eventData.date,
           time: eventData.time,
           venueName: eventData.venueName,
           venueAddress: eventData.venueAddress,
-          locationMap:
-            eventData.locationMap ||
-            `https://maps.google.com/?q=${encodeURIComponent(
-              eventData.venueAddress
-            )}`,
+          locationMap: eventData.locationMap ||
+            `https://maps.google.com/?q=${encodeURIComponent(eventData.venueAddress)}`,
           price: {
-            currency: "AUD",
+            currency: eventData.currency || "AUD",
             value: eventData.eventPrice,
           },
           description: eventData.description,
-          organizer: eventData.organizer,
+          organizer: {
+            name: eventData.organizer?.name || eventData.organizer,
+            description: eventData.organizer?.description,
+          },
           sponsors: eventData.sponsors || [],
         };
 
@@ -161,7 +100,7 @@ const EventDetails = () => {
   if (!event) {
     return null;
   }
-
+  console.log("Event", event);
   return (
     <>
       <EventSEO
@@ -180,7 +119,7 @@ const EventDetails = () => {
             value: event.price.value,
           },
           performer: {
-            name: event.organizer,
+            name: event.organizer.name,
             type: "Organization",
           },
           // Add any specific offers if you have them
@@ -316,7 +255,7 @@ const EventDetails = () => {
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: "2rem",
+                  gap: "3rem",
                   marginTop: "2rem",
                 }}
               >
@@ -326,7 +265,7 @@ const EventDetails = () => {
                     display: "flex",
                     alignItems: "center",
 
-                    padding: "15px",
+                    padding: "0 15px",
                   }}
                 >
                   <div
@@ -378,7 +317,7 @@ const EventDetails = () => {
                     display: "flex",
                     alignItems: "flex-start",
 
-                    padding: "15px",
+                    padding: "0 15px",
                   }}
                 >
                   <div
@@ -935,7 +874,7 @@ const EventDetails = () => {
                     position: "relative",
                   }}
                 >
-                  {event.organizer.charAt(0)}
+                  {event.organizer.name.charAt(0)}
                   <div
                     style={{
                       position: "absolute",
@@ -978,7 +917,7 @@ const EventDetails = () => {
                     fontFamily: "var(--font-heading)",
                   }}
                 >
-                  {event.organizer}
+                  {event.organizer.name}
                 </h3>
 
                 {/* Verified badge */}
@@ -1199,14 +1138,10 @@ const EventDetails = () => {
                     }}
                   >
                     <strong style={{ color: "var(--primary)" }}>
-                      {event.organizer}
+                      {event.organizer.name}
                     </strong>{" "}
-                    is a leading event organizer known for creating exceptional
-                    experiences for participants. With a proven track record of
-                    successful events, they focus on attention to detail and
-                    memorable moments. Their team of professionals works
-                    tirelessly to ensure that each event exceeds expectations
-                    and creates lasting impressions.
+                    {console.log("Organizer", event.organizer)}
+                    {event.organizer.description || 'Information about the organizer is not available.'}
                   </p>
                 </div>
 
@@ -1308,13 +1243,7 @@ const EventDetails = () => {
                               textOverflow: "ellipsis",
                             }}
                           >
-                            {
-                              [
-                                "Summer Festival",
-                                "Jazz Night",
-                                "Art Exhibition",
-                              ][index - 1]
-                            }
+                            {event.title}
                           </div>
                           <div
                             style={{
