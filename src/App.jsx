@@ -9,6 +9,7 @@ import { UserSidebar } from "./Components/UserSidebar";
 import { DefaultSEO } from "./utils/SEO";
 import ScrollToTop from "./utils/ScrollToTop";
 import React from "react";
+import Loader from "./Components/Loader";
 
 // Lazy load the EventDetails component to handle any potential loading issues
 const EventDetails = React.lazy(() => import("./pages/EventDetails"));
@@ -43,7 +44,16 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/events/:eventId" element={
-            <React.Suspense fallback={<div>Loading...</div>}>
+            <React.Suspense fallback={
+              <div style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "70vh",
+              }}>
+                <Loader size="large" text="Loading event details..." />
+              </div>
+            }>
               <EventDetails />
             </React.Suspense>
           } />

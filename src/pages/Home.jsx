@@ -12,6 +12,7 @@ import NewRecommendSection from "../Components/HomePage/NewRecommendSection.jsx"
 import { ScrollAnimation } from "../utils/ScrollAnimation.jsx";
 import { PageSEO } from "../utils/SEO.jsx";
 import { getAllAppData } from "../services/api.js";
+import Loader from "../Components/Loader.jsx";
 
 import "../i18n";
 
@@ -230,15 +231,7 @@ function Home() {
             height: "70vh",
           }}
         >
-          <div
-            style={{
-              color: "var(--primary)",
-              fontSize: "18px",
-              fontWeight: "500",
-            }}
-          >
-            Loading events...
-          </div>
+          <Loader size="large" />
         </div>
       ) : (
         <>

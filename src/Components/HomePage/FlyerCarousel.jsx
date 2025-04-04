@@ -7,6 +7,7 @@ import { MdNavigateNext } from "react-icons/md"; // Importing the right arrow ic
 import { useNavigate } from "react-router-dom";
 import { getFlyers } from "../../services/api.js";
 import PropTypes from "prop-types";
+import Loader from "../Loader.jsx";
 
 // Custom Previous Button
 const CustomPrevArrow = ({ onClick }) => (
@@ -199,10 +200,9 @@ function FlyerCarousel({ flyers: propFlyers }) {
           borderRadius: "10px",
           display: "flex",
           justifyContent: "center",
-          alignItems: "center",
-          color: "var(--primary)"
+          alignItems: "center"
         }}>
-          Loading events...
+          <Loader size={windowWidth <= 768 ? "medium" : "large"} />
         </div>
       ) : (
         <Slider {...settings}>

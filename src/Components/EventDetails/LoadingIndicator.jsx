@@ -1,4 +1,5 @@
 import React from 'react';
+import Loader from '../Loader';
 
 const LoadingIndicator = () => {
   return (
@@ -10,15 +11,7 @@ const LoadingIndicator = () => {
         height: "70vh",
       }}
     >
-      <div
-        style={{
-          color: "var(--primary)",
-          fontSize: "18px",
-          fontWeight: "500",
-        }}
-      >
-        Loading event details...
-      </div>
+      <Loader size="large" text="Loading event details..." />
     </div>
   );
 };
