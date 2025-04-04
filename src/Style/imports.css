@@ -231,6 +231,17 @@ h6 {
   }
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Event section styles */
 .scrollbar-container {
   -webkit-overflow-scrolling: touch;

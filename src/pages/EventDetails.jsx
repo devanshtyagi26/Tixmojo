@@ -5,8 +5,9 @@ import { HiOutlineLocationMarker, HiOutlineExternalLink } from "react-icons/hi";
 import { BsCalendar2Date } from "react-icons/bs";
 import { ScrollAnimation } from "../utils/ScrollAnimation.jsx";
 import { EventSEO } from "../utils/SEO.jsx";
-import { getEventById } from "../services/api.js";
+import { getEventById, getEventsByOrganizer } from "../services/api.js";
 import { IoTicketOutline } from "react-icons/io5";
+import { IoMdMail, IoMdGlobe, IoMdCall, IoMdClose } from "react-icons/io";
 
 const EventDetails = () => {
   const { t } = useTranslation();
@@ -14,6 +15,8 @@ const EventDetails = () => {
   const navigate = useNavigate();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showContactPopup, setShowContactPopup] = useState(false);
+  const [organizerEvents, setOrganizerEvents] = useState([]);
 
   // Define default tag colors
   const tagColor = {
@@ -47,13 +50,42 @@ const EventDetails = () => {
           },
           description: eventData.description,
           organizer: {
-            name: eventData.organizer?.name || eventData.organizer,
-            description: eventData.organizer?.description,
+            id: eventData.organizerId || '',
+            name: eventData.organizer?.name || '',
+            description: eventData.organizer?.description || '',
+            location: eventData.organizer?.location || '',
+            contactEmail: eventData.organizer?.contactEmail || '',
+            phone: eventData.organizer?.phone || '',
+            website: eventData.organizer?.website || '',
+            specialization: eventData.organizer?.specialization || [],
+            yearEstablished: eventData.organizer?.yearEstablished || '',
+            stats: eventData.organizer?.stats || {
+              totalEvents: 0,
+              rating: 0,
+              ticketsSold: "0"
+            }
           },
           sponsors: eventData.sponsors || [],
         };
 
         setEvent(formattedEvent);
+        
+        // Now fetch all events from the same organizer
+        if (eventData.organizerId) {
+          try {
+            const orgEvents = await getEventsByOrganizer(eventData.organizerId);
+            // Filter out the current event and limit to 3
+            const sameOrganizerEvents = orgEvents
+              .filter(e => e.id !== eventData.id)
+              .slice(0, 3);
+            
+            setOrganizerEvents(sameOrganizerEvents);
+          } catch (error) {
+            console.error("Error fetching organizer events:", error);
+            setOrganizerEvents([]);
+          }
+        }
+        
         setLoading(false);
       } catch (error) {
         console.error("Error fetching event:", error);
@@ -100,7 +132,7 @@ const EventDetails = () => {
   if (!event) {
     return null;
   }
-  console.log("Event", event);
+  // Event is ready to render
   return (
     <>
       <EventSEO
@@ -979,7 +1011,7 @@ const EventDetails = () => {
                         color: "var(--primary)",
                       }}
                     >
-                      24
+                      {event.organizer.stats?.totalEvents || "0"}
                     </div>
                     <div
                       style={{
@@ -1004,7 +1036,7 @@ const EventDetails = () => {
                         color: "var(--primary)",
                       }}
                     >
-                      4.9
+                      {event.organizer.stats?.rating || "0"}
                     </div>
                     <div
                       style={{
@@ -1029,7 +1061,7 @@ const EventDetails = () => {
                         color: "var(--primary)",
                       }}
                     >
-                      5k+
+                      {event.organizer.stats?.ticketsSold || "0"}
                     </div>
                     <div
                       style={{
@@ -1072,7 +1104,7 @@ const EventDetails = () => {
                     e.currentTarget.style.boxShadow =
                       "0 8px 20px rgba(111, 68, 255, 0.15)";
                   }}
-                  onClick={() => navigate("/page-not-found")}
+                  onClick={() => setShowContactPopup(true)}
                 >
                   <svg
                     width="16"
@@ -1135,14 +1167,33 @@ const EventDetails = () => {
                       margin: 0,
                       lineHeight: 1.7,
                       color: "var(--neutral-700)",
+                      marginBottom: "15px",
                     }}
                   >
                     <strong style={{ color: "var(--primary)" }}>
                       {event.organizer.name}
                     </strong>{" "}
-                    {console.log("Organizer", event.organizer)}
                     {event.organizer.description || 'Information about the organizer is not available.'}
                   </p>
+                  
+                  {/* Additional organizer details */}
+                  {event.organizer.yearEstablished && (
+                    <p style={{ margin: "5px 0", fontSize: "14px", color: "var(--neutral-700)" }}>
+                      <strong>Established:</strong> {event.organizer.yearEstablished}
+                    </p>
+                  )}
+                  
+                  {event.organizer.location && (
+                    <p style={{ margin: "5px 0", fontSize: "14px", color: "var(--neutral-700)" }}>
+                      <strong>Location:</strong> {event.organizer.location}
+                    </p>
+                  )}
+                  
+                  {event.organizer.specialization && event.organizer.specialization.length > 0 && (
+                    <p style={{ margin: "5px 0", fontSize: "14px", color: "var(--neutral-700)" }}>
+                      <strong>Specialization:</strong> {event.organizer.specialization.join(", ")}
+                    </p>
+                  )}
                 </div>
 
                 {/* Past Events section */}
@@ -1184,126 +1235,403 @@ const EventDetails = () => {
                       padding: "5px 0 15px 0",
                     }}
                   >
-                    {/* Sample past events */}
-                    {[1, 2, 3].map((index) => (
-                      <div
-                        key={index}
-                        style={{
-                          flex: "0 0 250px",
-                          borderRadius: "12px",
-                          overflow: "hidden",
-                          boxShadow: "0 5px 15px rgba(0, 0, 0, 0.05)",
-                          border: "1px solid var(--purple-100)",
-                          transition: "all 0.3s ease",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => navigate("/page-not-found")}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = "translateY(-5px)";
-                          e.currentTarget.style.boxShadow =
-                            "0 10px 25px rgba(111, 68, 255, 0.12)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = "translateY(0)";
-                          e.currentTarget.style.boxShadow =
-                            "0 5px 15px rgba(0, 0, 0, 0.05)";
-                        }}
-                      >
+                    {organizerEvents.length > 0 ? (
+                      organizerEvents.map((orgEvent) => (
                         <div
+                          key={orgEvent.id}
                           style={{
-                            height: "120px",
-                            backgroundImage: `url(${event.image})`,
-                            backgroundSize: "cover",
-                            backgroundPosition: "center",
+                            flex: "0 0 250px",
+                            borderRadius: "12px",
+                            overflow: "hidden",
+                            boxShadow: "0 5px 15px rgba(0, 0, 0, 0.05)",
+                            border: "1px solid var(--purple-100)",
+                            transition: "all 0.3s ease",
+                            cursor: "pointer",
                           }}
-                        />
-                        <div
-                          style={{
-                            padding: "15px",
+                          onClick={() => navigate(`/events/${orgEvent.id}`)}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = "translateY(-5px)";
+                            e.currentTarget.style.boxShadow =
+                              "0 10px 25px rgba(111, 68, 255, 0.12)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = "translateY(0)";
+                            e.currentTarget.style.boxShadow =
+                              "0 5px 15px rgba(0, 0, 0, 0.05)";
                           }}
                         >
                           <div
                             style={{
-                              fontSize: "14px",
-                              color: "var(--primary)",
-                              fontWeight: "600",
-                              marginBottom: "5px",
+                              height: "120px",
+                              backgroundImage: `url(${orgEvent.eventPoster})`,
+                              backgroundSize: "cover",
+                              backgroundPosition: "center",
                             }}
-                          >
-                            {["May 15", "Jun 20", "Jul 8"][index - 1]}
-                          </div>
+                          />
                           <div
                             style={{
-                              fontSize: "16px",
-                              fontWeight: "700",
-                              color: "var(--dark)",
-                              marginBottom: "10px",
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
+                              padding: "15px",
                             }}
                           >
-                            {event.title}
-                          </div>
-                          <div
-                            style={{
-                              fontSize: "13px",
-                              color: "var(--gray-medium)",
-                            }}
-                          >
-                            Sydney Opera House
+                            <div
+                              style={{
+                                fontSize: "14px",
+                                color: "var(--primary)",
+                                fontWeight: "600",
+                                marginBottom: "5px",
+                              }}
+                            >
+                              {orgEvent.date?.split(',')[0]}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: "16px",
+                                fontWeight: "700",
+                                color: "var(--dark)",
+                                marginBottom: "10px",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                            >
+                              {orgEvent.eventName}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: "13px",
+                                color: "var(--gray-medium)",
+                              }}
+                            >
+                              {orgEvent.venueName || orgEvent.eventAddress}
+                            </div>
                           </div>
                         </div>
+                      ))
+                    ) : (
+                      <div style={{ padding: "15px 0", color: "var(--gray-medium)", fontStyle: "italic" }}>
+                        No other events found for this organizer.
                       </div>
-                    ))}
+                    )}
                   </div>
 
-                  <button
-                    style={{
-                      marginTop: "20px",
-                      padding: "10px 20px",
-                      backgroundColor: "transparent",
-                      color: "var(--primary)",
-                      borderRadius: "10px",
-                      border: "1px solid var(--purple-200)",
-                      fontSize: "14px",
-                      fontWeight: "600",
-                      cursor: "pointer",
-                      transition: "all 0.3s ease",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      justifyContent: "center",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor =
-                        "var(--purple-50)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                    }}
-                    onClick={() => navigate("/page-not-found")}
-                  >
-                    View All Events
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                  {organizerEvents.length > 0 && (
+                    <button
+                      style={{
+                        marginTop: "20px",
+                        padding: "10px 20px",
+                        backgroundColor: "transparent",
+                        color: "var(--primary)",
+                        borderRadius: "10px",
+                        border: "1px solid var(--purple-200)",
+                        fontSize: "14px",
+                        fontWeight: "600",
+                        cursor: "pointer",
+                        transition: "all 0.3s ease",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        justifyContent: "center",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor =
+                          "var(--purple-50)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                      }}
+                      onClick={() => navigate(`/page-not-found?organizer=${event.organizer.id}`)}
                     >
-                      <polyline points="9 18 15 12 9 6"></polyline>
-                    </svg>
-                  </button>
+                      View All Events by {event.organizer.name}
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                      </svg>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
           </div>
         </ScrollAnimation>
       </div>
+      
+      {/* Contact Popup */}
+      {showContactPopup && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+            backdropFilter: "blur(5px)",
+          }}
+          onClick={() => setShowContactPopup(false)}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "20px",
+              padding: "30px",
+              width: "90%",
+              maxWidth: "420px",
+              boxShadow: "0 20px 60px rgba(0, 0, 0, 0.2)",
+              position: "relative",
+              animation: "fadeInUp 0.3s ease-out",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              style={{
+                position: "absolute",
+                top: "15px",
+                right: "15px",
+                backgroundColor: "var(--purple-50)",
+                border: "none",
+                borderRadius: "50%",
+                width: "36px",
+                height: "36px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                transition: "all 0.2s",
+                color: "var(--neutral-800)",
+              }}
+              onClick={() => setShowContactPopup(false)}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--purple-100)";
+                e.currentTarget.style.transform = "rotate(90deg)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--purple-50)";
+                e.currentTarget.style.transform = "rotate(0deg)";
+              }}
+            >
+              <IoMdClose size={20} />
+            </button>
+
+            {/* Header */}
+            <div style={{ textAlign: "center", marginBottom: "25px" }}>
+              <div
+                style={{
+                  width: "80px",
+                  height: "80px",
+                  borderRadius: "20px",
+                  backgroundColor: "var(--primary)",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "40px",
+                  fontWeight: "700",
+                  margin: "0 auto 15px auto",
+                  boxShadow: "0 15px 30px rgba(111, 68, 255, 0.2)",
+                }}
+              >
+                {event.organizer.name.charAt(0)}
+              </div>
+              <h3 style={{ 
+                margin: "0 0 5px 0", 
+                color: "var(--dark)",
+                fontSize: "24px",
+                fontFamily: "var(--font-heading)" 
+              }}>
+                {event.organizer.name}
+              </h3>
+              <p style={{ 
+                margin: "0", 
+                color: "var(--neutral-600)",
+                fontSize: "14px" 
+              }}>
+                Contact Information
+              </p>
+            </div>
+
+            {/* Contact Details */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              {/* Website */}
+              <a
+                href={`https://${event.organizer.website}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "15px",
+                  padding: "15px",
+                  backgroundColor: "var(--purple-50)",
+                  borderRadius: "12px",
+                  textDecoration: "none",
+                  color: "var(--neutral-800)",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--purple-100)";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--purple-50)";
+                  e.currentTarget.style.transform = "translateY(0)";
+                }}
+              >
+                <div style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "10px",
+                  backgroundColor: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "var(--primary)",
+                  boxShadow: "0 4px 10px rgba(111, 68, 255, 0.1)",
+                  flexShrink: 0,
+                }}>
+                  <IoMdGlobe size={22} />
+                </div>
+                <div>
+                  <div style={{ fontWeight: "600", marginBottom: "3px" }}>Website</div>
+                  <div style={{ fontSize: "14px", color: "var(--primary)" }}>{event.organizer.website}</div>
+                </div>
+              </a>
+
+              {/* Email */}
+              <a
+                href={`mailto:${event.organizer.contactEmail}`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "15px",
+                  padding: "15px",
+                  backgroundColor: "var(--purple-50)",
+                  borderRadius: "12px",
+                  textDecoration: "none",
+                  color: "var(--neutral-800)",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--purple-100)";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--purple-50)";
+                  e.currentTarget.style.transform = "translateY(0)";
+                }}
+              >
+                <div style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "10px",
+                  backgroundColor: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "var(--primary)",
+                  boxShadow: "0 4px 10px rgba(111, 68, 255, 0.1)",
+                  flexShrink: 0,
+                }}>
+                  <IoMdMail size={22} />
+                </div>
+                <div>
+                  <div style={{ fontWeight: "600", marginBottom: "3px" }}>Email</div>
+                  <div style={{ fontSize: "14px", color: "var(--primary)" }}>{event.organizer.contactEmail}</div>
+                </div>
+              </a>
+
+              {/* Phone */}
+              <a
+                href={`tel:${event.organizer.phone}`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "15px",
+                  padding: "15px",
+                  backgroundColor: "var(--purple-50)",
+                  borderRadius: "12px",
+                  textDecoration: "none",
+                  color: "var(--neutral-800)",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--purple-100)";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--purple-50)";
+                  e.currentTarget.style.transform = "translateY(0)";
+                }}
+              >
+                <div style={{
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "10px",
+                  backgroundColor: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "var(--primary)",
+                  boxShadow: "0 4px 10px rgba(111, 68, 255, 0.1)",
+                  flexShrink: 0,
+                }}>
+                  <IoMdCall size={22} />
+                </div>
+                <div>
+                  <div style={{ fontWeight: "600", marginBottom: "3px" }}>Phone</div>
+                  <div style={{ fontSize: "14px", color: "var(--primary)" }}>{event.organizer.phone}</div>
+                </div>
+              </a>
+            </div>
+
+            {/* CTA Button */}
+            <button
+              style={{
+                width: "100%",
+                marginTop: "25px",
+                padding: "14px",
+                borderRadius: "12px",
+                backgroundColor: "var(--primary)",
+                color: "white",
+                border: "none",
+                fontWeight: "600",
+                fontSize: "16px",
+                cursor: "pointer",
+                transition: "all 0.3s",
+                boxShadow: "0 8px 20px rgba(111, 68, 255, 0.15)",
+              }}
+              onClick={() => {
+                setShowContactPopup(false);
+                // Add any additional action here if needed
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--purple-700)";
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 12px 25px rgba(111, 68, 255, 0.25)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--primary)";
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 8px 20px rgba(111, 68, 255, 0.15)";
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 };

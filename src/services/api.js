@@ -87,6 +87,18 @@ export const getEventsFromServer = async (location) => {
 };
 
 /**
+ * Get events by organizer ID
+ * @param {string} organizerId - Organizer ID to filter by
+ * @returns {Promise<Array>} - Events from the specified organizer
+ */
+export const getEventsByOrganizer = async (organizerId) => {
+  if (!organizerId) {
+    throw new Error("Organizer ID is required");
+  }
+  return fetchAPI(`/events/organizer/${encodeURIComponent(organizerId)}`);
+};
+
+/**
  * Get location-specific events (uses custom events for each location)
  * @param {string} location - Location name (e.g., 'sydney', 'singapore')
  * @returns {Promise<Array>} - Location-specific events data
@@ -164,5 +176,6 @@ export default {
   getLocationDetails,
   getEventsFromServer,
   getLocationEvents,
+  getEventsByOrganizer,
   getAllAppData,
 };
