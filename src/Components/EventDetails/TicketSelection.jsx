@@ -1,9 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TicketTable from './TicketTable';
 import TicketCart from './TicketCart';
 import CountdownTimer from './CountdownTimer';
 
 const TicketSelection = ({ event, expiryTime, onExpire, showTimer }) => {
+  // Timer state
+  const [minutes, setMinutes] = useState(0);
+  const [seconds, setSeconds] = useState(0);
+  const [isAlmostExpired, setIsAlmostExpired] = useState(false);
+  
+  // Update timer every second
+  useEffect(() => {
+    if (!showTimer || !expiryTime) return;
+    
+    const updateTimer = () => {
+      try {
+        // Ensure expiryTime is a Date object
+        const expiry = expiryTime instanceof Date ? expiryTime : new Date(expiryTime);
+        const now = new Date();
+        const difference = expiry.getTime() - now.getTime();
+        
+        if (difference <= 0) {
+          setMinutes(0);
+          setSeconds(0);
+          
+          // Ensure the expiry handler is called properly
+          if (typeof onExpire === 'function') {
+            console.log("TicketSelection timer expired - calling parent handler");
+            onExpire();
+          }
+          return;
+        }
+        
+        // Calculate minutes and seconds
+        const mins = Math.floor((difference / 1000 / 60) % 60);
+        const secs = Math.floor((difference / 1000) % 60);
+        
+        setMinutes(mins);
+        setSeconds(secs);
+        setIsAlmostExpired(difference < 120000); // Less than 2 minutes
+      } catch (error) {
+        console.error("Error in countdown timer:", error);
+        return;
+      }
+    };
+    
+    // Initial update
+    updateTimer();
+    
+    // Update every second
+    const interval = setInterval(updateTimer, 1000);
+    
+    // Clean up
+    return () => clearInterval(interval);
+  }, [expiryTime, onExpire, showTimer]);
+  
   // Sample ticket data - in a real app, this would come from the API
   const [tickets, setTickets] = useState([
     {
@@ -231,7 +282,7 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer }) => {
                 alignItems: 'center',
                 gap: '5px',
                 fontFamily: 'var(--font-heading)',
-                animation: Math.floor((expiryTime - new Date()) / 1000) < 120 ? 'pulse 1.5s infinite' : 'none'
+                animation: isAlmostExpired ? 'pulse 1.5s infinite' : 'none'
               }}>
                 <span style={{
                   background: 'var(--purple-600)',
@@ -244,7 +295,7 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer }) => {
                   textAlign: 'center',
                   boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                 }}>
-                  {String(Math.floor((expiryTime - new Date()) / (1000 * 60))).padStart(2, '0')}
+                  {String(minutes).padStart(2, '0')}
                 </span>
                 <span style={{ 
                   color: 'var(--purple-900)', 
@@ -262,7 +313,7 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer }) => {
                   textAlign: 'center',
                   boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                 }}>
-                  {String(Math.floor(((expiryTime - new Date()) / 1000) % 60)).padStart(2, '0')}
+                  {String(seconds).padStart(2, '0')}
                 </span>
               </div>
               

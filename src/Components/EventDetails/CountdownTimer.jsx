@@ -22,7 +22,12 @@ const CountdownTimer = ({ expiryTime, onExpire }) => {
         // Timer expired
         setTimeLeft({ minutes: 0, seconds: 0 });
         setProgressPercentage(0);
-        onExpire();
+        
+        // Call onExpire with appropriate guard
+        if (typeof onExpire === 'function') {
+          console.log("Countdown timer expired - calling parent handler");
+          onExpire();
+        }
         return;
       }
       
@@ -41,11 +46,20 @@ const CountdownTimer = ({ expiryTime, onExpire }) => {
     // Call immediately to set initial state
     calculateTimeLeft();
     
-    // Set up the interval
-    const timerId = setInterval(calculateTimeLeft, 1000);
+    // Set up the interval with a shorter delay for smoother updates
+    const timerId = setInterval(calculateTimeLeft, 500);
     
-    // Clear interval on component unmount
-    return () => clearInterval(timerId);
+    // Force update using requestAnimationFrame for smoother updates during interactions
+    const rafId = requestAnimationFrame(function updateFrame() {
+      calculateTimeLeft();
+      requestAnimationFrame(updateFrame);
+    });
+    
+    // Clear interval and animation frame on component unmount
+    return () => {
+      clearInterval(timerId);
+      cancelAnimationFrame(rafId);
+    };
   }, [expiryTime, onExpire]);
 
   // Determine color based on time remaining

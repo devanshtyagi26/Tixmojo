@@ -675,7 +675,7 @@ Added a comprehensive ticket selection and purchase system to the Event Details 
   - Automatic smooth scrolling to ticket selection when button clicked
   - Close button to hide ticket selection section
 
-- **Context-Adaptive Premium Countdown Timer**:
+- **Context-Adaptive Premium Countdown Timer with Session Management**:
   - Position-switching timer with distinct designs based on user's viewing context
   - Full-featured floating timer in top-right corner when browsing other sections
   - Premium banner-style timer positioned above the cart when viewing tickets
@@ -685,7 +685,9 @@ Added a comprehensive ticket selection and purchase system to the Event Details 
   - Animation effects that intensify when time is running low
   - Smart position tracking using Intersection Observer technology
   - Carefully selected color scheme that matches the application theme
-  - Visually prominent without being intrusive to the user experience
+  - Custom session expiry modal with elegant animation effects
+  - Clear user guidance when session times out
+  - One-click return to event details after expiry
   - Enhanced visual hierarchy in both display contexts
 
 - **User Experience**:
@@ -697,3 +699,6 @@ Added a comprehensive ticket selection and purchase system to the Event Details 
   - Full keyboard accessibility
   - Clean, uncluttered interface until user explicitly chooses to buy tickets
   - Ability to close ticket selection and return to event details
+  - Optimized location immediately after event details for better user flow
+  - Precise scrolling to the ticket selection when activated
+  - Visual separator to maintain clear content hierarchy
