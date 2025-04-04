@@ -5,11 +5,12 @@
     },
     "footer": {
         "copyright": "Copyright 2025 | All Right Reserved with TIXMOJO",
+        "about": "TixMojo is your one-stop platform for discovering and booking tickets to the best events, concerts, and performances in your city.",
         "tnc": {
             "privacy": "Privacy Policy",
             "refund": "Refund Policy",
             "terms": "Terms & Conditions"
-            },
+        },
         "information": {
             "title": "Information",
             "redirects": {
@@ -19,7 +20,7 @@
             }
         },
         "links": {
-                "title": "Helpful Links",
+            "title": "Helpful Links",
             "redirects": {
                 "one": "Terms & Conditions",
                 "two": "Privacy Policy",
@@ -31,66 +32,48 @@
             "redirects": {
                 "one": "+61 483952024",
                 "two": "info@tixmojo.com"
-            }
+            },
+            "address": "123 Event Street, Sydney, NSW 2000, Australia"
+        },
+        "categories": {
+            "title": "Event Categories",
+            "list": [
+                "Concerts", 
+                "Festivals",
+                "Theatre",
+                "Comedy",
+                "Sports",
+                "Arts",
+                "Family",
+                "Workshops",
+                "Nightlife",
+                "Culture"
+            ]
+        },
+        "social": {
+            "title": "Follow Us",
+            "networks": [
+                { "name": "Facebook", "icon": "IoLogoFacebook" },
+                { "name": "Twitter", "icon": "IoLogoTwitter" },
+                { "name": "Instagram", "icon": "IoLogoInstagram" },
+                { "name": "LinkedIn", "icon": "FaLinkedinIn" },
+                { "name": "YouTube", "icon": "FaYoutube" }
+            ]
+        },
+        "newsletter": {
+            "title": "Subscribe to Newsletter",
+            "placeholder": "Your email",
+            "button": "Subscribe"
+        },
+        "otherLinks": {
+            "title": "Quick Links",
+            "contactUs": "Contact Us"
         }
-
     },
-    "eventsSection": {
-        "sectionTitles": {
-            "popular": "Events in",
-            "recommended": "Recommended"
-        },
-        "filters": {
-            "all": "All",
-            "today": "Today",
-            "tomorrow": "Tomorrow",
-            "thisWeek": "This Week"
-        },
-        "locations": {
-            "sydney": "Sydney",
-            "melbourne": "Melbourne",
-            "singapore": "Singapore",
-            "brisbane": "Brisbane",
-            "tokyo": "Tokyo",
-            "london": "London",
-            "newYork": "New York"
-        },
-        "noEvents": {
-            "title": "No events available",
-            "message": "No events found in {{location}} for \"{{filter}}\" filter",
-            "viewAll": "View all events"
-        },
-        "events": {
-            "today": {
-                "live": "TODAY'S LIVE CONCERT",
-                "jazz": "TODAY'S JAZZ NIGHT",
-                "outdoor": "TODAY'S OUTDOOR FESTIVAL",
-                "comedy": "TODAY'S COMEDY SPECIAL",
-                "food": "TODAY'S FOOD TASTING",
-                "melbourne": "MELBOURNE JAZZ FESTIVAL"
-            },
-            "tomorrow": {
-                "dance": "TOMORROW'S DANCE PARTY",
-                "comedy": "TOMORROW'S COMEDY SHOW",
-                "art": "TOMORROW'S ART EXHIBITION",
-                "food": "TOMORROW'S FOOD FESTIVAL",
-                "tech": "TOMORROW'S TECH CONFERENCE",
-                "melbourne": "COMEDY FESTIVAL"
-            },
-            "thisWeek": {
-                "festival": "THIS WEEK FESTIVAL",
-                "indie": "THIS WEEK INDIE ROCK",
-                "theater": "THIS WEEK THEATER SHOW",
-                "fashion": "THIS WEEK FASHION SHOW",
-                "music": "THIS WEEK MUSIC FESTIVAL",
-                "melbourne": "CULTURAL SHOWCASE"
-            },
-            "other": {
-                "symphony": "NEXT MONTH SYMPHONIC",
-                "edm": "NEXT WEEK EDM PARTY",
-                "art": "NEXT MONTH ART EXHIBIT"
-            }
-        },
-        "priceLabel": "From AUD {{price}}"
-    }   
+    "pageNotFound": {
+        "title": "Page Not Found",
+        "message": "Sorry, the page you are looking for does not exist.",
+        "redirect": "Go back to Home"
+    }
+
 }

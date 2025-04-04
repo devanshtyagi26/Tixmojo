@@ -1,361 +1,416 @@
-import React, { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import Logo from "../assets/Logo";
-import "../i18n";
-import { Phone, Email } from "../assets/FooterSVGs";
+import React from "react";
 import { Link } from "react-router-dom";
-const styles = {
-  footer: {
-    boxShadow: "0px 1px 45px 5px rgba(0, 0, 0, 0.11)",
-    background: "rgb(255, 255, 255)",
-    width: "100vw",
-    height: "140px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    flexDirection: "column",
-    position: "relative",
-    bottom: "0",
-    padding: "1rem 0 0 0",
-  },
-  footerContainer: {
-    display: "flex",
-    justifyContent: "space-between",
-    width: "80%",
-    alignItems: "center",
-    gap: "1rem",
-  },
-  logo: {
-    color: "rgb(0, 0, 0)",
-    fontFamily: "Cabin",
-    fontSize: "53.11px",
-    fontWeight: "700",
-    textAlign: "left",
-    marginLeft: "5rem",
-  },
-  copyright: {
-    display: "grid",
-    gridTemplateColumns: "1.4fr 1fr 1fr",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100vw",
-    padding: "0 1rem",
-    color: "rgb(0, 0, 0)",
-    fontFamily: "Poppins",
-    fontSize: "12px",
-    fontWeight: "300",
-    textAlign: "left",
-    borderTop: "1px solid rgba(0, 0, 0, 0.17)",
-  },
-  tnc: {
-    display: "flex",
-    justifyContent: "end",
-    alignItems: "center",
-    gap: "1rem",
-    alignSelf: "flex-end",
-  },
-  tncText: {
-    fontFamily: "Poppins",
-    fontSize: "12px",
-    fontWeight: "300",
-    cursor: "pointer",
-    color: "rgb(0, 0, 0)",
-    textDecoration: "none",
-    transition: "text-decoration 0.2s ease-in-out",
-  },
-  tncTextHover: {
-    textDecoration: "underline",
-  },
-  footerContainer2: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
-    gap: "10rem",
-  },
-  usefulBlock: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
-    flexDirection: "column",
-  },
-  title: {
-    color: "rgb(0, 0, 0)",
-    fontFamily: "Poppins",
-    fontSize: "19px",
-    fontWeight: "700",
-    textAlign: "left",
-  },
-  content: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
-    flexDirection: "column",
-    textDecoration: "none",
-  },
-  contactSvg: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "0.5rem",
-  },
-  socialSvgContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: "0.5rem",
-    marginTop: "0.5rem",
-  },
-  socialSvg: {
-    width: "20px",
-    height: "20px",
-    borderRadius: "50%",
-    backgroundColor: "rgb(255, 255, 255)",
-    border: "1px solid rgb(0, 0, 0)",
-  },
+import {
+  IoLogoFacebook,
+  IoLogoTwitter,
+  IoLogoInstagram,
+} from "react-icons/io5";
+import { FaLinkedinIn, FaYoutube } from "react-icons/fa";
+import { FiMail, FiPhone, FiMapPin } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 
-  // Mobile
-  footerContainer2Mobile: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-start",
-    gap: "10rem",
-  },
-  copyrightMobile: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100vw",
-    padding: "0 1rem",
-    color: "rgb(0, 0, 0)",
-    fontFamily: "Poppins",
-    fontSize: "12px",
-    fontWeight: "300",
-    textAlign: "left",
-    borderTop: "1px solid rgba(0, 0, 0, 0.17)",
-  },
-  // Mobile
-  footerMobile: {
-    boxShadow: "0px 1px 45px 5px rgba(0, 0, 0, 0.11)",
-    background: "rgb(255, 255, 255)",
-    width: "100vw",
-    height: "220px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    flexDirection: "column",
-    // position: "relavtive",
-    bottom: "0",
-    padding: "1rem 0 0 0",
-  },
-  footerContainerMobile: {
-    display: "flex",
-    justifyContent: "space-between",
-    width: "85%",
-    alignItems: "center",
-    gap: "1rem",
-  },
+// Map of icon names to actual icon components
+const iconMap = {
+  IoLogoFacebook: <IoLogoFacebook />,
+  IoLogoTwitter: <IoLogoTwitter />,
+  IoLogoInstagram: <IoLogoInstagram />,
+  FaLinkedinIn: <FaLinkedinIn />,
+  FaYoutube: <FaYoutube />,
+  FiMail: <FiMail />,
+  FiPhone: <FiPhone />,
+  FiMapPin: <FiMapPin />,
 };
 
 function Footer() {
   const { t } = useTranslation();
-  const [hoveredItem, setHoveredItem] = useState(null);
+  const year = new Date().getFullYear();
 
-  const handleHover = (key) => setHoveredItem(key);
-  const handleLeave = () => setHoveredItem(null);
+  // Get footer data from translation
+  const socialNetworks = t("footer.social.networks", { returnObjects: true });
+  const categories = t("footer.categories.list", { returnObjects: true });
 
-  const renderLink = (key) => (
-    <p
-      style={
-        hoveredItem === key
-          ? { ...styles.tncText, ...styles.tncTextHover }
-          : styles.tncText
-      }
-      onMouseEnter={() => handleHover(key)}
-      onMouseLeave={handleLeave}
-    >
-      {t(key)}
-    </p>
-  );
+  // Contact information
+  const contactInfo = [
+    {
+      icon: "FiMapPin",
+      text: t("footer.contact.address"),
+    },
+    {
+      icon: "FiPhone",
+      text: t("footer.contact.redirects.one"),
+    },
+    {
+      icon: "FiMail",
+      text: t("footer.contact.redirects.two"),
+    },
+  ];
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  // Quick links
+  const quickLinks = [
+    "footer.information.redirects.one",
+    "footer.information.redirects.two",
+    "footer.information.redirects.three",
+    "footer.links.redirects.one",
+    "footer.links.redirects.two",
+    "footer.links.redirects.three",
+    "footer.otherLinks.contactUs",
+  ];
 
   return (
-    <>
-      {isMobile ? (
-        // Mobile
-        <footer style={styles.footerMobile}>
-          <div style={styles.footerContainerMobile}>
-            <div style={styles.usefulBlock}>
-              <p style={styles.title}>{t("footer.information.title")}</p>
-              <div style={styles.content}>
-                <Link to="/page-not-found" style={{ textDecoration: "none" }}>
-                  {renderLink("footer.information.redirects.one")}
+    <footer
+      style={{
+        backgroundColor: "var(--dark)",
+        color: "var(--light)",
+        padding: "60px 0 30px",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: "1200px",
+          margin: "0 auto",
+          padding: "0 20px",
+        }}
+      >
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+            gap: "40px",
+            marginBottom: "50px",
+          }}
+        >
+          {/* Company Name and About Us */}
+          <div>
+            <h2
+              style={{
+                fontSize: "24px",
+                fontWeight: "800",
+                fontFamily: "var(--font-primary)",
+                color: "white",
+                marginBottom: "20px",
+              }}
+            >
+              TIXMOJO
+            </h2>
+
+            <p
+              style={{
+                fontSize: "14px",
+                lineHeight: "1.6",
+                color: "var(--gray-light)",
+                marginBottom: "20px",
+              }}
+            >
+              {t("footer.about")}
+            </p>
+
+            <div
+              style={{
+                display: "flex",
+                gap: "15px",
+              }}
+            >
+              {socialNetworks.map((social, index) => (
+                <Link
+                  key={index}
+                  to="/page-not-found"
+                  aria-label={social.name}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "50%",
+                    backgroundColor: "var(--gray-dark)",
+                    color: "var(--gray-light)",
+                    fontSize: "18px",
+                    transition: "all 0.3s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--primary)";
+                    e.currentTarget.style.color = "var(--light)";
+                    e.currentTarget.style.transform = "translateY(-3px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--gray-dark)";
+                    e.currentTarget.style.color = "var(--gray-light)";
+                    e.currentTarget.style.transform = "translateY(0)";
+                  }}
+                >
+                  {iconMap[social.icon]}
                 </Link>
-                <Link to="/page-not-found" style={{ textDecoration: "none" }}>
-                  {renderLink("footer.information.redirects.two")}
-                </Link>
-                <Link to="/page-not-found" style={{ textDecoration: "none" }}>
-                  {renderLink("footer.information.redirects.three")}
-                </Link>
-              </div>
+              ))}
             </div>
-            <div style={styles.usefulBlock}>
-              <p style={styles.title}>{t("footer.links.title")}</p>
-              <div style={styles.content}>
-                <Link to="/page-not-found" style={{ textDecoration: "none" }}>
-                  {renderLink("footer.links.redirects.one")}
-                </Link>
-                <Link to="/page-not-found" style={{ textDecoration: "none" }}>
-                  {renderLink("footer.links.redirects.two")}
-                </Link>
-                <Link to="/page-not-found" style={{ textDecoration: "none" }}>
-                  {renderLink("footer.links.redirects.three")}
-                </Link>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h3
+              style={{
+                fontSize: "18px",
+                fontWeight: "700",
+                marginBottom: "20px",
+                color: "white",
+              }}
+            >
+              {t("footer.otherLinks.title")}
+            </h3>
+            <ul
+              style={{
+                listStyle: "none",
+                padding: 0,
+                margin: 0,
+              }}
+            >
+              {quickLinks.map((link, index) => (
+                <li key={index} style={{ marginBottom: "12px" }}>
+                  <Link
+                    to="/page-not-found"
+                    style={{
+                      color: "var(--gray-light)",
+                      textDecoration: "none",
+                      fontSize: "14px",
+                      display: "inline-block",
+                      position: "relative",
+                      paddingLeft: "15px",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = "var(--primary-light)";
+                      e.currentTarget.style.paddingLeft = "20px";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = "var(--gray-light)";
+                      e.currentTarget.style.paddingLeft = "15px";
+                    }}
+                  >
+                    <span
+                      style={{
+                        position: "absolute",
+                        left: "0",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        width: "6px",
+                        height: "6px",
+                        borderRadius: "50%",
+                        backgroundColor: "var(--primary)",
+                      }}
+                    ></span>
+                    {t(link)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Event Categories */}
+          <div>
+            <h3
+              style={{
+                fontSize: "18px",
+                fontWeight: "700",
+                marginBottom: "20px",
+                color: "white",
+              }}
+            >
+              {t("footer.categories.title")}
+            </h3>
+            <ul
+              style={{
+                listStyle: "none",
+                padding: 0,
+                margin: 0,
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "12px",
+              }}
+            >
+              {categories.map((category, index) => (
+                <li key={index}>
+                  <Link
+                    to="/page-not-found"
+                    style={{
+                      color: "var(--gray-light)",
+                      textDecoration: "none",
+                      fontSize: "14px",
+                      transition: "color 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = "var(--primary-light)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = "var(--gray-light)";
+                    }}
+                  >
+                    {category}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact Us */}
+          <div>
+            <h3
+              style={{
+                fontSize: "18px",
+                fontWeight: "700",
+                marginBottom: "20px",
+                color: "white",
+              }}
+            >
+              {t("footer.contact.title")}
+            </h3>
+            <ul
+              style={{
+                listStyle: "none",
+                padding: 0,
+                margin: 0,
+              }}
+            >
+              {contactInfo.map((contact, index) => (
+                <li
+                  key={index}
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    marginBottom: "15px",
+                    gap: "10px",
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "var(--primary)",
+                      fontSize: "18px",
+                      marginTop: "2px",
+                    }}
+                  >
+                    {iconMap[contact.icon]}
+                  </span>
+                  <Link
+                    to="/page-not-found"
+                    style={{
+                      color: "var(--gray-light)",
+                      fontSize: "14px",
+                      lineHeight: "1.6",
+                      textDecoration: "none",
+                      transition: "color 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = "var(--primary-light)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = "var(--gray-light)";
+                    }}
+                  >
+                    {contact.text}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            <div style={{ marginTop: "20px" }}>
+              <h4
+                style={{
+                  fontSize: "15px",
+                  fontWeight: "600",
+                  marginBottom: "15px",
+                  color: "white",
+                }}
+              >
+                {t("footer.newsletter.title")}
+              </h4>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                }}
+              >
+                <input
+                  type="email"
+                  placeholder={t("footer.newsletter.placeholder")}
+                  style={{
+                    flex: 1,
+                    padding: "10px 15px",
+                    borderRadius: "50px",
+                    border: "1px solid var(--gray-dark)",
+                    backgroundColor: "var(--gray-dark)",
+                    color: "white",
+                    fontSize: "14px",
+                    outline: "none",
+                  }}
+                />
+                <button
+                  className="btn btn-primary"
+                  style={{
+                    margin: 0,
+                    height: "40px",
+                    padding: "0 20px",
+                  }}
+                >
+                  {t("footer.newsletter.button")}
+                </button>
               </div>
             </div>
           </div>
-          <div style={styles.footerContainerMobile}>
-            <Logo style={styles.logo} isMobile={isMobile} />
-            <div style={styles.usefulBlock}>
-              <p style={styles.title}>{t("footer.contact.title")}</p>
-              <div style={styles.content}>
-                <div style={styles.contactSvg}>
-                  <Phone />
-                  <Link to="/page-not-found" style={{ textDecoration: "none" }}>
-                    {renderLink("footer.contact.redirects.one")}
-                  </Link>
-                </div>
-                <div style={styles.contactSvg}>
-                  <Email />
-                  <Link to="/page-not-found" style={{ textDecoration: "none" }}>
-                    {renderLink("footer.contact.redirects.two")}
-                  </Link>
-                </div>
-                <div style={styles.socialSvgContainer}>
-                  <div className="insta" style={styles.socialSvg}></div>
-                  <div className="twitter" style={styles.socialSvg}></div>
-                  <div className="facebook" style={styles.socialSvg}></div>
-                </div>
-              </div>
-            </div>
+        </div>
+
+        {/* Footer Bottom */}
+        <div
+          style={{
+            borderTop: "1px solid var(--gray-dark)",
+            paddingTop: "20px",
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "20px",
+          }}
+        >
+          <div
+            style={{
+              color: "var(--gray-light)",
+              fontSize: "14px",
+            }}
+          >
+            {t("footer.copyright")}
           </div>
-          <div style={styles.copyrightMobile}>
-            <span></span>
-            <p>{t("footer.copyright")}</p>
-          </div>
-        </footer>
-      ) : (
-        // Desktop
-        <footer style={styles.footer}>
-          <div style={styles.footerContainer}>
-            <Logo style={styles.logo} />
-            <div style={styles.footerContainer2}>
-              <div style={styles.usefulBlock}>
-                <p style={styles.title}>{t("footer.information.title")}</p>
-                <div style={styles.content}>
-                  <Link to="/page-not-found" style={{ textDecoration: "none" }}>
-                    {renderLink("footer.information.redirects.one")}
-                  </Link>
-                  <Link to="/page-not-found" style={{ textDecoration: "none" }}>
-                    {renderLink("footer.information.redirects.two")}
-                  </Link>
-                  <Link to="/page-not-found" style={{ textDecoration: "none" }}>
-                    {renderLink("footer.information.redirects.three")}
-                  </Link>
-                </div>
-              </div>
-              <div style={styles.usefulBlock}>
-                <p style={styles.title}>{t("footer.links.title")}</p>
-                <div style={styles.content}>
-                  <Link
-                    to="./page-not-found"
-                    style={{ textDecoration: "none" }}
-                  >
-                    {renderLink("footer.links.redirects.one")}
-                  </Link>
-                  <Link
-                    to="./page-not-found"
-                    style={{ textDecoration: "none" }}
-                  >
-                    {renderLink("footer.links.redirects.two")}
-                  </Link>
-                  <Link
-                    to="./page-not-found"
-                    style={{ textDecoration: "none" }}
-                  >
-                    {renderLink("footer.links.redirects.three")}
-                  </Link>
-                </div>
-              </div>
-              <div style={styles.usefulBlock}>
-                <p style={styles.title}>{t("footer.contact.title")}</p>
-                <div style={styles.content}>
-                  <Link
-                    to="./page-not-found"
-                    style={{ textDecoration: "none" }}
-                  >
-                    <div style={styles.contactSvg}>
-                      <Phone />
-                      {renderLink("footer.contact.redirects.one")}
-                    </div>
-                  </Link>
-                  <Link
-                    to="./page-not-found"
-                    style={{ textDecoration: "none" }}
-                  >
-                    <div style={styles.contactSvg}>
-                      <Email />
-                      {renderLink("footer.contact.redirects.two")}
-                    </div>
-                  </Link>
-                  <div style={styles.socialSvgContainer}>
-                    <Link
-                      to="./page-not-found"
-                      style={{ textDecoration: "none" }}
-                    >
-                      <div className="insta" style={styles.socialSvg}></div>
-                    </Link>
-                    <Link
-                      to="./page-not-found"
-                      style={{ textDecoration: "none" }}
-                    >
-                      <div className="twitter" style={styles.socialSvg}></div>
-                    </Link>
-                    <Link
-                      to="./page-not-found"
-                      style={{ textDecoration: "none" }}
-                    >
-                      <div className="facebook" style={styles.socialSvg}></div>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div style={styles.copyright}>
-            <span></span>
-            <p>{t("footer.copyright")}</p>
-            <div style={styles.tnc}>
-              <Link to="/page-not-found" style={{ textDecoration: "none" }}>
-                {renderLink("footer.tnc.privacy")}
+
+          <div
+            style={{
+              display: "flex",
+              gap: "20px",
+            }}
+          >
+            {[
+              "footer.tnc.privacy",
+              "footer.tnc.refund",
+              "footer.tnc.terms",
+            ].map((item, index) => (
+              <Link
+                key={index}
+                to="/page-not-found"
+                style={{
+                  color: "var(--gray-light)",
+                  textDecoration: "none",
+                  fontSize: "14px",
+                  transition: "color 0.3s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = "var(--primary-light)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = "var(--gray-light)";
+                }}
+              >
+                {t(item)}
               </Link>
-              <Link to="/page-not-found" style={{ textDecoration: "none" }}>
-                {renderLink("footer.tnc.refund")}
-              </Link>
-              <Link to="/page-not-found" style={{ textDecoration: "none" }}>
-                {renderLink("footer.tnc.terms")}
-              </Link>
-            </div>
+            ))}
           </div>
-        </footer>
-      )}
-    </>
+        </div>
+      </div>
+    </footer>
   );
 }
 

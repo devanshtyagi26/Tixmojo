@@ -1,14 +1,16 @@
 import React from "react";
-import Navbar from "../Components/Navbar";
-import Footer from "../Components/Footer";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { PageSEO } from "../utils/SEO.jsx";
+import "../i18n";
+
 const styles = {
   container: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    height: "100vh",
+    height: "80vh",
     width: "100vw",
     backgroundColor: "#f8f9fa",
   },
@@ -22,6 +24,7 @@ const styles = {
     fontSize: "1.5rem",
     color: "#333",
     textAlign: "center",
+    margin: "40px 0",
   },
   link: {
     textDecoration: "none",
@@ -35,13 +38,20 @@ const styles = {
   },
 };
 function PageNotFound() {
+  const { t, i18n } = useTranslation();
   return (
     <>
+      <PageSEO
+        title="Page Not Found"
+        description="The page you are looking for could not be found. Navigate back to our home page to find events and tickets."
+        path="/page-not-found"
+        noindex={true}
+      />
       <div style={styles.container}>
-        <h1 style={styles.h1}>PageNotFound Page</h1>
-        <p style={styles.p}>The page you are looking for does not exist.</p>
+        <h1 style={styles.h1}>{t("pageNotFound.title")}</h1>
+        <p style={styles.p}>{t("pageNotFound.message")}</p>
         <Link to="/" style={styles.link}>
-          Go to Home
+          {t("pageNotFound.redirect")}
         </Link>
       </div>
     </>

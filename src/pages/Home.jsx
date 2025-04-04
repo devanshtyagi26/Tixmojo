@@ -1,300 +1,280 @@
-import React from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
 import { useTranslation } from "react-i18next";
-import EventsSection from "../Components/EventsSection.jsx";
-import RecommendationSection from "../Components/RecommendationSection.jsx";
-import FlyerCarousel from "../Components/FlyerCarousel.jsx";
-import { flyerData } from "../data/flyerData.js";
-import Footer from "../Components/Footer.jsx";
-import Recommendations from "../Components/RecommendSection.jsx";
+import EventsSection from "../Components/HomePage/EventsSection.jsx";
+import FlyerCarousel from "../Components/HomePage/FlyerCarousel.jsx";
+import NewRecommendSection from "../Components/HomePage/NewRecommendSection.jsx";
+import { ScrollAnimation } from "../utils/ScrollAnimation.jsx";
+import { PageSEO } from "../utils/SEO.jsx";
+import { getAllAppData } from "../services/api.js";
+import Loader from "../Components/Loader.jsx";
 
-// Get today and tomorrow's dates formatted as "DD MMM"
-const formatDate = (date) => {
-  const day = date.getDate();
-  const monthNames = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  const month = monthNames[date.getMonth()];
-  return `${day} ${month}`;
-};
-
-const today = new Date();
-const tomorrow = new Date(today);
-tomorrow.setDate(tomorrow.getDate() + 1);
-
-const todayFormatted = formatDate(today);
-const tomorrowFormatted = formatDate(tomorrow);
-
-// Create next week date
-const nextWeek = new Date(today);
-nextWeek.setDate(nextWeek.getDate() + 5); // 5 days from now
-const nextWeekFormatted = formatDate(nextWeek);
-
-// Create dates for future events
-const futureDate1 = new Date(today);
-futureDate1.setDate(futureDate1.getDate() + 14);
-const futureFormatted1 = formatDate(futureDate1);
-
-const futureDate2 = new Date(today);
-futureDate2.setDate(futureDate2.getDate() + 30);
-const futureFormatted2 = formatDate(futureDate2);
-
-// Event data with concert images, date-aware events, locations, and rank scores
-const eventsData = [
-  {
-    eventName: "TODAY'S LIVE CONCERT",
-    eventDate: `${todayFormatted} - ${todayFormatted}`,
-    eventRanking: "1",
-    eventAddress: "Pulse Live (Former Yang), Sydney",
-    eventLocation: "Sydney",
-    eventPrice: "399",
-    eventPoster:
-      "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=2940&auto=format&fit=crop",
-    rankScore: 95, // High rank score for today's event
-  },
-  {
-    eventName: "TOMORROW'S DANCE PARTY",
-    eventDate: `${tomorrowFormatted} - ${tomorrowFormatted}`,
-    eventRanking: "1", // First position for tomorrow's events
-    eventAddress: "Marina Bay Sands, Sydney",
-    eventLocation: "Sydney",
-    eventPrice: "299",
-    eventPoster:
-      "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=2574&auto=format&fit=crop",
-    rankScore: 90,
-  },
-  {
-    eventName: "THIS WEEK FESTIVAL",
-    eventDate: `${nextWeekFormatted} - ${nextWeekFormatted}`,
-    eventRanking: "1", // First position for this week's events
-    eventAddress: "National Stadium, Sydney",
-    eventLocation: "Sydney",
-    eventPrice: "499",
-    eventPoster:
-      "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=2940&auto=format&fit=crop",
-    rankScore: 88,
-  },
-  {
-    eventName: "TODAY'S JAZZ NIGHT",
-    eventDate: `${todayFormatted} - ${todayFormatted}`,
-    eventRanking: "2", // Second position for today's events
-    eventAddress: "Esplanade Concert Hall, Sydney",
-    eventLocation: "Sydney",
-    eventPrice: "199",
-    eventPoster:
-      "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=2940&auto=format&fit=crop",
-    rankScore: 85,
-  },
-  {
-    eventName: "TOMORROW'S COMEDY SHOW",
-    eventDate: `${tomorrowFormatted} - ${tomorrowFormatted}`,
-    eventRanking: "2", // Second position for tomorrow's events
-    eventAddress: "Sentosa Beach, Sydney",
-    eventLocation: "Sydney",
-    eventPrice: "249",
-    eventPoster:
-      "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?q=80&w=2850&auto=format&fit=crop",
-    rankScore: 82,
-  },
-  {
-    eventName: "NEXT MONTH SYMPHONIC",
-    eventDate: `${futureFormatted2} - ${futureFormatted2}`,
-    eventRanking: "1", // First position for next month's events
-    eventAddress: "Victoria Concert Hall, Sydney",
-    eventLocation: "Sydney",
-    eventPrice: "349",
-    eventPoster:
-      "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?q=80&w=2940&auto=format&fit=crop",
-    rankScore: 75,
-  },
-  {
-    eventName: "NEXT WEEK EDM PARTY",
-    eventDate: `${futureFormatted1} - ${futureFormatted1}`,
-    eventRanking: "1", // First position for next week's events
-    eventAddress: "Gardens by the Bay, Sydney",
-    eventLocation: "Sydney",
-    eventPrice: "450",
-    eventPoster:
-      "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=2940&auto=format&fit=crop",
-    rankScore: 80,
-  },
-  {
-    eventName: "THIS WEEK INDIE ROCK",
-    eventDate: `${nextWeekFormatted} - ${nextWeekFormatted}`,
-    eventRanking: "2", // Second position for this week's events
-    eventAddress: "The Promontory, Sydney",
-    eventLocation: "Sydney",
-    eventPrice: "279",
-    eventPoster:
-      "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=2940&auto=format&fit=crop",
-    rankScore: 78,
-  },
-  {
-    eventName: "TODAY'S OUTDOOR FESTIVAL",
-    eventDate: `${todayFormatted} - ${todayFormatted}`,
-    eventRanking: "3", // Lower position for today's events
-    eventAddress: "Botanical Gardens, Sydney",
-    eventLocation: "Sydney",
-    eventPrice: "159",
-    eventPoster:
-      "https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=2940&auto=format&fit=crop",
-    rankScore: 70,
-  },
-  {
-    eventName: "TOMORROW'S ART EXHIBITION",
-    eventDate: `${tomorrowFormatted} - ${tomorrowFormatted}`,
-    eventRanking: "3", // Lower position for tomorrow's events
-    eventAddress: "Modern Art Gallery, Sydney",
-    eventLocation: "Sydney",
-    eventPrice: "120",
-    eventPoster:
-      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?q=80&w=2940&auto=format&fit=crop",
-    rankScore: 65,
-  },
-  {
-    eventName: "THIS WEEK THEATER SHOW",
-    eventDate: `${nextWeekFormatted} - ${nextWeekFormatted}`,
-    eventRanking: "3", // Lower position for this week's events
-    eventAddress: "Sydney Opera House, Sydney",
-    eventLocation: "Sydney",
-    eventPrice: "299",
-    eventPoster:
-      "https://images.unsplash.com/photo-1607998803461-4e9aaa2291a0?q=80&w=2940&auto=format&fit=crop",
-    rankScore: 60,
-  },
-];
-
-// We're only keeping the data that's being used in the components
+import "../i18n";
 
 function Home() {
-  const { t } = useTranslation();
-  const [popularEventsLocation, setPopularEventsLocation] = React.useState(
-    t("eventsSection.locations.sydney")
-  );
+  const { t, i18n } = useTranslation();
+  const [popularEventsLocation, setPopularEventsLocation] = useState("Sydney");
+  const [allAppData, setAllAppData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Flyer data is now imported directly from the data file
-
-  // Recommendations data (combining popular events from different locations)
-  const recommendationsData = [
-    {
-      eventName: "TRENDING: ELECTRONIC DANCE FESTIVAL",
-      eventDate: `${nextWeekFormatted} - ${nextWeekFormatted}`,
-      eventAddress: "Arts Centre, Melbourne",
-      eventPrice: "129",
-      eventPoster:
-        "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=2574&auto=format&fit=crop",
-    },
-    {
-      eventName: "POPULAR: CULTURAL FOOD FESTIVAL",
-      eventDate: `${tomorrowFormatted} - ${tomorrowFormatted}`,
-      eventAddress: "Federation Square, Melbourne",
-      eventPrice: "99",
-      eventPoster:
-        "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=2787&auto=format&fit=crop",
-    },
-    {
-      eventName: "BEST SELLER: JAZZ NIGHT SPECIAL",
-      eventDate: `${todayFormatted} - ${todayFormatted}`,
-      eventAddress: "Opera House, Sydney",
-      eventPrice: "149",
-      eventPoster:
-        "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?q=80&w=2940&auto=format&fit=crop",
-    },
-    {
-      eventName: "TOP RATED: COMEDY NIGHT",
-      eventDate: `${tomorrowFormatted} - ${tomorrowFormatted}`,
-      eventAddress: "State Theatre, Sydney",
-      eventPrice: "89",
-      eventPoster:
-        "https://images.unsplash.com/photo-1527224857830-43a7acc85260?q=80&w=2729&auto=format&fit=crop",
-    },
-    {
-      eventName: "HOT PICK: FASHION SHOWCASE",
-      eventDate: `${nextWeekFormatted} - ${nextWeekFormatted}`,
-      eventAddress: "Marina Bay Sands, Singapore",
-      eventPrice: "199",
-      eventPoster:
-        "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=2787&auto=format&fit=crop",
-    },
-    {
-      eventName: "MUST SEE: ROCK CONCERT",
-      eventDate: `${todayFormatted} - ${todayFormatted}`,
-      eventAddress: "National Stadium, Singapore",
-      eventPrice: "179",
-      eventPoster:
-        "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=2940&auto=format&fit=crop",
-    },
-    {
-      eventName: "FOR YOU: ART EXHIBITION",
-      eventDate: `${tomorrowFormatted} - ${tomorrowFormatted}`,
-      eventAddress: "National Gallery, Singapore",
-      eventPrice: "69",
-      eventPoster:
-        "https://images.unsplash.com/photo-1544967082-d9d25d867d66?q=80&w=2787&auto=format&fit=crop",
-    },
-    {
-      eventName: "RISING STAR: INDIE MUSIC NIGHT",
-      eventDate: `${nextWeekFormatted} - ${nextWeekFormatted}`,
-      eventAddress: "The Promontory, Sydney",
-      eventPrice: "79",
-      eventPoster:
-        "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?q=80&w=2940&auto=format&fit=crop",
-    },
-  ];
-
-  // We've removed Melbourne events data since it's not being used
-
-  // Define available locations for dropdowns
-  const availableLocations = [
-    t("eventsSection.locations.sydney"),
-    t("eventsSection.locations.melbourne"),
-    t("eventsSection.locations.singapore"),
-    t("eventsSection.locations.tokyo"),
-    t("eventsSection.locations.newYork"),
-  ];
-
-  // Handler for popular events location selector
-  const handlePopularLocationChange = (newLocation) => {
-    console.log(`Popular events location changed to: ${newLocation}`);
-    setPopularEventsLocation(newLocation);
-    // In a real app, you would fetch new events for the selected location
+  // Format date for display
+  const formatDate = (date) => {
+    const day = date.getDate();
+    const monthNames = t("eventsSection.dateFormat.months", {
+      returnObjects: true,
+    });
+    const month = monthNames[date.getMonth()];
+    return `${day} ${month}`;
   };
 
-  // Only keeping the popular events location handler since that's the only one being used
+  // Calculate dates for different event types
+  const dates = useMemo(() => {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const nextWeek = new Date(today);
+    nextWeek.setDate(nextWeek.getDate() + 5); // 5 days from now
+
+    const futureDate1 = new Date(today);
+    futureDate1.setDate(futureDate1.getDate() + 14);
+
+    const futureDate2 = new Date(today);
+    futureDate2.setDate(futureDate2.getDate() + 30);
+
+    return {
+      today: formatDate(today),
+      tomorrow: formatDate(tomorrow),
+      thisWeek: formatDate(nextWeek),
+      nextWeek: formatDate(futureDate1),
+      nextMonth: formatDate(futureDate2),
+    };
+  }, [i18n.language]);
+
+  // Format server events for display in EventsSection
+  const formatServerEvents = (serverEvents) => {
+    if (!Array.isArray(serverEvents) || serverEvents.length === 0) {
+      console.warn("No events data received from server or invalid format");
+      // Create some mock events as fallback
+      return [
+        {
+          id: "mock-event-1",
+          eventName: "SAMPLE EVENT 1",
+          eventPoster:
+            "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=2940&auto=format&fit=crop",
+          eventAddress: "Sydney Opera House, Sydney",
+          eventDate: "3 Apr",
+          eventPrice: "299",
+          eventRanking: "1",
+          rankScore: 95,
+          eventLocation: "Sydney",
+        },
+        {
+          id: "mock-event-2",
+          eventName: "SAMPLE EVENT 2",
+          eventPoster:
+            "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=2940&auto=format&fit=crop",
+          eventAddress: "Olympic Park, Sydney",
+          eventDate: "5 Apr",
+          eventPrice: "199",
+          eventRanking: "2",
+          rankScore: 90,
+          eventLocation: "Sydney",
+        },
+      ];
+    }
+
+    return serverEvents
+      .map((event, index) => {
+        if (!event) return null;
+
+        try {
+
+          // Handle different possible data structures safely
+          const address =
+            event.eventAddress ||
+            (event.venueName && event.venueAddress
+              ? `${event.venueName}, ${event.venueAddress}`
+              : event.venueAddress || "Sydney, Australia");
+
+          let displayDate = "Upcoming";
+          try {
+            // Try different date formats
+            if (event.date && typeof event.date === "string") {
+              const dateParts = event.date.split(",");
+              if (dateParts.length >= 2) {
+                displayDate = dateParts[1].trim();
+              }
+            } else if (event.eventDate) {
+              displayDate = event.eventDate;
+            }
+          } catch (dateError) {
+            console.warn("Error parsing date for event", event.id, dateError);
+          }
+
+          // Create display format expected by Cards component
+          return {
+            id: event.id || `event-${index}`,
+            eventName: event.eventName || "Event " + (index + 1),
+            eventPoster:
+              event.eventPoster ||
+              "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=2940&auto=format&fit=crop",
+            eventAddress: address,
+            eventDate: displayDate,
+            eventPrice: event.eventPrice || "Free",
+            eventRanking: event.eventRanking || String(index + 1),
+            rankScore: event.rankScore || 100 - index,
+            eventLocation: event.eventLocation || "Sydney",
+            // Preserve the eventDateType field which is essential for filtering
+            eventDateType: event.eventDateType,
+            // Add any other fields needed by Cards component
+            date: event.date,
+            time: event.time,
+            tags: event.tags || ["Event"],
+            description:
+              event.description || "Join us for this exciting event!",
+          };
+        } catch (error) {
+          console.error("Error processing event:", error, event);
+          return null;
+        }
+      })
+      .filter((event) => event !== null); // Remove any null events
+  };
+
+  // Fetch all application data once
+  useEffect(() => {
+    const fetchAllData = async () => {
+      setLoading(true);
+      try {
+        // Get all data in a single API call
+        const appData = await getAllAppData();
+
+        // Store the complete data set
+        setAllAppData(appData);
+      } catch (error) {
+        console.error("Error fetching application data:", error);
+        // Could implement fallback or retry logic here
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAllData();
+  }, []); // Only fetch once on component mount
+
+  // Handle location change without fetching new data
+  const handlePopularLocationChange = useCallback(
+    (newLocation) => {
+      if (newLocation === popularEventsLocation) return;
+      setPopularEventsLocation(newLocation);
+      // No need to fetch data - we already have everything
+    },
+    [popularEventsLocation]
+  );
+
+  // Format events for a specific location
+  const getEventsForLocation = useCallback(
+    (location) => {
+      if (!allAppData || !allAppData.locationEvents) return [];
+
+      // Get location events for the selected location
+      const eventsForLocation = allAppData.locationEvents[location] || [];
+
+      // Format and return
+      return formatServerEvents(eventsForLocation);
+    },
+    [allAppData]
+  );
+
+  // Get current location events
+  const currentLocationEvents = useMemo(() => {
+    return getEventsForLocation(popularEventsLocation);
+  }, [popularEventsLocation, getEventsForLocation]);
+
+  // Get spotlight events (no location filtering)
+  const currentSpotlightEvents = useMemo(() => {
+    if (!allAppData || !allAppData.spotlightEvents) return [];
+
+    // Format the dates properly for the spotlight events
+    return formatServerEvents(allAppData.spotlightEvents);
+  }, [allAppData]);
+
+  // Get available locations
+  const availableLocations = useMemo(() => {
+    if (!allAppData || !allAppData.locations) {
+      return ["Sydney", "Melbourne", "Brisbane", "Singapore"]; // Fallback
+    }
+    return allAppData.locations;
+  }, [allAppData]);
 
   return (
     <>
-      <div style={{ position: "relative", height: "fit-content" }}>
-        {/* Featured Flyers Carousel */}
-        <FlyerCarousel
-          flyers={flyerData}
-          containerId="featuredFlyersCarousel"
-        />
+      <PageSEO
+        title="Find and Book Amazing Events"
+        description="Discover top events, concerts, and shows in your area. TixMojo helps you find tickets for the best live entertainment experiences."
+        path="/"
+        keywords="events, tickets, concerts, shows, festivals, entertainment, live music"
+      />
 
-        {/* Popular Events Section */}
-        <EventsSection
-          title={t("eventsSection.sectionTitles.popular")}
-          location={popularEventsLocation}
-          events={eventsData}
-          containerId="popularEventsContainer"
-          onLocationChange={handlePopularLocationChange}
-          availableLocations={availableLocations}
-        />
-        <Recommendations
-          events={eventsData}
-          containerId="recommendationsContainer"
-        />
-      </div>
+      {loading || !allAppData ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "70vh",
+          }}
+        >
+          <Loader size="large" />
+        </div>
+      ) : (
+        <>
+          {/* Hero Section with Carousel */}
+          <ScrollAnimation direction="down" distance={30} duration={1.2}>
+            <FlyerCarousel flyers={allAppData.flyerData} />
+          </ScrollAnimation>
+
+          {/* Popular Events Section */}
+          <ScrollAnimation
+            direction="up"
+            distance={40}
+            duration={1}
+            delay={0.2}
+          >
+            <EventsSection
+              title="Events in"
+              location={popularEventsLocation}
+              events={currentLocationEvents}
+              containerId="popularEventsContainer"
+              onLocationChange={handlePopularLocationChange}
+              availableLocations={availableLocations}
+            />
+          </ScrollAnimation>
+
+          {/* New Recommendation Section without rankings - using spotlight events data */}
+          <ScrollAnimation
+            direction="up"
+            distance={40}
+            duration={1}
+            delay={0.3}
+          >
+            <NewRecommendSection
+              title={"Spotlight Events"}
+              subtitle={
+                "Curated selection of must-see events you don't want to miss"
+              }
+              events={currentSpotlightEvents}
+              containerId="trendingRecommendations"
+            />
+          </ScrollAnimation>
+        </>
+      )}
     </>
   );
 }
