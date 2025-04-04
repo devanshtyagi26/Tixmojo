@@ -14,6 +14,7 @@ import EventContainer from "../Components/EventDetails/EventContainer.jsx";
 import EventSEOWrapper from "../Components/EventDetails/EventSEOWrapper.jsx";
 import NewOrganizerInfo from "../Components/EventDetails/NewOrganizerInfo.jsx";
 import TicketSelection from "../Components/EventDetails/TicketSelection.jsx";
+import CountdownTimer from "../Components/EventDetails/CountdownTimer.jsx";
 
 const EventDetails = () => {
   const { t } = useTranslation();
@@ -23,7 +24,36 @@ const EventDetails = () => {
   const [loading, setLoading] = useState(true);
   const [showContactPopup, setShowContactPopup] = useState(false);
   const [showTicketSelection, setShowTicketSelection] = useState(false);
+  const [showTimer, setShowTimer] = useState(false);
+  const [expiryTime, setExpiryTime] = useState(null);
+  const [isInTicketSection, setIsInTicketSection] = useState(false);
   const [organizerEvents, setOrganizerEvents] = useState([]);
+  
+  // Intersection Observer to detect if user is viewing the ticket selection section
+  useEffect(() => {
+    if (!showTicketSelection) return;
+    
+    const ticketSectionRef = document.getElementById('ticket-selection-section');
+    if (!ticketSectionRef) return;
+    
+    const options = {
+      root: null,
+      rootMargin: '-100px 0px',
+      threshold: 0.2
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        setIsInTicketSection(entry.isIntersecting);
+      });
+    }, options);
+    
+    observer.observe(ticketSectionRef);
+    
+    return () => {
+      observer.disconnect();
+    };
+  }, [showTicketSelection]);
 
   useEffect(() => {
     // Fetch event details from API
@@ -105,6 +135,10 @@ const EventDetails = () => {
     // Show the ticket selection section
     setShowTicketSelection(true);
     
+    // Initialize the timer (10 minutes from now)
+    setExpiryTime(new Date(Date.now() + 600000));
+    setShowTimer(true);
+    
     // Scroll to ticket selection section
     setTimeout(() => {
       window.scrollTo({
@@ -112,6 +146,14 @@ const EventDetails = () => {
         behavior: 'smooth'
       });
     }, 100);
+  };
+  
+  // Handle timer expiry
+  const handleTimerExpire = () => {
+    setShowTimer(false);
+    setShowTicketSelection(false);
+    alert('Your session has expired. The page will now refresh.');
+    window.location.reload();
   };
 
   if (loading) {
@@ -126,6 +168,50 @@ const EventDetails = () => {
   return (
     <>
       <EventSEOWrapper event={event} eventId={eventId} />
+      
+      {/* Fixed Timer - Only shown when not in ticket section */}
+      {showTimer && !isInTicketSection && (
+        <div 
+          className="fixed-timer"
+          style={{
+            position: 'fixed',
+            top: '90px',
+            right: '20px',
+            zIndex: 1000,
+            width: '280px',
+            transform: 'scale(0.85)',
+            transformOrigin: 'top right',
+            transition: 'all 0.3s ease',
+            filter: 'drop-shadow(0 4px 20px rgba(0,0,0,0.15))',
+          }}
+        >
+          <CountdownTimer expiryTime={expiryTime} onExpire={handleTimerExpire} />
+          
+          {/* Responsive styles */}
+          <style>
+            {`
+              @media (max-width: 768px) {
+                .fixed-timer {
+                  top: 70px;
+                  right: 10px;
+                  width: 240px;
+                  transform: scale(0.75);
+                }
+              }
+              
+              @media (max-width: 480px) {
+                .fixed-timer {
+                  top: auto;
+                  bottom: 10px;
+                  right: 10px;
+                  width: 220px;
+                  transform: scale(0.7);
+                }
+              }
+            `}
+          </style>
+        </div>
+      )}
 
       <EventContainer>
         <EventDetailsHeader event={event} />
@@ -154,44 +240,54 @@ const EventDetails = () => {
             duration={0.8}
             delay={0.5}
           >
-            <div style={{ 
-              position: 'relative',
-              marginBottom: '50px'
-            }}>
+            <div 
+              id="ticket-selection-section"
+              style={{ 
+                position: 'relative',
+                marginBottom: '50px'
+              }}
+            >
               <button
                 onClick={() => setShowTicketSelection(false)}
                 style={{
                   position: 'absolute',
                   top: '15px',
                   right: '15px',
-                  background: 'white',
-                  border: 'none',
+                  background: 'var(--purple-50)',
+                  border: '1px solid var(--purple-100)',
                   borderRadius: '50%',
-                  width: '36px',
-                  height: '36px',
+                  width: '32px',
+                  height: '32px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   cursor: 'pointer',
-                  boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                  boxShadow: '0 2px 8px rgba(111, 68, 255, 0.08)',
                   zIndex: 20,
-                  color: 'var(--neutral-700)',
-                  fontSize: '20px',
+                  color: 'var(--purple-600)',
+                  fontSize: '18px',
                   fontWeight: 'bold',
                   transition: 'all 0.2s ease',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'scale(1.05)';
-                  e.currentTarget.style.color = 'var(--primary)';
+                  e.currentTarget.style.background = 'var(--purple-100)';
+                  e.currentTarget.style.color = 'var(--purple-800)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.color = 'var(--neutral-700)';
+                  e.currentTarget.style.background = 'var(--purple-50)';
+                  e.currentTarget.style.color = 'var(--purple-600)';
                 }}
               >
                 ✕
               </button>
-              <TicketSelection event={event} />
+              <TicketSelection 
+                event={event} 
+                expiryTime={expiryTime}
+                onExpire={handleTimerExpire}
+                showTimer={showTimer && isInTicketSection}
+              />
             </div>
           </ScrollAnimation>
         )}

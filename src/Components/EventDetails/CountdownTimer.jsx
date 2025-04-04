@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaRegClock } from 'react-icons/fa';
+import { BiTimer } from 'react-icons/bi';
 
 const CountdownTimer = ({ expiryTime, onExpire }) => {
   const [timeLeft, setTimeLeft] = useState({
@@ -51,8 +51,8 @@ const CountdownTimer = ({ expiryTime, onExpire }) => {
   // Determine color based on time remaining
   const getTimerColor = () => {
     if (progressPercentage > 50) return 'var(--purple-600)';
-    if (progressPercentage > 20) return 'orange';
-    return '#ff4545';
+    if (progressPercentage > 20) return 'var(--purple-800)';
+    return 'var(--primary)';
   };
   
   const timerColor = getTimerColor();
@@ -69,16 +69,14 @@ const CountdownTimer = ({ expiryTime, onExpire }) => {
         justifyContent: 'center',
         gap: '10px',
         fontFamily: 'var(--font-heading)',
-        marginBottom: '25px',
         position: 'relative',
-        backgroundColor: 'rgba(255, 255, 255, 0.7)',
-        backdropFilter: 'blur(10px)',
+        backgroundColor: 'var(--purple-50)',
         padding: '15px 20px',
         borderRadius: '12px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-        maxWidth: '400px',
-        margin: '0 auto 25px auto',
-        border: '1px solid rgba(0, 0, 0, 0.08)'
+        boxShadow: '0 4px 12px rgba(111, 68, 255, 0.08)',
+        width: '100%',
+        border: '1px solid var(--purple-100)',
+        animation: 'slideIn 0.3s forwards'
       }}
     >
       {/* Header */}
@@ -91,7 +89,7 @@ const CountdownTimer = ({ expiryTime, onExpire }) => {
         fontSize: '15px',
         animation: shouldPulse ? 'pulse 1.5s infinite' : 'none'
       }}>
-        <FaRegClock style={{ fontSize: '16px' }} />
+        <BiTimer style={{ fontSize: '18px' }} />
         <span>Session Expires In</span>
       </div>
       
@@ -112,12 +110,12 @@ const CountdownTimer = ({ expiryTime, onExpire }) => {
             justifyContent: 'center',
             background: timerColor,
             color: 'white',
-            width: '48px',
-            height: '54px',
-            borderRadius: '8px',
-            fontSize: '28px',
+            width: '42px',
+            height: '46px',
+            borderRadius: '6px',
+            fontSize: '24px',
             fontWeight: '700',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+            boxShadow: '0 3px 6px rgba(111, 68, 255, 0.2)',
             position: 'relative',
             overflow: 'hidden',
             transition: 'background-color 0.3s ease'
@@ -128,7 +126,7 @@ const CountdownTimer = ({ expiryTime, onExpire }) => {
         <span style={{ 
           color: timerColor, 
           fontWeight: '700', 
-          fontSize: '28px',
+          fontSize: '24px',
           animation: shouldPulse ? 'pulse 1.5s infinite' : 'none'
         }}>:</span>
         <div 
@@ -138,12 +136,12 @@ const CountdownTimer = ({ expiryTime, onExpire }) => {
             justifyContent: 'center',
             background: timerColor,
             color: 'white',
-            width: '48px',
-            height: '54px',
-            borderRadius: '8px',
-            fontSize: '28px',
+            width: '42px',
+            height: '46px',
+            borderRadius: '6px',
+            fontSize: '24px',
             fontWeight: '700',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+            boxShadow: '0 3px 6px rgba(111, 68, 255, 0.2)',
             position: 'relative',
             overflow: 'hidden',
             transition: 'background-color 0.3s ease'
@@ -174,23 +172,41 @@ const CountdownTimer = ({ expiryTime, onExpire }) => {
       {/* Message */}
       <span 
         style={{ 
-          fontSize: '13px', 
-          color: 'var(--neutral-700)', 
+          fontSize: '12px', 
+          color: 'var(--neutral-600)', 
           textAlign: 'center',
           fontWeight: '500',
-          marginTop: '5px'
+          marginTop: '2px'
         }}
       >
-        Complete your purchase before the timer expires
+        Please complete purchase before expiry
       </span>
       
-      {/* Add CSS animation for pulse effect */}
+      {/* Add CSS animations */}
       <style>
         {`
           @keyframes pulse {
             0% { opacity: 1; }
             50% { opacity: 0.7; }
             100% { opacity: 1; }
+          }
+          
+          @keyframes slideIn {
+            0% { transform: translateX(100px); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+          }
+          
+          @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+            20%, 40%, 60%, 80% { transform: translateX(2px); }
+          }
+          
+          @media (max-width: 768px) {
+            .timer-container {
+              transform: scale(0.8);
+              transform-origin: top right;
+            }
           }
         `}
       </style>

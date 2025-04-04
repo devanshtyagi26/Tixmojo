@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import CountdownTimer from './CountdownTimer';
+import React, { useState } from 'react';
 import TicketTable from './TicketTable';
 import TicketCart from './TicketCart';
+import CountdownTimer from './CountdownTimer';
 
-const TicketSelection = ({ event }) => {
+const TicketSelection = ({ event, expiryTime, onExpire, showTimer }) => {
   // Sample ticket data - in a real app, this would come from the API
   const [tickets, setTickets] = useState([
     {
@@ -51,9 +51,6 @@ const TicketSelection = ({ event }) => {
   // Cart state
   const [cartItems, setCartItems] = useState([]);
   const [ticketQuantities, setTicketQuantities] = useState({});
-
-  // Timer state - Set to 10 minutes (600000 ms) from now
-  const [expiryTime] = useState(new Date(Date.now() + 600000));
 
   // Add ticket to cart
   const handleAddToCart = (ticket) => {
@@ -112,12 +109,6 @@ const TicketSelection = ({ event }) => {
     alert('This would navigate to the checkout page in a real application.');
   };
 
-  // Handle timer expiry
-  const handleTimerExpire = () => {
-    alert('Your session has expired. The page will now refresh.');
-    window.location.reload();
-  };
-
   return (
     <div
       style={{
@@ -131,25 +122,25 @@ const TicketSelection = ({ event }) => {
         position: 'relative',
       }}
     >
-      {/* Timer positioned at the top, partially overlapping */}
-      <div style={{ 
-        position: 'absolute', 
-        top: '-30px', 
-        left: '50%', 
-        transform: 'translateX(-50%)',
-        width: 'auto',
-        zIndex: 10 
-      }}>
-        <CountdownTimer expiryTime={expiryTime} onExpire={handleTimerExpire} />
-      </div>
+      {/* Timer positioned inside the ticket selection when viewing this section */}
+      {showTimer && (
+        <div style={{ 
+          marginBottom: '20px',
+          width: '100%',
+          maxWidth: '350px',
+          margin: '0 auto 25px auto'
+        }}>
+          <CountdownTimer expiryTime={expiryTime} onExpire={onExpire} />
+        </div>
+      )}
       
-      <div style={{ paddingTop: '30px' }}>
+      <div style={{ paddingTop: '10px' }}>
         <h2
           style={{
             fontSize: '28px',
             fontWeight: '800',
             color: 'var(--neutral-800)',
-            marginBottom: '8px',
+            marginBottom: '18px',
             fontFamily: 'var(--font-heading)',
             display: 'flex',
             alignItems: 'center',
