@@ -6,9 +6,9 @@ import React, {
   useCallback,
 } from "react";
 import { useTranslation } from "react-i18next";
-import EventsSection from "../Components/EventsSection.jsx";
-import FlyerCarousel from "../Components/FlyerCarousel.jsx";
-import NewRecommendSection from "../Components/NewRecommendSection.jsx";
+import EventsSection from "../Components/HomePage/EventsSection.jsx";
+import FlyerCarousel from "../Components/HomePage/FlyerCarousel.jsx";
+import NewRecommendSection from "../Components/HomePage/NewRecommendSection.jsx";
 import { ScrollAnimation } from "../utils/ScrollAnimation.jsx";
 import { PageSEO } from "../utils/SEO.jsx";
 import { getAllAppData } from "../services/api.js";

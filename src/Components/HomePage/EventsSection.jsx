@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
 import { IoFilter } from "react-icons/io5";
 import Cards from "./Cards.jsx";
-import { getLocationDetails } from "../services/api.js";
+import { getLocationDetails } from "../../services/api.js";
 
 const EventsSection = ({
   title,

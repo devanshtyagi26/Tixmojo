@@ -5,7 +5,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { MdNavigateBefore } from "react-icons/md"; // Importing the left arrow icon
 import { MdNavigateNext } from "react-icons/md"; // Importing the right arrow icon
 import { useNavigate } from "react-router-dom";
-import { getFlyers } from "../services/api.js";
+import { getFlyers } from "../../services/api.js";
 import PropTypes from "prop-types";
 
 // Custom Previous Button

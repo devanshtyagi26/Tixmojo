@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
 import Cards from "./Cards.jsx";
-import { useScrollAnimation } from "../utils/ScrollAnimation.jsx";
+import { useScrollAnimation } from "../../utils/ScrollAnimation.jsx";
 
 function NewRecommendSection({
   title = "Trending Now",
