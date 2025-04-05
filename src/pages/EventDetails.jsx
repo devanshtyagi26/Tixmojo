@@ -137,6 +137,7 @@ function EventDetails() {
           },
           sponsors: eventData.sponsors || [],
           faq: eventData.faq || [],
+          highlights: eventData.highlights || [],
         };
         
         setEvent(formattedEvent);

@@ -4,11 +4,11 @@ import { IoTicketOutline } from "react-icons/io5";
 
 const TabHighlights = ({ event, activeTab, handleGetTickets }) => {
   return (
-    <div 
-      style={{ 
+    <div
+      style={{
         display: activeTab === "highlights" ? "block" : "none",
         animation: activeTab === "highlights" ? "fadeIn 0.5s ease" : "none",
-        position: "relative", 
+        position: "relative",
         zIndex: 1,
       }}
     >
@@ -25,7 +25,7 @@ const TabHighlights = ({ event, activeTab, handleGetTickets }) => {
       >
         <BiStar size={24} /> Event Highlights
       </h3>
-      
+
       {/* Feature Banner - Extract from event description */}
       <div
         style={{
@@ -50,7 +50,7 @@ const TabHighlights = ({ event, activeTab, handleGetTickets }) => {
             filter: "brightness(0.7)",
           }}
         />
-        
+
         <div
           style={{
             position: "relative",
@@ -76,7 +76,7 @@ const TabHighlights = ({ event, activeTab, handleGetTickets }) => {
           >
             FEATURED
           </div>
-          
+
           <h4
             style={{
               margin: "0 0 5px 0",
@@ -89,7 +89,7 @@ const TabHighlights = ({ event, activeTab, handleGetTickets }) => {
           >
             {event.title}
           </h4>
-          
+
           <p
             style={{
               margin: 0,
@@ -103,37 +103,10 @@ const TabHighlights = ({ event, activeTab, handleGetTickets }) => {
           </p>
         </div>
       </div>
-      
+
       {/* Extract Highlights from Description */}
       {(() => {
-        // Parse the description to extract bullet points from the list
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = event.description;
-        
-        // Find all lists in the description
-        const lists = tempDiv.querySelectorAll('ul');
-        let highlights = [];
-        
-        // Extract list items from the first list we find
-        if (lists.length > 0) {
-          const listItems = lists[0].querySelectorAll('li');
-          listItems.forEach((item) => {
-            highlights.push(item.textContent.trim());
-          });
-        }
-        
-        // If no lists found or they're empty, use tags instead
-        if (highlights.length === 0 && event.tags) {
-          highlights = event.tags.map(tag => `Experience the best of ${tag}`);
-        }
-        
-        // Ensure we have at least 6 items
-        while (highlights.length < 6 && event.tags) {
-          highlights.push(`Exclusive ${event.tags[0]} experience`);
-        }
-        
-        // Get the first 6 highlights
-        return highlights.slice(0, 6).map((highlight, index) => (
+        return event.highlights.slice(0, 6).map((highlight, index) => (
           <div
             key={index}
             style={{
@@ -180,7 +153,7 @@ const TabHighlights = ({ event, activeTab, handleGetTickets }) => {
               >
                 <BiStar size={18} />
               </div>
-              
+
               <div>
                 <p
                   style={{
@@ -198,7 +171,7 @@ const TabHighlights = ({ event, activeTab, handleGetTickets }) => {
           </div>
         ));
       })()}
-      
+
       {/* Call to Action */}
       <div
         style={{
