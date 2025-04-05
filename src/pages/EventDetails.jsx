@@ -136,10 +136,11 @@ function EventDetails() {
             }
           },
           sponsors: eventData.sponsors || [],
+          faq: eventData.faq || [],
         };
-
+        
         setEvent(formattedEvent);
-
+        
         // Now fetch all events from the same organizer
         if (eventData.organizerId) {
           try {
@@ -237,7 +238,6 @@ function EventDetails() {
   return (
     <>
       <EventSEOWrapper event={event} eventId={eventId} />
-
       {/* Fixed Timer - Only shown when not in ticket section */}
       {showTimer && !isInTicketSection && (
         <div
