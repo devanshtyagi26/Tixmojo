@@ -18,7 +18,7 @@ import TicketSelection from "../Components/EventDetails/TicketSelection.jsx";
 import PaymentPortal from "../Components/EventDetails/PaymentPortal.jsx";
 import CountdownTimer from "../Components/EventDetails/CountdownTimer.jsx";
 
-function EventDetails() {
+function EventDetails(props) {
   const { t } = useTranslation();
   const { eventId } = useParams();
   const navigate = useNavigate();
@@ -116,7 +116,70 @@ function EventDetails() {
   }, [showTicketSelection]);
 
   useEffect(() => {
-    // Fetch event details from API
+    // Check if we have server-side data
+    const hasServerData = props.serverData && 
+      props.serverData.event && 
+      props.serverData.eventId === eventId;
+    
+    if (hasServerData) {
+      // Use server-side data for initial render
+      console.log("Using server-side rendered data for Event Details page");
+      
+      // Set event data from server
+      setEvent(props.serverData.event);
+      setLoading(false);
+      
+      // If we have organizer events also from server, use them
+      if (props.serverData.organizerEvents && props.serverData.organizerEvents.length > 0) {
+        setOrganizerEvents(props.serverData.organizerEvents);
+      } else {
+        // Still fetch organizer events if not provided by server
+        fetchOrganizerEvents(props.serverData.event.organizer?.id);
+      }
+      
+      // Show tickets if URL parameter is set
+      if (shouldShowTickets) {
+        handleShowTicketSelection();
+      }
+      
+      return; // Skip API fetch if we have server data
+    }
+    
+    // Check for cached event data
+    try {
+      const cachedEventKey = `event_${eventId}`;
+      const cachedEvent = localStorage.getItem(cachedEventKey);
+      const cachedTimestamp = localStorage.getItem(`${cachedEventKey}_timestamp`);
+      
+      if (cachedEvent && cachedTimestamp) {
+        const now = new Date().getTime();
+        const then = parseInt(cachedTimestamp, 10);
+        
+        // Use cached data if less than 4 hours old
+        if (now - then < 14400000) {
+          const parsedEvent = JSON.parse(cachedEvent);
+          setEvent(parsedEvent);
+          setLoading(false);
+          console.log("Using cached event data");
+          
+          // Still load organizer events
+          if (parsedEvent.organizer?.id) {
+            fetchOrganizerEvents(parsedEvent.organizer.id);
+          }
+          
+          // Show tickets if needed
+          if (shouldShowTickets && isAuthenticated()) {
+            setTimeout(() => { handleGetTickets(); }, 300);
+          }
+          
+          return; // Skip API fetch if we have valid cached data
+        }
+      }
+    } catch (cacheError) {
+      console.warn("Error using cached event data:", cacheError);
+    }
+    
+    // Fetch event details from API (client-side fallback)
     const fetchEvent = async () => {
       setLoading(true);
       try {
@@ -161,16 +224,58 @@ function EventDetails() {
         
         setEvent(formattedEvent);
         
+        // Cache the event data for future use
+        try {
+          const cachedEventKey = `event_${eventId}`;
+          localStorage.setItem(cachedEventKey, JSON.stringify(formattedEvent));
+          localStorage.setItem(`${cachedEventKey}_timestamp`, new Date().getTime().toString());
+        } catch (cacheError) {
+          console.warn("Could not cache event data:", cacheError);
+        }
+        
         // Now fetch all events from the same organizer
         if (eventData.organizerId) {
           try {
-            const orgEvents = await getEventsByOrganizer(eventData.organizerId);
-            // Filter out the current event and limit to 3
-            const sameOrganizerEvents = orgEvents
-              .filter(e => e.id !== eventData.id)
-              .slice(0, 3);
-
-            setOrganizerEvents(sameOrganizerEvents);
+            // Check if we have cached organizer events first
+            let useOrgCache = false;
+            try {
+              const cachedOrgKey = `organizer_events_${eventData.organizerId}`;
+              const cachedOrgEvents = localStorage.getItem(cachedOrgKey);
+              const cachedOrgTimestamp = localStorage.getItem(`${cachedOrgKey}_timestamp`);
+              
+              if (cachedOrgEvents && cachedOrgTimestamp) {
+                const now = new Date().getTime();
+                const then = parseInt(cachedOrgTimestamp, 10);
+                
+                // Use cached data if less than 4 hours old
+                if (now - then < 14400000) {
+                  setOrganizerEvents(JSON.parse(cachedOrgEvents));
+                  useOrgCache = true;
+                  console.log("Using cached organizer events");
+                }
+              }
+            } catch (orgCacheError) {
+              console.warn("Error using cached organizer events:", orgCacheError);
+            }
+            
+            if (!useOrgCache) {
+              const orgEvents = await getEventsByOrganizer(eventData.organizerId);
+              // Filter out the current event and limit to 3
+              const sameOrganizerEvents = orgEvents
+                .filter(e => e.id !== eventData.id)
+                .slice(0, 3);
+  
+              setOrganizerEvents(sameOrganizerEvents);
+              
+              // Cache the organizer events
+              try {
+                const cachedOrgKey = `organizer_events_${eventData.organizerId}`;
+                localStorage.setItem(cachedOrgKey, JSON.stringify(sameOrganizerEvents));
+                localStorage.setItem(`${cachedOrgKey}_timestamp`, new Date().getTime().toString());
+              } catch (orgCacheError) {
+                console.warn("Could not cache organizer events:", orgCacheError);
+              }
+            }
           } catch (error) {
             console.error("Error fetching organizer events:", error);
             setOrganizerEvents([]);
@@ -205,7 +310,7 @@ function EventDetails() {
     if (eventId) {
       fetchEvent();
     }
-  }, [eventId, navigate, shouldShowTickets, isAuthenticated]);
+  }, [eventId, navigate, shouldShowTickets, isAuthenticated, props.serverData]);
 
   const handleGetTickets = () => {
     console.log("Getting tickets for:", event?.title);

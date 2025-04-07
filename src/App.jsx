@@ -3,7 +3,7 @@ import Home from "./pages/Home";
 import PageNotFound from "./pages/PageNotFound";
 import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SidebarScroll } from "./Components/Sidebar";
 import { UserSidebar } from "./Components/UserSidebar";
 import { DefaultSEO } from "./utils/SEO";
@@ -18,13 +18,43 @@ import ProtectedRoute from "./Components/Auth/ProtectedRoute";
 const EventDetails = React.lazy(() => import("./pages/EventDetails"));
 const Login = React.lazy(() => import("./pages/Login"));
 
-function App() {
+function App({ serverData }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isUserSidebarOpen, setIsUserSidebarOpen] = useState(false);
   
+  // Server data handling
+  const [appData, setAppData] = useState(serverData || {});
+  
+  // Check if we have server-rendered data
+  const isServerData = Boolean(serverData && Object.keys(serverData).length > 0);
+  
+  // Log server hydration information
+  useEffect(() => {
+    if (isServerData) {
+      console.log("Hydrating from server-rendered data:", 
+        appData.pageType || "default");
+      
+      // Mark hydration complete when app renders with server data
+      if (window.performance && window.performance.mark) {
+        window.performance.mark('hydrated');
+      }
+    }
+  }, [isServerData, appData]);
+  
+  // Pass server data to specific page components
+  const getPageProps = (pageType) => {
+    if (!isServerData) return {};
+    
+    if (appData.pageType === pageType) {
+      return { serverData: appData };
+    }
+    
+    return {};
+  };
+  
   return (
     <>
-      <DefaultSEO />
+      <DefaultSEO serverData={isServerData ? appData : undefined} />
       <AuthProvider>
         <BrowserRouter>
           <ScrollToTop />
@@ -47,7 +77,7 @@ function App() {
             />
           )}
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home {...getPageProps('home')} />} />
             <Route path="/events/:eventId" element={
               <React.Suspense fallback={
                 <div style={{
@@ -59,7 +89,7 @@ function App() {
                   <Loader size="large" text="Loading event details..." />
                 </div>
               }>
-                <EventDetails />
+                <EventDetails {...getPageProps('eventDetails')} />
               </React.Suspense>
             } />
             <Route path="/login" element={
@@ -73,10 +103,11 @@ function App() {
                   <Loader size="large" text="Loading login page..." />
                 </div>
               }>
-                <Login />
+                <Login {...getPageProps('login')} />
               </React.Suspense>
             } />
-            <Route path="/page-not-found" element={<PageNotFound />} />
+            <Route path="/page-not-found" element={<PageNotFound {...getPageProps('404')} />} />
+            <Route path="*" element={<PageNotFound {...getPageProps('404')} />} />
           </Routes>
           <Footer />
         </BrowserRouter>
