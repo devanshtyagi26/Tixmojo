@@ -11,6 +11,8 @@ import { useNavigate } from 'react-router-dom';
 import PhoneInput, { getCountryCallingCode } from 'react-phone-number-input';
 import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
 import 'react-phone-number-input/style.css';
+// Import flag images
+import ReactCountryFlag from 'react-country-flag';
 
 // Buyer information validation schema
 const buyerInfoSchema = yup.object({
@@ -787,8 +789,7 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
                       backgroundColor: '#f9f9f9',
                       borderRight: '1px solid #e0e0e0',
                       height: '50px',
-                      minWidth: '80px',
-                      maxWidth: '80px'
+                      width: '100px',
                     }}
                   >
                     <div style={{
@@ -801,13 +802,21 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
                       justifyContent: 'center'
                     }}>
                       {/* Flag */}
-                      <span style={{ fontSize: '18px' }}>
-                        {getCountryFlag(selectedCountry.code)}
+                      <span style={{ fontSize: '25px' }}>
+                        <ReactCountryFlag 
+                          countryCode={selectedCountry.code} 
+                          svg 
+                          style={{ 
+                            width: '1.2em', 
+                            height: '1.2em' 
+                          }}
+                          title={selectedCountry.name}
+                        />
                       </span>
                       
                       {/* Country Code */}
                       <span style={{
-                        fontSize: '13px',
+                        fontSize: '18px',
                         color: 'var(--neutral-600)',
                         fontWeight: '500'
                       }}>
@@ -824,6 +833,10 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
                         strokeWidth="2" 
                         strokeLinecap="round" 
                         strokeLinejoin="round"
+                        style={{
+                          width: '1.2em', 
+                          height: '1.2em'
+                        }}
                       >
                         <path d="M6 9l6 6 6-6"></path>
                       </svg>
