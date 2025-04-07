@@ -649,30 +649,132 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
           {/* Progress tabs */}
           <div style={{
             display: 'flex',
+            flexDirection: 'column',
             marginBottom: '30px',
-            borderRadius: '30px',
-            overflow: 'hidden',
-            width: 'fit-content',
+            width: '100%',
+            position: 'relative'
           }}>
+            {/* Progress bar */}
             <div style={{
-              backgroundColor: currentStep === 'buyerInfo' ? 'var(--primary)' : 'rgb(245, 245, 245)',
-              color: currentStep === 'buyerInfo' ? 'white' : 'var(--neutral-800)',
-              padding: '10px 20px',
-              fontWeight: '600',
-              fontSize: '14px',
-              transition: 'all 0.3s',
+              height: '4px',
+              backgroundColor: '#e0e0e0',
+              borderRadius: '2px',
+              width: '100%',
+              marginBottom: '20px',
+              position: 'relative',
+              overflow: 'hidden'
             }}>
-              BUYER INFORMATION
+              {/* Active progress */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                height: '100%',
+                width: currentStep === 'buyerInfo' ? '50%' : '100%',
+                backgroundColor: 'var(--purple-600)',
+                borderRadius: '2px',
+                transition: 'width 0.5s ease-in-out'
+              }} />
             </div>
+            
+            {/* Step indicators */}
             <div style={{
-              backgroundColor: currentStep === 'paymentInfo' ? 'var(--primary)' : 'rgb(245, 245, 245)',
-              color: currentStep === 'paymentInfo' ? 'white' : 'var(--neutral-800)',
-              padding: '10px 20px',
-              fontWeight: '600',
-              fontSize: '14px',
-              transition: 'all 0.3s',
+              display: 'flex',
+              justifyContent: 'space-between',
+              width: '100%'
             }}>
-              PAYMENT DETAILS
+              {/* Step 1 */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                width: '48%'
+              }}>
+                <div style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  backgroundColor: currentStep === 'buyerInfo' ? 'var(--purple-600)' : 
+                                  (currentStep === 'paymentInfo' ? 'var(--purple-300)' : '#e0e0e0'),
+                  color: currentStep === 'buyerInfo' ? 'white' : 
+                        (currentStep === 'paymentInfo' ? 'white' : 'var(--neutral-600)'),
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: '700',
+                  fontSize: '16px',
+                  marginRight: '12px',
+                  transition: 'all 0.3s ease',
+                  boxShadow: currentStep === 'buyerInfo' ? '0 2px 8px rgba(111, 68, 255, 0.3)' : 'none'
+                }}>
+                  1
+                </div>
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
+                  <span style={{
+                    fontSize: '15px',
+                    fontWeight: '600',
+                    color: currentStep === 'buyerInfo' ? 'var(--purple-600)' : 
+                          (currentStep === 'paymentInfo' ? 'var(--purple-300)' : 'var(--neutral-600)'),
+                    transition: 'color 0.3s ease'
+                  }}>
+                    BUYER INFORMATION
+                  </span>
+                  <span style={{
+                    fontSize: '12px',
+                    color: 'var(--neutral-500)',
+                    marginTop: '2px'
+                  }}>
+                    Personal details
+                  </span>
+                </div>
+              </div>
+              
+              {/* Step 2 */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                width: '48%'
+              }}>
+                <div style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  backgroundColor: currentStep === 'paymentInfo' ? 'var(--purple-600)' : '#e0e0e0',
+                  color: currentStep === 'paymentInfo' ? 'white' : 'var(--neutral-600)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: '700',
+                  fontSize: '16px',
+                  marginRight: '12px',
+                  transition: 'all 0.3s ease',
+                  boxShadow: currentStep === 'paymentInfo' ? '0 2px 8px rgba(111, 68, 255, 0.3)' : 'none'
+                }}>
+                  2
+                </div>
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
+                  <span style={{
+                    fontSize: '15px',
+                    fontWeight: '600',
+                    color: currentStep === 'paymentInfo' ? 'var(--purple-600)' : 'var(--neutral-600)',
+                    transition: 'color 0.3s ease'
+                  }}>
+                    PAYMENT DETAILS
+                  </span>
+                  <span style={{
+                    fontSize: '12px',
+                    color: 'var(--neutral-500)',
+                    marginTop: '2px'
+                  }}>
+                    Card information
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
           
