@@ -7,6 +7,7 @@ import zxcvbn from 'zxcvbn';
 import ISO31661a2 from 'iso-3166-1-alpha-2';
 import creditCardType from 'credit-card-type';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 // Buyer information validation schema
 const buyerInfoSchema = yup.object({
@@ -126,6 +127,7 @@ function getDialCode(countryCode) {
 }
 
 const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, discount, onBack, onCancel }) => {
+  const navigate = useNavigate();
   // Timer state from parent
   const [timeLeft, setTimeLeft] = useState({
     minutes: 0,
@@ -896,6 +898,61 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
                   marginBottom: '20px',
                 }}>
                   {buyerInfoForm.formState.errors.root.message}
+                </div>
+              )}
+              
+              {/* Login prompt for non-authenticated users */}
+              {!isAuthenticated() && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginBottom: '25px',
+                  padding: '10px 15px',
+                  backgroundColor: 'var(--purple-50)',
+                  border: '1px dashed var(--purple-200)',
+                  borderRadius: '10px',
+                }}>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ 
+                      margin: '0 0 5px 0',
+                      fontWeight: '600',
+                      color: 'var(--purple-700)',
+                      fontSize: '14px'
+                    }}>
+                      You're not logged in
+                    </p>
+                    <p style={{ 
+                      margin: 0,
+                      color: 'var(--neutral-600)',
+                      fontSize: '14px'
+                    }}>
+                      Login for faster checkout and to save your ticket history
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => navigate('/login', { state: { from: `/events/${event.id}` } })}
+                    style={{
+                      backgroundColor: 'var(--purple-600)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '8px 16px',
+                      fontSize: '14px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--purple-700)';
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--purple-600)';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                  >
+                    Login
+                  </button>
                 </div>
               )}
               

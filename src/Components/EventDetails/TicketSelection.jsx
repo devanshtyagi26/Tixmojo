@@ -255,61 +255,7 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer, onProceedToPa
         Choose the tickets you want to purchase for {event.title}
       </p>
       
-      {/* Optional login section */}
-      {!isAuthenticated() && (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          marginBottom: '25px',
-          padding: '10px 15px',
-          backgroundColor: 'var(--purple-50)',
-          border: '1px dashed var(--purple-200)',
-          borderRadius: '10px',
-          maxWidth: '80%',
-        }}>
-          <div style={{ flex: 1 }}>
-            <p style={{ 
-              margin: '0 0 5px 0',
-              fontWeight: '600',
-              color: 'var(--purple-700)',
-              fontSize: '14px'
-            }}>
-              You're not logged in
-            </p>
-            <p style={{ 
-              margin: 0,
-              color: 'var(--neutral-600)',
-              fontSize: '14px'
-            }}>
-              Login for faster checkout and to save your ticket history
-            </p>
-          </div>
-          <button
-            onClick={() => navigate('/login', { state: { from: `/events/${event.id}` } })}
-            style={{
-              backgroundColor: 'var(--purple-600)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '8px 16px',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--purple-700)';
-              e.currentTarget.style.transform = 'translateY(-2px)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--purple-600)';
-              e.currentTarget.style.transform = 'translateY(0)';
-            }}
-          >
-            Login
-          </button>
-        </div>
-      )}
+      {/* No login prompt here anymore - moved to PaymentPortal */}
       
       {/* Show welcome message if user is logged in */}
       {isAuthenticated() && currentUser && (
