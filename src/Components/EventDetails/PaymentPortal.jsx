@@ -244,6 +244,9 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
     }
   });
   
+  // State to track if the timer is almost expired
+  const [isAlmostExpired, setIsAlmostExpired] = useState(false);
+  
   // Update timer every second
   useEffect(() => {
     if (!expiryTime) return;
@@ -257,6 +260,7 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
         
         if (difference <= 0) {
           setTimeLeft({ minutes: 0, seconds: 0 });
+          setIsAlmostExpired(false);
           
           // Clear all form data when timer expires
           clearFormData();
@@ -274,6 +278,7 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
         const secs = Math.floor((difference / 1000) % 60);
         
         setTimeLeft({ minutes: mins, seconds: secs });
+        setIsAlmostExpired(difference < 120000); // Less than 2 minutes
       } catch (error) {
         console.error("Error in countdown timer:", error);
       }
@@ -1471,92 +1476,79 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
           boxShadow: '0 4px 15px rgba(0, 0, 0, 0.05)',
           height: 'fit-content',
         }}>
-          {/* Timer display */}
-          <div style={{ 
+          {/* Timer display - Using same design as TicketSelection */}
+          <div style={{
+            position: 'relative',
+            width: '100%',
+            zIndex: 5,
+            background: 'linear-gradient(135deg, var(--purple-100), var(--purple-200))',
+            borderRadius: '10px',
+            padding: '10px 15px',
             display: 'flex',
-            justifyContent: 'center',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
             marginBottom: '20px'
           }}>
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              gap: '5px',
+              gap: '8px'
             }}>
-              {/* Minutes tens */}
-              <div style={{
-                width: '30px',
-                height: '40px',
-                backgroundColor: 'black',
-                color: 'white',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '24px',
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--purple-800)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10 2h4a2 2 0 0 1 2 2v2H8V4a2 2 0 0 1 2-2z"></path>
+                <path d="M8 4L6 7.5 8 10 6 13.5 8 16l-2 3.5 2 2.5"></path>
+                <path d="M16 4l2 3.5-2 2.5 2 3.5-2 2.5 2 3.5-2 2.5"></path>
+                <rect x="4" y="18" width="16" height="4" rx="2"></rect>
+              </svg>
+              <span style={{
+                fontSize: '16px',
                 fontWeight: '700',
-                borderRadius: '4px',
+                color: 'var(--purple-800)'
               }}>
-                {String(timeLeft.minutes).padStart(2, '0')[0]}
-              </div>
-              
-              {/* Minutes ones */}
-              <div style={{
-                width: '30px',
-                height: '40px',
-                backgroundColor: 'black',
-                color: 'white',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '24px',
-                fontWeight: '700',
-                borderRadius: '4px',
-              }}>
-                {String(timeLeft.minutes).padStart(2, '0')[1]}
-              </div>
-              
-              {/* Seconds tens */}
-              <div style={{
-                width: '30px',
-                height: '40px',
-                backgroundColor: 'black',
-                color: 'white',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '24px',
-                fontWeight: '700',
-                borderRadius: '4px',
-                marginLeft: '5px',
-              }}>
-                {String(timeLeft.seconds).padStart(2, '0')[0]}
-              </div>
-              
-              {/* Seconds ones */}
-              <div style={{
-                width: '30px',
-                height: '40px',
-                backgroundColor: 'black',
-                color: 'white',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '24px',
-                fontWeight: '700',
-                borderRadius: '4px',
-              }}>
-                {String(timeLeft.seconds).padStart(2, '0')[1]}
-              </div>
+                Session Expires In
+              </span>
             </div>
-          </div>
-          
-          <div style={{
-            fontSize: '14px',
-            color: 'var(--neutral-600)',
-            textAlign: 'center',
-            marginBottom: '20px',
-          }}>
-            left to complete your purchase
+            
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px',
+              fontFamily: 'var(--font-heading)',
+              animation: isAlmostExpired ? 'pulse 1.5s infinite' : 'none'
+            }}>
+              <span style={{
+                background: 'var(--purple-600)',
+                color: 'white',
+                borderRadius: '6px',
+                padding: '5px 8px',
+                fontSize: '18px',
+                fontWeight: '700',
+                minWidth: '36px',
+                textAlign: 'center',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}>
+                {String(timeLeft.minutes).padStart(2, '0')}
+              </span>
+              <span style={{ 
+                color: 'var(--purple-900)', 
+                fontWeight: '700',
+                fontSize: '18px'
+              }}>:</span>
+              <span style={{
+                background: 'var(--purple-600)',
+                color: 'white',
+                borderRadius: '6px',
+                padding: '5px 8px',
+                fontSize: '18px',
+                fontWeight: '700',
+                minWidth: '36px',
+                textAlign: 'center',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+              }}>
+                {String(timeLeft.seconds).padStart(2, '0')}
+              </span>
+            </div>
           </div>
           
           {/* Cart items */}
@@ -1728,6 +1720,12 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
             100% {
               opacity: 1;
             }
+          }
+          
+          @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.02); }
+            100% { opacity: 1; transform: scale(1); }
           }
         `}
       </style>
