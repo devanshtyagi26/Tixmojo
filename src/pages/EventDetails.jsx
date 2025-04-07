@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getEventById, getEventsByOrganizer } from "../services/api.js";
 import { ScrollAnimation } from "../utils/ScrollAnimation.jsx";
+import { useAuth } from "../context/AuthContext";
 
 // Import Modular Components
 import EventDetailsHeader from "../Components/EventDetails/EventDetailsHeader.jsx";
@@ -14,21 +15,32 @@ import EventContainer from "../Components/EventDetails/EventContainer.jsx";
 import EventSEOWrapper from "../Components/EventDetails/EventSEOWrapper.jsx";
 import NewOrganizerInfo from "../Components/EventDetails/NewOrganizerInfo.jsx";
 import TicketSelection from "../Components/EventDetails/TicketSelection.jsx";
+import PaymentPortal from "../Components/EventDetails/PaymentPortal.jsx";
 import CountdownTimer from "../Components/EventDetails/CountdownTimer.jsx";
 
 function EventDetails() {
   const { t } = useTranslation();
   const { eventId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showContactPopup, setShowContactPopup] = useState(false);
   const [showTicketSelection, setShowTicketSelection] = useState(false);
+  const [showPaymentPortal, setShowPaymentPortal] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
   const [expiryTime, setExpiryTime] = useState(null);
   const [showExpiryPopup, setShowExpiryPopup] = useState(false);
   const [isInTicketSection, setIsInTicketSection] = useState(false);
   const [organizerEvents, setOrganizerEvents] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  
+  // Check URL parameters for automatic ticket selection display
+  const urlParams = new URLSearchParams(location.search);
+  const shouldShowTickets = urlParams.get('showTickets') === 'true';
 
   // Force component re-render for timer updates
   const [, forceUpdate] = useState();
@@ -38,16 +50,24 @@ function EventDetails() {
     // Reset all session-related states when component mounts (page load/refresh)
     setShowTimer(false);
     setShowTicketSelection(false);
+    setShowPaymentPortal(false);
     setShowExpiryPopup(false);
     setExpiryTime(null);
+    setCartItems([]);
+    setTotalAmount(0);
+    setDiscount(0);
 
     // Listen for page visibility changes to reset session when returning to the page
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
         setShowTimer(false);
         setShowTicketSelection(false);
+        setShowPaymentPortal(false);
         setShowExpiryPopup(false);
         setExpiryTime(null);
+        setCartItems([]);
+        setTotalAmount(0);
+        setDiscount(0);
       }
     };
 
@@ -137,7 +157,6 @@ function EventDetails() {
           },
           sponsors: eventData.sponsors || [],
           faq: eventData.faq || [],
-          highlights: eventData.highlights || [],
         };
         
         setEvent(formattedEvent);
@@ -159,6 +178,22 @@ function EventDetails() {
         }
 
         setLoading(false);
+        
+        // After loading is complete, check if we should automatically show tickets
+        // Only show if the user is authenticated and the URL parameter is present
+        if (shouldShowTickets && isAuthenticated()) {
+          console.log("Automatically showing ticket selection from URL parameter");
+          
+          // Short delay to ensure event data is properly rendered
+          setTimeout(() => {
+            handleGetTickets();
+          }, 300);
+          
+          // Clean up the URL parameter to prevent showing tickets again on refresh
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.delete('showTickets');
+          window.history.replaceState({}, document.title, newUrl.toString());
+        }
       } catch (error) {
         console.error("Error fetching event:", error);
         setLoading(false);
@@ -170,10 +205,14 @@ function EventDetails() {
     if (eventId) {
       fetchEvent();
     }
-  }, [eventId, navigate]);
+  }, [eventId, navigate, shouldShowTickets, isAuthenticated]);
 
   const handleGetTickets = () => {
     console.log("Getting tickets for:", event?.title);
+    
+    // Login is now optional - let the user proceed directly to ticket selection
+    // regardless of authentication status
+    
     // Show the ticket selection section
     setShowTicketSelection(true);
 
@@ -200,9 +239,13 @@ function EventDetails() {
   const handleTimerExpire = () => {
     console.log("Timer expired - showing custom popup");
 
-    // Reset ticket selection state
+    // Reset ticket selection and payment state
     setShowTimer(false);
     setShowTicketSelection(false);
+    setShowPaymentPortal(false);
+    setCartItems([]);
+    setTotalAmount(0);
+    setDiscount(0);
 
     // Show custom expiry popup
     setShowExpiryPopup(true);
@@ -216,7 +259,11 @@ function EventDetails() {
     setShowExpiryPopup(false);
     setShowTimer(false);
     setShowTicketSelection(false);
+    setShowPaymentPortal(false);
     setExpiryTime(null);
+    setCartItems([]);
+    setTotalAmount(0);
+    setDiscount(0);
 
     // Scroll to top
     window.scrollTo(0, 0);
@@ -225,6 +272,66 @@ function EventDetails() {
     setTimeout(() => {
       window.location.reload();
     }, 100);
+  };
+  
+  // Handle proceeding to payment
+  const handleProceedToPayment = (items, amount, discountAmount) => {
+    console.log("Proceeding to payment with", items.length, "items");
+    
+    // Save cart data
+    setCartItems(items);
+    setTotalAmount(amount);
+    setDiscount(discountAmount);
+    
+    // Hide ticket selection and show payment portal
+    setShowTicketSelection(false);
+    setShowPaymentPortal(true);
+    
+    // Scroll to payment section after it's rendered
+    setTimeout(() => {
+      const paymentSection = document.getElementById('payment-portal-section');
+      if (paymentSection) {
+        const yOffset = -20; // Small offset
+        const y = paymentSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        
+        window.scrollTo({
+          top: y,
+          behavior: 'smooth'
+        });
+      }
+    }, 150);
+  };
+  
+  // Handle back from payment to ticket selection
+  const handleBackToTicketSelection = () => {
+    // Hide payment portal and show ticket selection
+    // Note: We don't reset cartItems, totalAmount, or discount
+    // This ensures selected tickets remain intact
+    setShowPaymentPortal(false);
+    setShowTicketSelection(true);
+    
+    // Pass the saved cart data back to TicketSelection via a ref or state
+    // The cartItems, totalAmount, and discount states are already maintained
+    
+    // Scroll to ticket selection after it's rendered
+    setTimeout(() => {
+      const ticketSection = document.getElementById('ticket-selection-section');
+      if (ticketSection) {
+        const yOffset = -20; // Small offset
+        const y = ticketSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        
+        window.scrollTo({
+          top: y,
+          behavior: 'smooth'
+        });
+      }
+    }, 150);
+  };
+  
+  // Handle cancel booking (cancels everything, reloads page)
+  const handleCancelBooking = () => {
+    // Reset all states and reload page
+    window.location.reload();
   };
 
   if (loading) {
@@ -356,13 +463,46 @@ function EventDetails() {
                 expiryTime={expiryTime}
                 onExpire={handleTimerExpire}
                 showTimer={showTimer && isInTicketSection}
+                onProceedToPayment={handleProceedToPayment}
+                savedCartItems={cartItems}
+                savedDiscount={discount}
+              />
+            </div>
+          </ScrollAnimation>
+        )}
+        
+        {/* Payment Portal - Only shown after ticket selection is complete */}
+        {showPaymentPortal && (
+          <ScrollAnimation
+            direction="up"
+            distance={20}
+            duration={0.8}
+            delay={0.5}
+          >
+            <div
+              id="payment-portal-section"
+              style={{
+                position: 'relative',
+                marginTop: '40px',
+                marginBottom: '50px'
+              }}
+            >
+              <PaymentPortal
+                event={event}
+                expiryTime={expiryTime}
+                onExpire={handleTimerExpire}
+                cartItems={cartItems}
+                totalAmount={totalAmount}
+                discount={discount}
+                onBack={handleBackToTicketSelection}
+                onCancel={handleCancelBooking}
               />
             </div>
           </ScrollAnimation>
         )}
 
-        {/* Visual separator after ticket selection */}
-        {showTicketSelection && (
+        {/* Visual separator after ticket/payment sections */}
+        {(showTicketSelection || showPaymentPortal) && (
           <div style={{
             height: '1px',
             background: 'linear-gradient(to right, rgba(111, 68, 255, 0.05), rgba(111, 68, 255, 0.2), rgba(111, 68, 255, 0.05))',

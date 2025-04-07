@@ -93,6 +93,37 @@ The React app will run on http://localhost:5173.
 
 ## Development
 
+### Google OAuth Setup
+
+To configure Google OAuth for the application, follow these steps:
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Navigate to "APIs & Services" > "Credentials"
+4. Click "Create Credentials" > "OAuth client ID"
+5. Select "Web application" as the application type
+6. Add the following authorized JavaScript origins:
+   - `http://localhost:3000` (local development with npm run dev)
+   - `http://localhost:5173` (local development with Vite)
+   - Your production URL (if applicable)
+7. Add the following authorized redirect URIs:
+   - `http://localhost:3000`
+   - `http://localhost:5173`
+   - `http://localhost:3000/login`
+   - `http://localhost:5173/login`
+   - Your production URLs (if applicable)
+8. Click "Create" and note your Client ID
+9. Create a `.env` file in the root of your project with:
+   ```
+   VITE_API_URL=http://localhost:5000/api
+   VITE_GOOGLE_CLIENT_ID=your-client-id-goes-here
+   ```
+
+**Important Notes:**
+- The "redirect_uri_mismatch" error occurs when Google OAuth doesn't recognize the redirect URI being used.
+- The application uses "popup" mode which should work without explicit redirect URIs, but adding them in the Google console improves reliability.
+- Never commit your `.env` file to version control.
+
 ### Backend Auto-Restart with Nodemon
 
 The server uses nodemon for development which automatically restarts when files change. Key features:

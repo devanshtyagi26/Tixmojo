@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import "../i18n";
 import Hamburger from "./Hamburger";
+import LoginButton from "./Auth/LoginButton";
+import { useAuth } from "../context/AuthContext";
 
 function Navbar({
   toggleScrollPage,
@@ -14,6 +16,7 @@ function Navbar({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const inputRef = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [scrolled, setScrolled] = useState(false);
@@ -195,32 +198,42 @@ function Navbar({
           )}
         </div>
 
-        {/* User icon - hide on mobile when search is focused */}
+        {/* Login button or user profile */}
         {!(isMobile && searchFocused) && (
-          <div
-            onClick={handleUserClick}
-            style={{
-              width: "38px",
-              height: "38px",
-              borderRadius: "50%",
-              backgroundColor: "var(--purple-100)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              transition: "all 0.3s ease",
-              opacity: searchFocused && !isMobile ? "0.7" : "1",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--purple-200)";
-              e.currentTarget.style.transform = "scale(1.05)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--purple-100)";
-              e.currentTarget.style.transform = "scale(1)";
-            }}
-          >
-            <BiUser style={{ color: "var(--primary)", fontSize: "22px" }} />
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            opacity: searchFocused && !isMobile ? "0.7" : "1",
+            transition: "opacity 0.3s ease",
+          }}>
+            {isAuthenticated() ? (
+              <div
+                onClick={handleUserClick}
+                style={{
+                  width: "38px",
+                  height: "38px",
+                  borderRadius: "50%",
+                  backgroundColor: "var(--purple-100)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--purple-200)";
+                  e.currentTarget.style.transform = "scale(1.05)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--purple-100)";
+                  e.currentTarget.style.transform = "scale(1)";
+                }}
+              >
+                <BiUser style={{ color: "var(--primary)", fontSize: "22px" }} />
+              </div>
+            ) : (
+              <LoginButton />
+            )}
           </div>
         )}
 
