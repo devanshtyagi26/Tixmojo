@@ -8,14 +8,9 @@
     "dev": "vite",
     "server": "cd server && npm run dev",
     "dev:all": "concurrently \"npm run dev\" \"npm run server\"",
-    "build": "vite build && npm run post-build",
-    "build:netlify": "vite build && npm run netlify-postbuild",
-    "build:ssr": "vite build && vite build --ssr && npm run post-build",
-    "post-build": "node scripts/fix-mime-types.js && node scripts/generate-importmap.js",
-    "netlify-postbuild": "node scripts/fix-mime-types.js && node scripts/netlify-deployment.js",
+    "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "start": "npm run build:ssr && cd server && npm run start"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
