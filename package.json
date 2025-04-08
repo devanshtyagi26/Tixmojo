@@ -9,6 +9,7 @@
     "server": "cd server && npm run dev",
     "dev:all": "concurrently \"npm run dev\" \"npm run server\"",
     "build": "vite build",
+    "build:netlify": "vite build && cp public/_redirects dist/ && cp public/_headers dist/",
     "lint": "eslint .",
     "preview": "vite preview"
   },
