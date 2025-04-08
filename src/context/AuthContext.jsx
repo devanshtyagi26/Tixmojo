@@ -23,8 +23,29 @@ export const AuthProvider = ({ children }) => {
 
   // Login user
   const login = (userData) => {
-    localStorage.setItem('user', JSON.stringify(userData));
-    setCurrentUser(userData);
+    // Process Google OAuth data if available
+    let processedData = userData;
+    
+    if (userData.provider === 'google') {
+      // Extract and normalize phone number from Google user data if available
+      let phoneNumber = userData.phoneNumber || '';
+      
+      // If no phone number is available but we have a sub (Google ID), we can
+      // simulate one for demo purposes with the last 8 digits of the ID
+      if (!phoneNumber && userData.sub) {
+        const lastEight = userData.sub.slice(-8);
+        phoneNumber = `+1${lastEight}`; // Simulate a US phone number
+      }
+      
+      // Enhance the user data with normalized phone number
+      processedData = {
+        ...userData,
+        phone: phoneNumber
+      };
+    }
+    
+    localStorage.setItem('user', JSON.stringify(processedData));
+    setCurrentUser(processedData);
   };
 
   // Logout user

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import ISO31661a2 from 'iso-3166-1-alpha-2';
+import { useAuth } from '../../context/AuthContext';
 
 // Phone login validation schema
 const schema = yup.object({
@@ -46,25 +47,94 @@ const sortedCountries = [
   ...countryOptions.filter(c => !popularCountries.includes(c.code))
 ];
 
+// Function to extract country code from phone number
+const extractCountryFromPhone = (phone) => {
+  if (!phone) return null;
+  
+  // Check for common formats
+  if (phone.startsWith('+1')) return 'US'; // North America
+  if (phone.startsWith('+44')) return 'GB'; // UK
+  if (phone.startsWith('+61')) return 'AU'; // Australia
+  if (phone.startsWith('+64')) return 'NZ'; // New Zealand
+  if (phone.startsWith('+91')) return 'IN'; // India
+  
+  // Try to match other countries
+  for (const country of countryOptions) {
+    if (phone.startsWith(country.dialCode)) {
+      return country.code;
+    }
+  }
+  
+  return null;
+};
+
+// Function to extract national number from phone with country code
+const extractNationalNumber = (phone, dialCode) => {
+  if (!phone || !dialCode || !phone.startsWith(dialCode)) {
+    return '';
+  }
+  
+  // Remove the dial code from the phone number
+  return phone.substring(dialCode.length);
+};
+
 const PhoneLoginForm = ({ onSubmit, loading }) => {
   const { t } = useTranslation();
+  const { currentUser, isAuthenticated } = useAuth();
   const [selectedCountry, setSelectedCountry] = useState({
     code: 'AU',
     name: 'Australia',
     dialCode: '+61'
   });
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+  const [nationalNumber, setNationalNumber] = useState('');
   
-  const { register, handleSubmit, formState: { errors, isValid } } = useForm({
+  const { register, handleSubmit, formState: { errors, isValid }, setValue, reset } = useForm({
     resolver: yupResolver(schema),
     mode: 'onChange'
   });
+
+  // Pre-fill with user's phone number if available from Google OAuth
+  useEffect(() => {
+    if (isAuthenticated() && currentUser?.phone) {
+      // Extract country code
+      const countryCode = extractCountryFromPhone(currentUser.phone);
+      
+      if (countryCode) {
+        // Find the country object
+        const foundCountry = countryOptions.find(c => c.code === countryCode);
+        if (foundCountry) {
+          setSelectedCountry(foundCountry);
+          
+          // Extract and set national number
+          const nationalNum = extractNationalNumber(currentUser.phone, foundCountry.dialCode);
+          setNationalNumber(nationalNum);
+          setValue('phone', nationalNum, { shouldValidate: true });
+        }
+      } else {
+        // If no country code detected, use the full number
+        setNationalNumber(currentUser.phone);
+        setValue('phone', currentUser.phone, { shouldValidate: true });
+      }
+    }
+  }, [currentUser, isAuthenticated, setValue]);
 
   // Handle form submission
   const handleFormSubmit = (data) => {
     // Add country code to the phone number
     const fullPhoneNumber = `${selectedCountry.dialCode}${data.phone}`;
     onSubmit({ ...data, phone: fullPhoneNumber });
+  };
+
+  // Handle country change
+  const handleCountryChange = (country) => {
+    setSelectedCountry(country);
+    setShowCountryDropdown(false);
+    
+    // If we have a national number, keep it when changing country
+    if (nationalNumber) {
+      setValue('phone', nationalNumber, { shouldValidate: true });
+    }
   };
 
   // Input field style based on validation
@@ -140,6 +210,10 @@ const PhoneLoginForm = ({ onSubmit, loading }) => {
             placeholder={t('Phone Number')}
             autoComplete="tel"
             {...register('phone')}
+            onChange={(e) => {
+              setNationalNumber(e.target.value);
+              register('phone').onChange(e);
+            }}
             style={{
               flex: 1,
               border: 'none',
@@ -187,10 +261,7 @@ const PhoneLoginForm = ({ onSubmit, loading }) => {
               {sortedCountries.map((country) => (
                 <div
                   key={country.code}
-                  onClick={() => {
-                    setSelectedCountry(country);
-                    setShowCountryDropdown(false);
-                  }}
+                  onClick={() => handleCountryChange(country)}
                   style={{
                     padding: '8px 12px',
                     cursor: 'pointer',
@@ -257,6 +328,28 @@ const PhoneLoginForm = ({ onSubmit, loading }) => {
           {t('Forgot Password?')}
         </a>
       </div>
+      
+      {/* Google data message */}
+      {isAuthenticated() && currentUser?.phone && currentUser?.provider === 'google' && (
+        <div style={{
+          backgroundColor: 'rgba(52, 168, 83, 0.05)',
+          border: '1px solid rgba(52, 168, 83, 0.3)',
+          borderRadius: '10px',
+          padding: '8px 12px',
+          fontSize: '13px',
+          marginBottom: '15px',
+          color: '#34A853',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+        }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          Phone number pre-filled from your Google account
+        </div>
+      )}
       
       {/* Login button */}
       <button

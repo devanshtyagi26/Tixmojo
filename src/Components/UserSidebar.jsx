@@ -1,13 +1,14 @@
-import { BiUser, BiCog, BiWallet, BiHelpCircle, BiLogOut } from "react-icons/bi";
+import { BiUser, BiCog, BiWallet, BiHelpCircle, BiLogOut, BiPhone } from "react-icons/bi";
 import { HiChartPie } from "react-icons/hi";
 import { PiListHeartBold } from "react-icons/pi";
 import { Link } from "react-router-dom";
 import "../Style/sidebarAnimation.css";
 import { useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const styles = {
   sidebar: {
-    width: "250px",
+    width: "280px", // Increased width for phone number display
     height: "auto",
     maxHeight: "90vh",
     backgroundColor: "var(--purple-50)",
@@ -81,6 +82,7 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     marginRight: "15px",
+    overflow: "hidden", // For image containment
   },
   profileName: {
     fontWeight: "700",
@@ -93,6 +95,14 @@ const styles = {
     fontSize: "13px",
     color: "var(--gray-light)",
     letterSpacing: "-0.01em",
+  },
+  profilePhone: {
+    fontSize: "13px",
+    color: "var(--purple-600)",
+    letterSpacing: "-0.01em",
+    display: "flex",
+    alignItems: "center",
+    marginTop: "2px",
   },
   editProfile: {
     fontSize: "13px",
@@ -115,7 +125,14 @@ const styles = {
 };
 
 export function UserSidebar({ toggleUserSidebar, isUserSidebarOpen }) {
+  const { currentUser, isAuthenticated, logout } = useAuth();
+  
   const handleClick = () => {
+    toggleUserSidebar();
+  };
+  
+  const handleLogout = () => {
+    logout();
     toggleUserSidebar();
   };
 
@@ -144,6 +161,20 @@ export function UserSidebar({ toggleUserSidebar, isUserSidebarOpen }) {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isUserSidebarOpen, toggleUserSidebar]);
+  
+  // Format phone number for display
+  const formatPhoneForDisplay = (phone) => {
+    if (!phone) return '';
+    
+    // Simple formatting for display purposes
+    if (phone.startsWith('+1') && phone.length === 12) {
+      // Format US numbers as (XXX) XXX-XXXX
+      return `(${phone.slice(2, 5)}) ${phone.slice(5, 8)}-${phone.slice(8)}`;
+    }
+    
+    // For other cases, just return the phone number as is
+    return phone;
+  };
 
   return (
     <>
@@ -152,11 +183,33 @@ export function UserSidebar({ toggleUserSidebar, isUserSidebarOpen }) {
         {/* User profile section */}
         <div style={styles.profileHeader}>
           <div style={styles.profileAvatar}>
-            <BiUser style={{ color: "white", fontSize: "26px" }} />
+            {isAuthenticated() && currentUser?.profilePicture ? (
+              <img 
+                src={currentUser.profilePicture} 
+                alt={`${currentUser.firstName}'s profile`}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <BiUser style={{ color: "white", fontSize: "26px" }} />
+            )}
           </div>
           <div>
-            <div style={styles.profileName}>Guest User</div>
-            <div style={styles.profileEmail}>guest@example.com</div>
+            <div style={styles.profileName}>
+              {isAuthenticated() 
+                ? `${currentUser.firstName} ${currentUser.lastName}`
+                : 'Guest User'
+              }
+            </div>
+            <div style={styles.profileEmail}>
+              {isAuthenticated() ? currentUser.email : 'guest@example.com'}
+            </div>
+            {/* Display phone number if available */}
+            {isAuthenticated() && currentUser.phone && (
+              <div style={styles.profilePhone}>
+                <BiPhone style={{ marginRight: '5px', fontSize: '14px' }} />
+                {formatPhoneForDisplay(currentUser.phone)}
+              </div>
+            )}
             <Link 
               to="/page-not-found"
               style={styles.editProfile}
@@ -248,20 +301,37 @@ export function UserSidebar({ toggleUserSidebar, isUserSidebarOpen }) {
         <div style={styles.divider}></div>
         
         <div style={styles.itemGroup}>
-          <Link 
-            to="/page-not-found" 
-            style={{...styles.item, textDecoration: "none", color: "#e53935"}}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(229, 57, 53, 0.1)";
-              e.currentTarget.style.transform = "translateX(5px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "";
-              e.currentTarget.style.transform = "";
-            }}
-          >
-            <BiLogOut style={{...styles.icon, color: "#e53935"}} /> Sign Out
-          </Link>
+          {isAuthenticated() ? (
+            <div 
+              onClick={handleLogout}
+              style={{...styles.item, textDecoration: "none", color: "#e53935", cursor: "pointer"}}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(229, 57, 53, 0.1)";
+                e.currentTarget.style.transform = "translateX(5px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "";
+                e.currentTarget.style.transform = "";
+              }}
+            >
+              <BiLogOut style={{...styles.icon, color: "#e53935"}} /> Sign Out
+            </div>
+          ) : (
+            <Link 
+              to="/login" 
+              style={{...styles.item, textDecoration: "none", color: "var(--primary)"}}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(111, 68, 255, 0.1)";
+                e.currentTarget.style.transform = "translateX(5px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "";
+                e.currentTarget.style.transform = "";
+              }}
+            >
+              <BiUser style={{...styles.icon, color: "var(--primary)"}} /> Sign In
+            </Link>
+          )}
         </div>
       </div>
     </>

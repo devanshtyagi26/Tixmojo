@@ -130,10 +130,13 @@ const Login = () => {
         profilePicture: payload.picture || 'https://via.placeholder.com/150',
         provider: 'google',
         locale: payload.locale,
+        // Extract phone number - in a real app this would come from Google's People API
+        // For demo, we'll simulate a phone number based on the user's ID
+        phoneNumber: payload.phoneNumber || `+1${payload.sub.slice(-10)}`,
         isAuthenticated: true
       };
       
-      // Log the user in
+      // Log the user in - will process the phone number in the AuthContext
       login(userData);
       
       // Navigate back to the previous page or home
