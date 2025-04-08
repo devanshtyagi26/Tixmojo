@@ -25,6 +25,34 @@ const PhoneInputWithValidation = ({ fieldName = 'phone', defaultCountry = 'AU', 
     code: defaultCountry,
     name: ISO31661a2.getCountry(defaultCountry) || defaultCountry
   });
+  
+  // React to initial value that might be auto-filled
+  useEffect(() => {
+    // Check initial value once on mount
+    if (phoneValue && phoneValue.startsWith('+')) {
+      try {
+        const parsed = parsePhoneNumber(phoneValue);
+        if (parsed && parsed.country && parsed.country !== selectedCountry.code) {
+          setSelectedCountry({
+            code: parsed.country,
+            name: ISO31661a2.getCountry(parsed.country) || parsed.country
+          });
+          
+          console.log(`Auto-detected country from initial value: ${parsed.country}`);
+          
+          // Trigger validation after country update
+          const validationTimer = setTimeout(() => {
+            trigger(fieldName);
+          }, 50);
+          
+          // Clean up timer on unmount
+          return () => clearTimeout(validationTimer);
+        }
+      } catch (err) {
+        // Could not parse country from initial value
+      }
+    }
+  }, []);
 
   // Country detection from phone number
   useEffect(() => {
@@ -406,7 +434,56 @@ const PhoneInputWithValidation = ({ fieldName = 'phone', defaultCountry = 'AU', 
           onFocus={(e) => {
             // Auto-add country code if empty
             if (!e.target.value) {
-              setValue(fieldName, `+${getCountryCallingCode(selectedCountry.code)}`, { shouldValidate: false });
+              const dialCode = `+${getCountryCallingCode(selectedCountry.code)}`;
+              setValue(fieldName, dialCode, { shouldValidate: true });
+              
+              // Trigger validation after a short delay to let React update the field
+              const validationTimer = setTimeout(() => {
+                trigger(fieldName);
+              }, 10);
+            }
+          }}
+          onAnimationStart={(e) => {
+            // Check for browser autofill animation
+            if (e.animationName === 'onAutoFillStart') {
+              console.log('Browser autofill detected on phone input');
+              
+              // Get the current value after autofill
+              const value = e.target.value;
+              
+              // If we have a value with a country code, try to update selected country
+              if (value && value.startsWith('+')) {
+                try {
+                  const parsed = parsePhoneNumber(value);
+                  if (parsed && parsed.country && parsed.country !== selectedCountry.code) {
+                    // Update the country dropdown
+                    setSelectedCountry({
+                      code: parsed.country,
+                      name: ISO31661a2.getCountry(parsed.country) || parsed.country
+                    });
+                    
+                    console.log(`Auto-detected country from autofill: ${parsed.country}`);
+                    
+                    // Format the number properly
+                    const formattedValue = formatPhoneNumber(value, parsed.country);
+                    if (formattedValue !== value) {
+                      setValue(fieldName, formattedValue, { shouldValidate: true });
+                    }
+                    
+                    // Trigger validation
+                    const validationTimer = setTimeout(() => {
+                      trigger(fieldName);
+                    }, 50);
+                  }
+                } catch (err) {
+                  console.warn("Could not parse country from autofilled phone:", err);
+                }
+              }
+              
+              // Validate only this field, not the whole form
+              const fieldValidationTimer = setTimeout(() => {
+                trigger(fieldName);
+              }, 100);
             }
           }}
         />

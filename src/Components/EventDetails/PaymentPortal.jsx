@@ -235,7 +235,8 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
   // Form for buyer information
   const buyerInfoForm = useForm({
     resolver: yupResolver(buyerInfoSchema),
-    mode: 'onBlur',
+    mode: 'onChange', // Change from onBlur to onChange to validate on every change
+    reValidateMode: 'onChange',
     defaultValues: getDefaultValues(),
     context: { 
       selectedCountry: selectedCountry,
@@ -248,6 +249,23 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
   useEffect(() => {
     if (isAuthenticated() && currentUser) {
       const defaultValues = getDefaultValues();
+      
+      // If we have a phone number from auth, try to detect country
+      if (defaultValues.phone && defaultValues.phone.startsWith('+')) {
+        try {
+          const parsed = parsePhoneNumber(defaultValues.phone);
+          if (parsed && parsed.country) {
+            // Update selected country from the phone number
+            setSelectedCountry({
+              code: parsed.country,
+              name: ISO31661a2.getCountry(parsed.country) || parsed.country
+            });
+            console.log(`Auto-detected country from auth: ${parsed.country}`);
+          }
+        } catch (err) {
+          console.log("Could not parse country from auth phone number");
+        }
+      }
       
       // Reset form with new values and update context
       buyerInfoForm.reset(defaultValues, {
@@ -268,6 +286,23 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
       };
       
       console.log("Updated form with user data:", defaultValues);
+      
+      // Validate only the fields that have values
+      const validationTimer = setTimeout(() => {
+        // Only validate fields that have values
+        Object.keys(defaultValues).forEach(fieldName => {
+          if (defaultValues[fieldName]) {
+            buyerInfoForm.trigger(fieldName);
+          }
+        });
+      }, 300);
+      
+      // Clean up the timer if component unmounts before timeout
+      return () => {
+        if (validationTimer) {
+          clearTimeout(validationTimer);
+        }
+      };
     }
   }, [currentUser, isAuthenticated]);
   
@@ -291,6 +326,92 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
       console.error("Error updating form context with new country:", err);
     }
   }, [selectedCountry.code]);
+  
+  // Handle browser auto-fill detection
+  useEffect(() => {
+    // Initialize the timer variable
+    let timer;
+    
+    // Set up listeners to detect browser auto-fill
+    const phoneField = document.getElementById('phone');
+    const emailField = document.getElementById('email');
+    const firstNameField = document.getElementById('firstName');
+    const lastNameField = document.getElementById('lastName');
+    
+    // Function to check if field was auto-filled and trigger validation
+    const handleAutofill = (e) => {
+      // Most browsers change background color on autofill
+      const computedStyle = window.getComputedStyle(e.target);
+      const isAutofilled = computedStyle.animationName === 'autofill' || 
+                          computedStyle.animationName === 'onAutoFillStart' ||
+                          (e.target.value && !e.target.dataset.userTyped);
+      
+      if (isAutofilled) {
+        console.log("Detected browser autofill on:", e.target.id);
+        
+        // For phone numbers, try to extract country
+        if (e.target.id === 'phone' && e.target.value && e.target.value.startsWith('+')) {
+          try {
+            const parsed = parsePhoneNumber(e.target.value);
+            if (parsed && parsed.country) {
+              // Update selected country from the phone number
+              setSelectedCountry({
+                code: parsed.country,
+                name: ISO31661a2.getCountry(parsed.country) || parsed.country
+              });
+            }
+          } catch (err) {
+            // Could not parse country from auto-filled phone
+          }
+        }
+        
+        // Validate only this field after a short delay
+        setTimeout(() => {
+          buyerInfoForm.trigger(e.target.id);
+        }, 100);
+      }
+    };
+    
+    // Track user typing to distinguish from autofill
+    const trackUserTyping = (e) => {
+      e.target.dataset.userTyped = 'true';
+    };
+    
+    // Add listeners
+    const fields = [phoneField, emailField, firstNameField, lastNameField];
+    fields.forEach(field => {
+      if (field) {
+        field.addEventListener('input', handleAutofill);
+        field.addEventListener('keydown', trackUserTyping);
+        field.addEventListener('change', handleAutofill);
+        
+        // Animation-based autofill detection (works in Chrome)
+        const animationStartListener = (e) => {
+          if (e.animationName === 'onAutoFillStart') {
+            handleAutofill({ target: field });
+          }
+        };
+        field.addEventListener('animationstart', animationStartListener);
+      }
+    });
+    
+    // Clean up listeners on unmount
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+      
+      fields.forEach(field => {
+        if (field) {
+          field.removeEventListener('input', handleAutofill);
+          field.removeEventListener('keydown', trackUserTyping);
+          field.removeEventListener('change', handleAutofill);
+          // Use a named function reference for animationstart to properly remove it
+          field.removeEventListener('animationstart', handleAutofill);
+        }
+      });
+    };
+  }, []);
   
   // Check if Stripe is configured
   useEffect(() => {
@@ -440,12 +561,28 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
   };
   
   // Handle form submission for buyer info
-  const handleBuyerInfoSubmit = async (data) => {
+  const handleBuyerInfoSubmit = async (data, event) => {
+    // React Hook Form passes data as first argument and event as second
+    if (event && typeof event.preventDefault === 'function') {
+      event.preventDefault();
+    }
+    
     if (isFormSubmitting) return;
+    
+    // Validate all fields at once before submission
+    const isValid = await buyerInfoForm.trigger();
+    
+    if (!isValid) {
+      console.log("Form validation failed");
+      return;
+    }
     
     setIsFormSubmitting(true);
     
     try {
+      // Get the form data after validation
+      const data = buyerInfoForm.getValues();
+      
       // Try to extract country from phone number for better tracking
       let phoneCountry = selectedCountry.code;
       try {
@@ -858,7 +995,7 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
           
           {/* Form fields change based on current step */}
           {currentStep === 'buyerInfo' ? (
-            <form onSubmit={buyerInfoForm.handleSubmit(handleBuyerInfoSubmit)}>
+            <form onSubmit={buyerInfoForm.handleSubmit((data, event) => handleBuyerInfoSubmit(data, event))}>
               {/* First and Last Name */}
               <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
                 <div style={{ flex: 1 }}>
@@ -1102,29 +1239,38 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <button
                   type="submit"
-                  disabled={isFormSubmitting || !buyerInfoForm.formState.isValid}
+                  // Remove onClick as it conflicts with the form submission
+                  // The form will handle validation on submit
+                  disabled={isFormSubmitting || 
+                    (Object.keys(buyerInfoForm.formState.errors).length > 0)}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
-                    backgroundColor: isFormSubmitting || !buyerInfoForm.formState.isValid ? 'var(--neutral-200)' : 'var(--primary)',
+                    backgroundColor: isFormSubmitting || 
+                      (Object.keys(buyerInfoForm.formState.errors).length > 0) ? 
+                      'var(--neutral-200)' : 'var(--primary)',
                     color: 'white',
                     border: 'none',
                     padding: '12px 24px',
                     borderRadius: '8px',
                     fontWeight: '600',
                     fontSize: '16px',
-                    cursor: isFormSubmitting || !buyerInfoForm.formState.isValid ? 'not-allowed' : 'pointer',
+                    cursor: isFormSubmitting || 
+                      (Object.keys(buyerInfoForm.formState.errors).length > 0) ? 
+                      'not-allowed' : 'pointer',
                     transition: 'all 0.2s',
                   }}
                   onMouseEnter={(e) => {
-                    if (!isFormSubmitting && buyerInfoForm.formState.isValid) {
+                    if (!isFormSubmitting && (Object.keys(buyerInfoForm.formState.errors).length === 0)) {
                       e.currentTarget.style.backgroundColor = '#e50036';
                       e.currentTarget.style.transform = 'translateY(-2px)';
                     }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = isFormSubmitting || !buyerInfoForm.formState.isValid ? 'var(--neutral-200)' : 'var(--primary)';
+                    e.currentTarget.style.backgroundColor = isFormSubmitting || 
+                      (Object.keys(buyerInfoForm.formState.errors).length > 0) ? 
+                      'var(--neutral-200)' : 'var(--primary)';
                     e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
@@ -1510,6 +1656,27 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
             0% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.9; transform: scale(1.02); }
             100% { opacity: 1; transform: scale(1); }
+          }
+          
+          /* Special animation only for browser autofill detection */
+          @keyframes onAutoFillStart {
+            from { content: ""; }
+            to { content: ""; }
+          }
+          
+          @keyframes onAutoFillCancel {
+            from { content: ""; }
+            to { content: ""; }
+          }
+          
+          /* Apply special style for autofilled inputs in Chrome, Safari, etc. */
+          input:-webkit-autofill {
+            animation-name: onAutoFillStart;
+            transition: background-color 50000s ease-in-out 0s;
+          }
+          
+          input:not(:-webkit-autofill) {
+            animation-name: onAutoFillCancel;
           }
           
           /* Custom styles for react-phone-number-input */
