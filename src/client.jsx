@@ -23,9 +23,8 @@ window.onload = () => {
 // Get the initial data injected by the server
 const initialData = window.__INITIAL_DATA__ || {};
 
-// Google OAuth client ID
-const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || 
-  "737893507438-rfo58r4pjsklna2pbj3t0g4jcn6g4p13.apps.googleusercontent.com";
+// Google OAuth client ID from environment variables
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 // Check if we have a valid-looking Google OAuth client ID
 const isValidGoogleClientId = googleClientId && 

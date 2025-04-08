@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import LoginToggle from '../Components/Auth/LoginToggle';
 import OrDivider from '../Components/Auth/OrDivider';
 import GoogleLoginButton from '../Components/Auth/GoogleLoginButton';
+import GoogleAuthStatus from '../Components/Auth/GoogleAuthStatus';
 import { useAuth } from '../context/AuthContext';
 import { ScrollAnimation } from '../utils/ScrollAnimation.jsx';
 
@@ -245,6 +246,11 @@ const Login = () => {
               onSuccess={handleGoogleLoginSuccess}
               onError={handleGoogleLoginError}
             />
+            
+            {/* Display Google Auth status when in development or when there's an error */}
+            {(import.meta.env.DEV || error.includes('OAuth')) && (
+              <GoogleAuthStatus />
+            )}
           </div>
 
           <OrDivider />
