@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
     
     if (userData.provider === 'google') {
       // Extract and normalize phone number from Google user data if available
-      let phoneNumber = userData.phoneNumber || '';
+      let phoneNumber = userData.phoneNumber || userData.phone || '';
       
       // If no phone number is available but we have a sub (Google ID), we can
       // simulate one for demo purposes with the last 8 digits of the ID
@@ -37,10 +37,20 @@ export const AuthProvider = ({ children }) => {
         phoneNumber = `+1${lastEight}`; // Simulate a US phone number
       }
       
-      // Enhance the user data with normalized phone number
+      // Extract profile picture if available
+      const profilePicture = userData.picture || userData.profilePicture || '';
+      
+      // Format name components
+      const firstName = userData.given_name || userData.firstName || userData.name?.split(' ')[0] || '';
+      const lastName = userData.family_name || userData.lastName || (userData.name?.split(' ').length > 1 ? userData.name.split(' ').slice(1).join(' ') : '') || '';
+      
+      // Enhance the user data with normalized information
       processedData = {
         ...userData,
-        phone: phoneNumber
+        phone: phoneNumber,
+        profilePicture: profilePicture,
+        firstName: firstName,
+        lastName: lastName
       };
       
       console.log("Processed Google user data:", processedData);

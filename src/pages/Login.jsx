@@ -140,16 +140,27 @@ const Login = () => {
       // Create user data object
       const userData = {
         id: payload.sub,
+        sub: payload.sub, // Keep sub for phone number generation in AuthContext
         email: payload.email,
         firstName: payload.given_name || payload.name?.split(' ')[0] || 'Google',
         lastName: payload.family_name || payload.name?.split(' ').slice(1).join(' ') || 'User',
+        // Keep both picture and profilePicture for compatibility
+        picture: payload.picture || 'https://via.placeholder.com/150',
         profilePicture: payload.picture || 'https://via.placeholder.com/150',
         provider: 'google',
         locale: payload.locale,
         // In a real app this would come from Google's People API
+        // For demo purposes, we generate a consistent phone number from the user ID
         phone: simulatePhoneNumber(),
         isAuthenticated: true
       };
+      
+      // Log profile image info for debugging
+      console.log("Profile image info:", { 
+        pictureProp: payload.picture,
+        googlePicture: payload.picture || 'None',
+        finalPicture: userData.profilePicture || 'None'
+      });
       
       console.log("Generated user data:", userData);
       
@@ -250,9 +261,31 @@ const Login = () => {
                     borderRadius: '20px',
                     border: '1px solid var(--neutral-200)',
                     fontSize: '14px',
+                    backgroundColor: isAuthenticated() && currentUser?.phone ? 'rgba(52, 168, 83, 0.05)' : 'white',
                   }}
                 />
               </div>
+              {/* Show message when phone is pre-filled from Google */}
+              {isAuthenticated() && currentUser?.phone && currentUser?.provider === 'google' && usePhoneNumber && (
+                <div style={{
+                  backgroundColor: 'rgba(52, 168, 83, 0.05)',
+                  border: '1px solid rgba(52, 168, 83, 0.3)',
+                  borderRadius: '10px',
+                  padding: '8px 12px',
+                  fontSize: '13px',
+                  marginBottom: '15px',
+                  color: '#34A853',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                  Phone number pre-filled from your Google account
+                </div>
+              )}
             ) : (
               <div style={{ 
                 marginBottom: '15px',

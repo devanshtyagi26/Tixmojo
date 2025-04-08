@@ -97,6 +97,8 @@ const PhoneLoginForm = ({ onSubmit, loading }) => {
   // Pre-fill with user's phone number if available from Google OAuth
   useEffect(() => {
     if (isAuthenticated() && currentUser?.phone) {
+      console.log("Pre-filling phone input with:", currentUser.phone);
+      
       // Extract country code
       const countryCode = extractCountryFromPhone(currentUser.phone);
       
@@ -118,6 +120,15 @@ const PhoneLoginForm = ({ onSubmit, loading }) => {
       }
     }
   }, [currentUser, isAuthenticated, setValue]);
+  
+  // Add a debug effect to log when component mounts or auth changes
+  useEffect(() => {
+    console.log("PhoneLoginForm auth state:", { 
+      isAuthenticated: isAuthenticated(),
+      currentUser,
+      hasPhone: Boolean(currentUser?.phone)
+    });
+  }, [isAuthenticated, currentUser]);
 
   // Handle form submission
   const handleFormSubmit = (data) => {

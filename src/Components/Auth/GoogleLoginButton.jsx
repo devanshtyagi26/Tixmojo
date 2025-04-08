@@ -99,6 +99,8 @@ const GoogleLoginButton = ({ onSuccess, onError }) => {
         width="280px"
         auto_select={false}
         ux_mode="popup"
+        /* Request additional scopes when available */
+        scope="profile email"
       />
     </div>
   );

@@ -193,11 +193,17 @@ export function UserSidebar({ toggleUserSidebar, isUserSidebarOpen }) {
         {/* User profile section */}
         <div style={styles.profileHeader}>
           <div style={styles.profileAvatar}>
-            {isAuthenticated() && currentUser?.profilePicture ? (
+            {isAuthenticated() && (currentUser?.profilePicture || currentUser?.picture) ? (
               <img 
-                src={currentUser.profilePicture} 
-                alt={`${currentUser.firstName}'s profile`}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                src={currentUser.profilePicture || currentUser.picture} 
+                alt={`${currentUser.firstName || 'User'}'s profile`}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                onError={(e) => {
+                  console.error("Failed to load sidebar profile image:", e);
+                  e.target.onerror = null; 
+                  e.target.style.display = "none";
+                  e.target.parentNode.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
+                }}
               />
             ) : (
               <BiUser style={{ color: "white", fontSize: "26px" }} />
