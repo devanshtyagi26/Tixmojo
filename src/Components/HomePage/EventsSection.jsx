@@ -8,7 +8,6 @@ import React, {
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import { MdNavigateNext, MdNavigateBefore } from "react-icons/md";
-import { IoFilter } from "react-icons/io5";
 import Cards from "./Cards.jsx";
 import { getLocationDetails } from "../../services/api.js";
 
@@ -45,9 +44,21 @@ const EventsSection = ({
         }
       } catch (error) {
         console.error("Error fetching location data:", error);
-        // Fallback to basic data if API fails
+        
+        // Try again with lowercase version of the location
+        try {
+          const lowercaseData = await getLocationDetails(selectedLocation.toLowerCase());
+          if (lowercaseData) {
+            setLocationData(lowercaseData);
+            return;
+          }
+        } catch (lowercaseError) {
+          console.error("Error fetching lowercase location data:", lowercaseError);
+        }
+        
+        // Fallback to basic data if all API attempts fail
         setLocationData({
-          title: `Event in`,
+          title: `Events in`,
           subtitle: `Discover the most popular events happening in ${selectedLocation} right now`,
           image: "",
           description: "",
