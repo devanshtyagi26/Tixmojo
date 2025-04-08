@@ -85,11 +85,68 @@ const fetchAPI = async (endpoint, options = {}) => {
         : typeof data
     );
 
-    return data.data; // Our API returns data in a 'data' property
+    // Our API returns data in a 'data' property
+    return data.data || data; 
   } catch (error) {
     console.error(`API Error for ${endpoint}:`, error);
     throw error;
   }
+};
+
+/**
+ * HTTP GET request
+ * @param {string} endpoint - API endpoint
+ * @param {object} options - Additional fetch options
+ * @returns {Promise<any>} - Parsed response data
+ */
+const get = async (endpoint, options = {}) => {
+  return fetchAPI(endpoint, {
+    method: 'GET',
+    ...options
+  });
+};
+
+/**
+ * HTTP POST request
+ * @param {string} endpoint - API endpoint
+ * @param {object} data - Data to send in request body
+ * @param {object} options - Additional fetch options
+ * @returns {Promise<any>} - Parsed response data
+ */
+const post = async (endpoint, data, options = {}) => {
+  return fetchAPI(endpoint, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    ...options
+  });
+};
+
+/**
+ * HTTP PUT request
+ * @param {string} endpoint - API endpoint
+ * @param {object} data - Data to send in request body
+ * @param {object} options - Additional fetch options
+ * @returns {Promise<any>} - Parsed response data
+ */
+const put = async (endpoint, data, options = {}) => {
+  return fetchAPI(endpoint, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+    ...options
+  });
+};
+
+/**
+ * HTTP DELETE request
+ * @param {string} endpoint - API endpoint
+ * @param {object} options - Additional fetch options
+ * @returns {Promise<any>} - Parsed response data
+ */
+const del = async (endpoint, options = {}) => {
+  return fetchAPI(endpoint, {
+    method: 'DELETE',
+    ...options
+  });
 };
 
 /**
@@ -99,7 +156,7 @@ const fetchAPI = async (endpoint, options = {}) => {
  */
 export const getAllEvents = async (location) => {
   const query = location ? `?location=${encodeURIComponent(location)}` : "";
-  return fetchAPI(`/events${query}`);
+  return get(`/events${query}`);
 };
 
 /**
@@ -109,7 +166,7 @@ export const getAllEvents = async (location) => {
  */
 export const getEventsFromServer = async (location) => {
   const query = location ? `?location=${encodeURIComponent(location)}` : "";
-  return fetchAPI(`/events/server-data${query}`);
+  return get(`/events/server-data${query}`);
 };
 
 /**
@@ -121,7 +178,7 @@ export const getEventsByOrganizer = async (organizerId) => {
   if (!organizerId) {
     throw new Error("Organizer ID is required");
   }
-  return fetchAPI(`/events/organizer/${encodeURIComponent(organizerId)}`);
+  return get(`/events/organizer/${encodeURIComponent(organizerId)}`);
 };
 
 /**
@@ -133,7 +190,7 @@ export const getLocationEvents = async (location) => {
   if (!location) {
     throw new Error("Location parameter is required");
   }
-  return fetchAPI(
+  return get(
     `/events/location/${encodeURIComponent(location.toLowerCase())}`
   );
 };
@@ -145,7 +202,7 @@ export const getLocationEvents = async (location) => {
  */
 export const getSpotlightEvents = async (location) => {
   const query = location ? `?location=${encodeURIComponent(location)}` : "";
-  return fetchAPI(`/events/spotlight${query}`);
+  return get(`/events/spotlight${query}`);
 };
 
 /**
@@ -153,7 +210,7 @@ export const getSpotlightEvents = async (location) => {
  * @returns {Promise<Array>} - Flyers data
  */
 export const getFlyers = async () => {
-  return fetchAPI("/events/flyers");
+  return get("/events/flyers");
 };
 
 /**
@@ -178,7 +235,7 @@ export const getEventById = async (id, useFallback = false) => {
 
   try {
     // Try fetching from API first
-    return await fetchAPI(`/events/${id}`);
+    return await get(`/events/${id}`);
   } catch (error) {
     console.error(`API error for event ${id}, using fallback:`, error);
     
@@ -203,7 +260,7 @@ export const getEventById = async (id, useFallback = false) => {
  * @returns {Promise<Array>} - Available locations
  */
 export const getLocations = async () => {
-  return fetchAPI("/events/locations");
+  return get("/events/locations");
 };
 
 /**
@@ -212,7 +269,7 @@ export const getLocations = async () => {
  * @returns {Promise<Object>} - Location details or all locations if none specified
  */
 export const getLocationDetails = async (location) => {
-  return fetchAPI(
+  return get(
     `/events/locations/${location ? encodeURIComponent(location) : ""}`
   );
 };
@@ -231,7 +288,7 @@ export const getAllAppData = async (useFallback = false) => {
 
   try {
     // Try fetching from API first
-    const data = await fetchAPI("/events/app-data");
+    const data = await get("/events/app-data");
     return data;
   } catch (error) {
     console.error("API error, using fallback data:", error);
@@ -242,6 +299,14 @@ export const getAllAppData = async (useFallback = false) => {
 
 // Export all API functions
 export default {
+  // HTTP methods
+  get,
+  post,
+  put,
+  delete: del,
+  fetchAPI,
+  
+  // Endpoint-specific methods
   getAllEvents,
   getSpotlightEvents,
   getFlyers,

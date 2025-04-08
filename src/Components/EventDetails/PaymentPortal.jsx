@@ -13,6 +13,15 @@ import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
 import 'react-phone-number-input/style.css';
 // Import flag images
 import ReactCountryFlag from 'react-country-flag';
+// Import Stripe payment form
+// Using dynamic import to handle potential bundling issues
+import StripePaymentFormDefault, { StripePaymentForm } from './StripePaymentForm';
+// Use the default export, but fallback to named export if needed
+const StripePaymentComponent = StripePaymentFormDefault || StripePaymentForm;
+// Import Stripe service
+import stripeService from '../../services/stripeService';
+// Alternative payment service for dev mode
+import paymentService from '../../services/paymentService';
 
 // Buyer information validation schema
 const buyerInfoSchema = yup.object({
@@ -286,6 +295,56 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
     }
   }, [currentUser, isAuthenticated]);
   
+  // Check if Stripe is configured
+  useEffect(() => {
+    // Check if Stripe is configured
+    const stripeConfigured = stripeService.isStripeConfigured();
+    setIsStripeEnabled(stripeConfigured);
+    
+    // Initialize payment session
+    const initSession = async () => {
+      try {
+        // Select the appropriate service based on whether Stripe is configured
+        const service = stripeConfigured ? stripeService : paymentService;
+        
+        console.log("Initializing payment session with service:", stripeConfigured ? "Stripe" : "Alternative");
+        
+        // Call the appropriate service to initialize the payment session
+        const response = await service.initializePaymentSession(cartItems, event);
+        
+        if (response && response.sessionId) {
+          setSessionId(response.sessionId);
+          console.log("Payment session initialized successfully:", response.sessionId);
+        } else {
+          console.error("Payment session initialization did not return a sessionId");
+        }
+      } catch (error) {
+        console.error("Error initializing payment session:", error);
+        
+        // Let's give more useful error message for common issues
+        if (error.message && error.message.includes("is not a function")) {
+          console.error("API method error. Make sure the API service is properly configured with HTTP methods.");
+        }
+        
+        // Provide debug info for the session initialization
+        try {
+          console.log("Debug info - cartItems:", cartItems);
+          console.log("Debug info - event:", event?.id);
+          console.log("Debug info - isStripeEnabled:", stripeConfigured);
+        } catch (debugError) {
+          console.error("Error logging debug info:", debugError);
+        }
+      }
+    };
+    
+    // Only initialize if we have items and an event
+    if (cartItems && cartItems.length > 0 && event) {
+      initSession();
+    } else {
+      console.log("Skipping payment session initialization - missing cartItems or event");
+    }
+  }, [cartItems, event]);
+  
   // Form for payment information
   const paymentInfoForm = useForm({
     resolver: yupResolver(paymentInfoSchema),
@@ -301,6 +360,12 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
   
   // State to track if the timer is almost expired
   const [isAlmostExpired, setIsAlmostExpired] = useState(false);
+  
+  // State for payment session
+  const [sessionId, setSessionId] = useState(null);
+  
+  // State to track if Stripe is configured
+  const [isStripeEnabled, setIsStripeEnabled] = useState(false);
   
   // Update timer every second
   useEffect(() => {
@@ -384,18 +449,26 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
     setIsFormSubmitting(true);
     
     try {
-      // Simulate server-side validation
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // The phone number is already in E.164 format from react-phone-number-input
-      // which includes the country code, so we don't need to add it manually
-      
-      // In a real app, this would call an API endpoint
-      console.log("Buyer info validated:", {
+      // In a real app, this would call an API endpoint to validate buyer info
+      // and store it securely on the server
+      const buyerInfoData = {
         ...data,
-        // Show the selected country as well for tracking purposes
         phoneCountry: selectedCountry.code
-      });
+      };
+      
+      if (sessionId) {
+        // Use the appropriate service based on whether Stripe is configured
+        const service = isStripeEnabled ? stripeService : paymentService;
+        
+        // Call the API to validate buyer info
+        await service.validateBuyerInfo(sessionId, buyerInfoData);
+        
+        console.log("Buyer info validated and stored with session:", sessionId);
+      } else {
+        // Simulate server-side validation if no session
+        await new Promise(resolve => setTimeout(resolve, 800));
+        console.log("Buyer info validated:", buyerInfoData);
+      }
       
       // Move to payment info step
       setCurrentStep('paymentInfo');
@@ -410,7 +483,7 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
     }
   };
   
-  // Handle form submission for payment info
+  // Handle form submission for payment info via Stripe
   const handlePaymentInfoSubmit = async (data) => {
     if (isFormSubmitting) return;
     
@@ -420,53 +493,40 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
       // Get buyer info from the first step
       const buyerInfo = buyerInfoForm.getValues();
       
-      // Combine data from both forms
-      const paymentData = {
-        buyerInfo: {
-          ...buyerInfo,
-          // The phone is already in E.164 format with country code
-          phoneCountry: selectedCountry.code,
-          userId: currentUser?.id || null,
-          authProvider: currentUser?.provider || null
-        },
-        paymentInfo: {
-          ...data,
-          // For security, we'd never send full card details to our server
-          // We'd use a payment processor token instead
-          cardNumber: data.cardNumber.replace(/\s/g, '').slice(-4).padStart(16, '*'),
-          cardType: cardType || 'unknown'
-        },
-        ticketInfo: {
-          tickets: cartItems,
-          totalAmount,
-          discount,
-          finalAmount: (totalAmount + 10 - (totalAmount * discount))
-        },
-        eventId: event.id
-      };
+      // This is now managed by the StripePaymentForm component
+      console.log("Payment form ready for Stripe processing");
       
-      // Log the payment data for debugging (remove in production)
-      console.log("Processing payment with data:", paymentData);
-      
-      // Simulate server-side payment processing with different times based on auth method
-      // Google auth is "faster" for demonstration purposes
-      const processingTime = currentUser?.provider === 'google' ? 800 : 1500;
-      await new Promise(resolve => setTimeout(resolve, processingTime));
-      
-      // In a real app, this would be handled by a payment processor
-      console.log("Payment processed successfully");
-      
-      // Show success message or redirect
-      alert('Payment processed successfully! In a real application, you would be redirected to a confirmation page.');
+      // The Stripe form will handle payment processing and callbacks
     } catch (error) {
       console.error("Error processing payment:", error);
       paymentInfoForm.setError('root', { 
         type: 'manual',
         message: 'Payment processing failed. Please try again.' 
       });
-    } finally {
       setIsFormSubmitting(false);
     }
+  };
+  
+  // Handle successful payment from Stripe
+  const handlePaymentSuccess = (paymentIntentId) => {
+    console.log("Payment processed successfully with ID:", paymentIntentId);
+    
+    // Show success message or redirect
+    alert('Payment processed successfully! In a real application, you would be redirected to a confirmation page.');
+    
+    setIsFormSubmitting(false);
+  };
+  
+  // Handle payment error from Stripe
+  const handlePaymentError = (errorMessage) => {
+    console.error("Error processing payment:", errorMessage);
+    
+    paymentInfoForm.setError('root', { 
+      type: 'manual',
+      message: errorMessage || 'Payment processing failed. Please try again.' 
+    });
+    
+    setIsFormSubmitting(false);
   };
   
   // Handle back button
@@ -1347,278 +1407,7 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
             </form>
           ) : (
             <form onSubmit={paymentInfoForm.handleSubmit(handlePaymentInfoSubmit)}>
-              {/* Cardholder Name */}
-              <div style={{ marginBottom: '20px' }}>
-                <label 
-                  htmlFor="cardholderName" 
-                  style={{
-                    display: 'block',
-                    fontSize: '14px',
-                    color: paymentInfoForm.formState.errors.cardholderName ? 'var(--primary)' : 'var(--neutral-500)',
-                    marginBottom: '5px',
-                    fontWeight: '500',
-                    transition: 'color 0.2s ease',
-                  }}
-                >
-                  Cardholder Name
-                </label>
-                <input
-                  id="cardholderName"
-                  {...paymentInfoForm.register('cardholderName')}
-                  autoComplete="cc-name"
-                  placeholder="Name on card"
-                  style={getInputStyle(
-                    paymentInfoForm.formState.errors.cardholderName,
-                    paymentInfoForm.formState.touchedFields.cardholderName,
-                    paymentInfoForm.formState.dirtyFields.cardholderName
-                  )}
-                />
-                {paymentInfoForm.formState.errors.cardholderName && (
-                  <p style={{ 
-                    color: 'var(--primary)', 
-                    fontSize: '12px', 
-                    marginTop: '5px',
-                    fontWeight: '500'
-                  }}>
-                    {paymentInfoForm.formState.errors.cardholderName.message}
-                  </p>
-                )}
-              </div>
-              
-              {/* Card Number */}
-              <div style={{ marginBottom: '20px' }}>
-                <label 
-                  htmlFor="cardNumber" 
-                  style={{
-                    display: 'block',
-                    fontSize: '14px',
-                    color: paymentInfoForm.formState.errors.cardNumber ? 'var(--primary)' : 'var(--neutral-500)',
-                    marginBottom: '5px',
-                    fontWeight: '500',
-                    transition: 'color 0.2s ease',
-                  }}
-                >
-                  Card Number
-                </label>
-                <div style={{
-                  position: 'relative',
-                }}>
-                  <Cleave
-                    id="cardNumber"
-                    options={{
-                      creditCard: true,
-                      delimiter: ' ',
-                    }}
-                    placeholder="1234 5678 9012 3456"
-                    autoComplete="cc-number"
-                    {...paymentInfoForm.register('cardNumber')}
-                    onChange={(e) => {
-                      paymentInfoForm.setValue('cardNumber', e.target.value);
-                      handleCardNumberChange(e);
-                    }}
-                    style={{
-                      ...getInputStyle(
-                        paymentInfoForm.formState.errors.cardNumber,
-                        paymentInfoForm.formState.touchedFields.cardNumber,
-                        paymentInfoForm.formState.dirtyFields.cardNumber
-                      ),
-                      paddingRight: '60px', // Space for the card icon
-                    }}
-                  />
-                  <div style={{
-                    position: 'absolute',
-                    right: '15px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: 'var(--neutral-500)',
-                    fontSize: '14px',
-                    pointerEvents: 'none',
-                  }}>
-                    {cardType && getCardIcon()}
-                  </div>
-                </div>
-                {paymentInfoForm.formState.errors.cardNumber && (
-                  <p style={{ 
-                    color: 'var(--primary)', 
-                    fontSize: '12px', 
-                    marginTop: '5px',
-                    fontWeight: '500'
-                  }}>
-                    {paymentInfoForm.formState.errors.cardNumber.message}
-                  </p>
-                )}
-                
-                {/* Security score indicator (only show once some digits are entered) */}
-                {paymentInfoForm.watch('cardNumber') && paymentInfoForm.watch('cardNumber').length > 8 && (
-                  <div style={{ 
-                    marginTop: '8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                  }}>
-                    <div style={{
-                      height: '4px',
-                      flex: 1,
-                      backgroundColor: '#e0e0e0',
-                      borderRadius: '2px',
-                      overflow: 'hidden',
-                    }}>
-                      <div 
-                        style={{
-                          height: '100%',
-                          width: `${cardSecurityScore * 25}%`,
-                          backgroundColor: cardSecurityScore < 2 ? '#ff5757' : 
-                                          cardSecurityScore < 3 ? '#ffb347' : 
-                                          cardSecurityScore < 4 ? '#4caf50' : '#2e7d32',
-                          transition: 'width 0.3s ease, background-color 0.3s ease',
-                        }}
-                      />
-                    </div>
-                    <span style={{
-                      fontSize: '12px',
-                      fontWeight: '500',
-                      color: cardSecurityScore < 2 ? '#ff5757' : 
-                              cardSecurityScore < 3 ? '#ffb347' : 
-                              cardSecurityScore < 4 ? '#4caf50' : '#2e7d32',
-                    }}>
-                      {cardSecurityScore < 2 ? 'Weak' : 
-                      cardSecurityScore < 3 ? 'OK' : 
-                      cardSecurityScore < 4 ? 'Good' : 'Strong'}
-                    </span>
-                  </div>
-                )}
-              </div>
-              
-              {/* Expiry Date and CVV */}
-              <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
-                <div style={{ flex: 1 }}>
-                  <label 
-                    htmlFor="expiryDate" 
-                    style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      color: paymentInfoForm.formState.errors.expiryDate ? 'var(--primary)' : 'var(--neutral-500)',
-                      marginBottom: '5px',
-                      fontWeight: '500',
-                      transition: 'color 0.2s ease',
-                    }}
-                  >
-                    Expiry Date
-                  </label>
-                  <Cleave
-                    id="expiryDate"
-                    options={{
-                      date: true,
-                      datePattern: ['m', 'y'],
-                      delimiter: '/',
-                    }}
-                    placeholder="MM/YY"
-                    autoComplete="cc-exp"
-                    {...paymentInfoForm.register('expiryDate')}
-                    onChange={(e) => {
-                      paymentInfoForm.setValue('expiryDate', e.target.value);
-                    }}
-                    style={getInputStyle(
-                      paymentInfoForm.formState.errors.expiryDate,
-                      paymentInfoForm.formState.touchedFields.expiryDate,
-                      paymentInfoForm.formState.dirtyFields.expiryDate
-                    )}
-                  />
-                  {paymentInfoForm.formState.errors.expiryDate && (
-                    <p style={{ 
-                      color: 'var(--primary)', 
-                      fontSize: '12px', 
-                      marginTop: '5px',
-                      fontWeight: '500'
-                    }}>
-                      {paymentInfoForm.formState.errors.expiryDate.message}
-                    </p>
-                  )}
-                </div>
-                
-                <div style={{ flex: 1 }}>
-                  <label 
-                    htmlFor="cvv" 
-                    style={{
-                      display: 'block',
-                      fontSize: '14px',
-                      color: paymentInfoForm.formState.errors.cvv ? 'var(--primary)' : 'var(--neutral-500)',
-                      marginBottom: '5px',
-                      fontWeight: '500',
-                      transition: 'color 0.2s ease',
-                    }}
-                  >
-                    CVV / CVC
-                  </label>
-                  <Cleave
-                    id="cvv"
-                    options={{
-                      blocks: [3],
-                      numericOnly: true,
-                    }}
-                    placeholder="123"
-                    autoComplete="cc-csc"
-                    {...paymentInfoForm.register('cvv')}
-                    onChange={(e) => {
-                      paymentInfoForm.setValue('cvv', e.target.value);
-                    }}
-                    style={getInputStyle(
-                      paymentInfoForm.formState.errors.cvv,
-                      paymentInfoForm.formState.touchedFields.cvv,
-                      paymentInfoForm.formState.dirtyFields.cvv
-                    )}
-                  />
-                  {paymentInfoForm.formState.errors.cvv && (
-                    <p style={{ 
-                      color: 'var(--primary)', 
-                      fontSize: '12px', 
-                      marginTop: '5px',
-                      fontWeight: '500'
-                    }}>
-                      {paymentInfoForm.formState.errors.cvv.message}
-                    </p>
-                  )}
-                </div>
-              </div>
-              
-              {/* ZIP/Postal Code */}
-              <div style={{ marginBottom: '30px' }}>
-                <label 
-                  htmlFor="zipCode" 
-                  style={{
-                    display: 'block',
-                    fontSize: '14px',
-                    color: paymentInfoForm.formState.errors.zipCode ? 'var(--primary)' : 'var(--neutral-500)',
-                    marginBottom: '5px',
-                    fontWeight: '500',
-                    transition: 'color 0.2s ease',
-                  }}
-                >
-                  ZIP / Postal Code
-                </label>
-                <input
-                  id="zipCode"
-                  {...paymentInfoForm.register('zipCode')}
-                  autoComplete="postal-code"
-                  placeholder="ZIP / Postal Code"
-                  style={getInputStyle(
-                    paymentInfoForm.formState.errors.zipCode,
-                    paymentInfoForm.formState.touchedFields.zipCode,
-                    paymentInfoForm.formState.dirtyFields.zipCode
-                  )}
-                />
-                {paymentInfoForm.formState.errors.zipCode && (
-                  <p style={{ 
-                    color: 'var(--primary)', 
-                    fontSize: '12px', 
-                    marginTop: '5px',
-                    fontWeight: '500'
-                  }}>
-                    {paymentInfoForm.formState.errors.zipCode.message}
-                  </p>
-                )}
-              </div>
-              
+              {/* Payment form with Stripe integration - Card element only */}
               {/* Form error */}
               {paymentInfoForm.formState.errors.root && (
                 <div style={{
@@ -1634,57 +1423,19 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
                 </div>
               )}
               
-              {/* Payment button */}
-              <button
-                type="submit"
-                disabled={isFormSubmitting || !paymentInfoForm.formState.isValid}
-                style={{
-                  width: '100%',
-                  backgroundColor: isFormSubmitting || !paymentInfoForm.formState.isValid ? 'var(--neutral-200)' : 'var(--primary)',
-                  color: 'white',
-                  padding: '16px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  fontSize: '16px',
-                  fontWeight: '700',
-                  cursor: isFormSubmitting || !paymentInfoForm.formState.isValid ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.3s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '10px',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isFormSubmitting && paymentInfoForm.formState.isValid) {
-                    e.currentTarget.style.backgroundColor = '#e50036';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 0, 60, 0.25)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = isFormSubmitting || !paymentInfoForm.formState.isValid ? 'var(--neutral-200)' : 'var(--primary)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                {isFormSubmitting ? (
-                  <>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ animation: 'spin 1s linear infinite' }}>
-                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" strokeDasharray="40 20" />
-                    </svg>
-                    Processing Payment...
-                  </>
-                ) : (
-                  <>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                      <line x1="1" y1="10" x2="23" y2="10"></line>
-                    </svg>
-                    Pay ${(totalAmount + 10 - (totalAmount * discount)).toFixed(2)}
-                  </>
-                )}
-              </button>
-              
+              {/* Stripe Payment Form - Only showing Stripe card element */}
+              <div style={{ marginBottom: '30px' }}>
+                <StripePaymentComponent 
+                  sessionId={sessionId}
+                  buyerInfo={buyerInfoForm.getValues()}
+                  onPaymentSuccess={handlePaymentSuccess}
+                  onPaymentError={handlePaymentError}
+                  isSubmitting={isFormSubmitting}
+                  setIsSubmitting={setIsFormSubmitting}
+                  amount={totalAmount + 10 - (totalAmount * discount)}
+                />
+              </div>
+
               {/* Secure payment notice */}
               <div style={{
                 display: 'flex',
@@ -1699,7 +1450,7 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                   <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
-                Secure Payment | SSL Encrypted
+                Secure Payment | Powered by Stripe
               </div>
               
               {/* Supported payment methods */}
