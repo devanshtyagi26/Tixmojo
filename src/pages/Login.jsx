@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import LoginToggle from '../Components/Auth/LoginToggle';
 import OrDivider from '../Components/Auth/OrDivider';
@@ -9,7 +9,7 @@ import { ScrollAnimation } from '../utils/ScrollAnimation.jsx';
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { login, currentUser, isAuthenticated } = useAuth();
   const [usePhoneNumber, setUsePhoneNumber] = useState(false);
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -22,40 +22,49 @@ const Login = () => {
   const from = location.state?.from || '/';
   const isFromEventPage = from.includes && from.includes('/events/');
 
+  // Pre-fill phone input when user is authenticated from Google OAuth
+  useEffect(() => {
+    if (isAuthenticated() && currentUser?.phone && currentUser?.provider === 'google') {
+      console.log("Pre-filling phone input in Login component:", currentUser.phone);
+      setPhone(currentUser.phone);
+      setUsePhoneNumber(true); // Switch to phone mode automatically
+    }
+  }, [currentUser, isAuthenticated]);
+
   const handleEmailLogin = async (e) => {
     e.preventDefault();
-    
+
     if (!email || !password) {
       setError('Please enter email and password');
       return;
     }
-    
+
     setLoading(true);
     setError('');
-    
+
     try {
       // In a real app, this would be an API call to authenticate
       // For demo purposes, we'll simulate a successful login
       await new Promise(resolve => setTimeout(resolve, 800));
-      
+
       // Simulate user data from backend
       const userData = {
         id: '123',
         email: email,
-        firstName: 'Demo', 
+        firstName: 'Demo',
         lastName: 'User',
         isAuthenticated: true
       };
-      
+
       // Log the user in
       login(userData);
-      
+
       // Navigate back to the previous page or home
       if (isFromEventPage) {
         // Add a parameter to indicate we should show the ticket selection on return
-        const redirectPath = typeof from === 'string' ? 
+        const redirectPath = typeof from === 'string' ?
           `${from}?showTickets=true` : from;
-        
+
         navigate(redirectPath, { replace: true });
       } else {
         navigate(from, { replace: true });
@@ -69,32 +78,32 @@ const Login = () => {
 
   const handlePhoneLogin = async (e) => {
     e.preventDefault();
-    
+
     if (!phone || !password) {
       setError('Please enter phone number and password');
       return;
     }
-    
+
     setLoading(true);
     setError('');
-    
+
     try {
       // In a real app, this would be an API call to authenticate
       // For demo purposes, we'll simulate a successful login
       await new Promise(resolve => setTimeout(resolve, 800));
-      
+
       // Simulate user data from backend
       const userData = {
         id: '456',
         phone: phone,
-        firstName: 'Phone', 
+        firstName: 'Phone',
         lastName: 'User',
         isAuthenticated: true
       };
-      
+
       // Log the user in
       login(userData);
-      
+
       // Navigate back to the previous page or home
       navigate(from, { replace: true });
     } catch (error) {
@@ -107,20 +116,20 @@ const Login = () => {
   const handleGoogleLoginSuccess = (credentialResponse) => {
     setLoading(true);
     setError('');
-    
+
     try {
       console.log("Google login success:", credentialResponse);
-      
+
       // In a real app, you'd verify the token on your backend
       // For demo purposes, we'll simulate a successful login
-      
+
       // Get user info from JWT token (simplified for demo)
       const token = credentialResponse.credential;
       const tokenParts = token.split('.');
       const payload = JSON.parse(atob(tokenParts[1]));
-      
+
       console.log("Decoded token:", payload);
-      
+
       // Format simulated phone number for consistent display
       const simulatePhoneNumber = () => {
         // Generate a consistent phone number from the user ID
@@ -136,7 +145,7 @@ const Login = () => {
         }
         return '+12025550198'; // Default fallback
       };
-      
+
       // Create user data object
       const userData = {
         id: payload.sub,
@@ -154,25 +163,25 @@ const Login = () => {
         phone: simulatePhoneNumber(),
         isAuthenticated: true
       };
-      
+
       // Log profile image info for debugging
-      console.log("Profile image info:", { 
+      console.log("Profile image info:", {
         pictureProp: payload.picture,
         googlePicture: payload.picture || 'None',
         finalPicture: userData.profilePicture || 'None'
       });
-      
+
       console.log("Generated user data:", userData);
-      
+
       // Log the user in - will process the phone number in the AuthContext
       login(userData);
-      
+
       // Navigate back to the previous page or home
       if (isFromEventPage) {
         // Add a parameter to indicate we should show the ticket selection on return
-        const redirectPath = typeof from === 'string' ? 
+        const redirectPath = typeof from === 'string' ?
           `${from}?showTickets=true` : from;
-        
+
         console.log("Redirecting to event page with ticket selection:", redirectPath);
         navigate(redirectPath, { replace: true });
       } else {
@@ -185,15 +194,15 @@ const Login = () => {
       setLoading(false);
     }
   };
-  
+
   const handleGoogleLoginError = (error) => {
     console.error("Google login failed:", error);
-    
+
     // Check if the error message contains "redirect_uri_mismatch"
-    const isRedirectUriMismatch = error && 
-      typeof error === 'string' && 
+    const isRedirectUriMismatch = error &&
+      typeof error === 'string' &&
       error.includes('redirect_uri_mismatch');
-    
+
     if (isRedirectUriMismatch) {
       setError(
         'OAuth configuration error: redirect_uri_mismatch. Please set up Google OAuth credentials properly. ' +
@@ -229,65 +238,67 @@ const Login = () => {
           }}>
             Welcome to TixMojo
           </h1>
-          
+
           {/* Social login buttons */}
           <div style={{ marginBottom: '20px' }}>
-            <GoogleLoginButton 
-              onSuccess={handleGoogleLoginSuccess} 
-              onError={handleGoogleLoginError} 
+            <GoogleLoginButton
+              onSuccess={handleGoogleLoginSuccess}
+              onError={handleGoogleLoginError}
             />
           </div>
-          
+
           <OrDivider />
-          
+
           {/* Login toggle */}
-          <LoginToggle 
-            usePhoneNumber={usePhoneNumber} 
-            setUsePhoneNumber={setUsePhoneNumber} 
+          <LoginToggle
+            usePhoneNumber={usePhoneNumber}
+            setUsePhoneNumber={setUsePhoneNumber}
           />
-          
+
           {/* Login form */}
           <form onSubmit={usePhoneNumber ? handlePhoneLogin : handleEmailLogin}>
             {usePhoneNumber ? (
-              <div style={{ marginBottom: '15px' }}>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Phone Number"
-                  style={{
-                    width: '100%',
-                    padding: '12px 15px',
-                    borderRadius: '20px',
-                    border: '1px solid var(--neutral-200)',
-                    fontSize: '14px',
-                    backgroundColor: isAuthenticated() && currentUser?.phone ? 'rgba(52, 168, 83, 0.05)' : 'white',
-                  }}
-                />
-              </div>
-              {/* Show message when phone is pre-filled from Google */}
-              {isAuthenticated() && currentUser?.phone && currentUser?.provider === 'google' && usePhoneNumber && (
-                <div style={{
-                  backgroundColor: 'rgba(52, 168, 83, 0.05)',
-                  border: '1px solid rgba(52, 168, 83, 0.3)',
-                  borderRadius: '10px',
-                  padding: '8px 12px',
-                  fontSize: '13px',
-                  marginBottom: '15px',
-                  color: '#34A853',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                  </svg>
-                  Phone number pre-filled from your Google account
+              <>
+                <div style={{ marginBottom: '15px' }}>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="Phone Number"
+                    style={{
+                      width: '100%',
+                      padding: '12px 15px',
+                      borderRadius: '20px',
+                      border: '1px solid var(--neutral-200)',
+                      fontSize: '14px',
+                      backgroundColor: isAuthenticated() && currentUser?.phone ? 'rgba(52, 168, 83, 0.05)' : 'white',
+                    }}
+                  />
                 </div>
-              )}
+                {/* Show message when phone is pre-filled from Google */}
+                {isAuthenticated() && currentUser?.phone && currentUser?.provider === 'google' && (
+                  <div style={{
+                    backgroundColor: 'rgba(52, 168, 83, 0.05)',
+                    border: '1px solid rgba(52, 168, 83, 0.3)',
+                    borderRadius: '10px',
+                    padding: '8px 12px',
+                    fontSize: '13px',
+                    marginBottom: '15px',
+                    color: '#34A853',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    Phone number pre-filled from your Google account
+                  </div>
+                )}
+              </>
             ) : (
-              <div style={{ 
+              <div style={{
                 marginBottom: '15px',
                 position: 'relative',
               }}>
@@ -318,7 +329,7 @@ const Login = () => {
                 </div>
               </div>
             )}
-            
+
             <div style={{ marginBottom: '20px' }}>
               <input
                 type="password"
@@ -334,7 +345,7 @@ const Login = () => {
                 }}
               />
             </div>
-            
+
             {error && (
               <div style={{
                 color: 'var(--primary)',
@@ -345,7 +356,7 @@ const Login = () => {
                 {error}
               </div>
             )}
-            
+
             <button
               type="submit"
               disabled={loading}
@@ -393,14 +404,14 @@ const Login = () => {
               )}
             </button>
           </form>
-          
+
           <div style={{
             marginTop: '20px',
             textAlign: 'center',
             fontSize: '14px',
           }}>
-            Don't have an account? <a 
-              href="/signup" 
+            Don't have an account? <a
+              href="/signup"
               style={{
                 color: 'var(--purple-600)',
                 textDecoration: 'none',
