@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import Cleave from 'cleave.js/react';
@@ -8,13 +8,12 @@ import ISO31661a2 from 'iso-3166-1-alpha-2';
 import creditCardType from 'credit-card-type';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import PhoneInput, { getCountryCallingCode } from 'react-phone-number-input';
-import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
-import 'react-phone-number-input/style.css';
-// Import flag images
+import { parsePhoneNumber } from 'libphonenumber-js';
+import { getCountryCallingCode } from 'react-phone-number-input';
 import ReactCountryFlag from 'react-country-flag';
+// Import the new phone validation component
+import PhoneInputWithValidation from './PhoneInputWithValidation';
 // Import Stripe payment form
-// Using dynamic import to handle potential bundling issues
 import StripePaymentFormDefault, { StripePaymentForm } from './StripePaymentForm';
 // Use the default export, but fallback to named export if needed
 const StripePaymentComponent = StripePaymentFormDefault || StripePaymentForm;
@@ -22,6 +21,8 @@ const StripePaymentComponent = StripePaymentFormDefault || StripePaymentForm;
 import stripeService from '../../services/stripeService';
 // Alternative payment service for dev mode
 import paymentService from '../../services/paymentService';
+// Import phone validation utilities
+import { createPhoneValidationSchema } from '../../utils/phoneValidation';
 
 // Buyer information validation schema
 const buyerInfoSchema = yup.object({
@@ -45,53 +46,8 @@ const buyerInfoSchema = yup.object({
     .email('Please enter a valid email address')
     .max(100, 'Email address is too long'),
   
-  phone: yup
-    .string()
-    .required('Phone number is required')
-    .test('is-valid-phone', function(value) {
-      // Allow validation to pass if value is empty (the required check will handle this)
-      if (!value) return this.createError({ message: 'Phone number is required' });
-      
-      // For partial dial codes, consider it valid during typing
-      if (value.match(/^\+\d{1,3}$/)) {
-        return true;
-      }
-      
-      // Try to validate if it looks like a valid number
-      try {
-        // Check if the number starts with +
-        if (!value.startsWith('+')) {
-          return this.createError({
-            message: 'Phone number must include country code (e.g., +1 for US)'
-          });
-        }
-        
-        // Use libphonenumber-js to validate the phone number
-        const isValid = isValidPhoneNumber(value);
-        
-        if (!isValid) {
-          try {
-            // Try to get the country to provide more specific error message
-            const phoneInput = parsePhoneNumber(value) || { country: null };
-            const country = phoneInput.country || 'unknown country';
-            
-            return this.createError({
-              message: `Invalid phone number format for ${ISO31661a2.getCountry(country) || country}`
-            });
-          } catch (e) {
-            return this.createError({
-              message: 'Invalid phone number format. Please check and try again.'
-            });
-          }
-        }
-        
-        return true;
-      } catch (err) {
-        return this.createError({
-          message: 'Invalid phone number. Please enter a valid number with country code.'
-        });
-      }
-    })
+  // Use the phone validation schema from our utilities
+  ...createPhoneValidationSchema('phone').fields
 });
 
 // Payment information validation schema
@@ -280,7 +236,12 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
   const buyerInfoForm = useForm({
     resolver: yupResolver(buyerInfoSchema),
     mode: 'onBlur',
-    defaultValues: getDefaultValues()
+    defaultValues: getDefaultValues(),
+    context: { 
+      selectedCountry: selectedCountry,
+      requireMobile: false, // Set to true if you want to require mobile phones only
+      enforceCountryMatch: false // Set to true to enforce that the phone number matches the selected country
+    }
   });
   
   // Update form values when currentUser changes
@@ -288,12 +249,48 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
     if (isAuthenticated() && currentUser) {
       const defaultValues = getDefaultValues();
       
-      // Reset form with new values
-      buyerInfoForm.reset(defaultValues);
+      // Reset form with new values and update context
+      buyerInfoForm.reset(defaultValues, {
+        keepValues: false,
+        keepDirty: false,
+        keepErrors: false,
+        keepIsSubmitted: false,
+        keepTouched: false,
+        keepIsValid: false,
+        keepSubmitCount: false,
+        keepDirtyValues: false
+      });
+      
+      // Update form context with current country
+      buyerInfoForm.formState.context = {
+        ...buyerInfoForm.formState.context,
+        selectedCountry: selectedCountry
+      };
       
       console.log("Updated form with user data:", defaultValues);
     }
   }, [currentUser, isAuthenticated]);
+  
+  // Update form context when selected country changes
+  useEffect(() => {
+    try {
+      if (buyerInfoForm) {
+        // This updates the context for validation
+        buyerInfoForm.formState.context = {
+          ...buyerInfoForm.formState.context,
+          selectedCountry: selectedCountry
+        };
+        
+        // Re-validate phone field if it has a value
+        const phoneValue = buyerInfoForm.getValues('phone');
+        if (phoneValue) {
+          buyerInfoForm.trigger('phone');
+        }
+      }
+    } catch (err) {
+      console.error("Error updating form context with new country:", err);
+    }
+  }, [selectedCountry.code]);
   
   // Check if Stripe is configured
   useEffect(() => {
@@ -449,11 +446,32 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
     setIsFormSubmitting(true);
     
     try {
+      // Try to extract country from phone number for better tracking
+      let phoneCountry = selectedCountry.code;
+      try {
+        if (data.phone && data.phone.startsWith('+')) {
+          const parsed = parsePhoneNumber(data.phone);
+          if (parsed && parsed.country) {
+            phoneCountry = parsed.country;
+            
+            // Update selected country if it changed
+            if (phoneCountry !== selectedCountry.code) {
+              setSelectedCountry({
+                code: phoneCountry,
+                name: ISO31661a2.getCountry(phoneCountry) || phoneCountry
+              });
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("Could not extract country from phone number:", err);
+      }
+      
       // In a real app, this would call an API endpoint to validate buyer info
       // and store it securely on the server
       const buyerInfoData = {
         ...data,
-        phoneCountry: selectedCountry.code
+        phoneCountry: phoneCountry
       };
       
       if (sessionId) {
@@ -918,267 +936,14 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
                 </div>
               </div>
               
-              {/* Phone Number with Country Code */}
-              <div style={{ marginBottom: '20px' }}>
-                <label 
-                  htmlFor="phone" 
-                  style={{
-                    display: 'block',
-                    fontSize: '14px',
-                    color: buyerInfoForm.formState.errors.phone ? 'var(--primary)' : 'var(--neutral-500)',
-                    marginBottom: '5px',
-                    fontWeight: '500',
-                    transition: 'color 0.2s ease',
-                  }}
-                >
-                  Phone Number
-                </label>
-                <div style={{
-                  border: `1px solid ${buyerInfoForm.formState.errors.phone ? 'var(--primary)' : '#e0e0e0'}`,
-                  borderRadius: '8px',
-                  overflow: 'hidden',
-                  backgroundColor: buyerInfoForm.formState.errors.phone ? 'rgba(255, 0, 60, 0.03)' : 'white',
-                  display: 'flex',
-                  alignItems: 'center'
-                }}>
-                  {/* Country dropdown - Shows Flag + Country Code (e.g., 🇮🇳 IN) */}
-                  <div 
-                    className="country-select-wrapper"
-                    style={{
-                      position: 'relative',
-                      display: 'flex',
-                      alignItems: 'center',
-                      backgroundColor: '#f9f9f9',
-                      borderRight: '1px solid #e0e0e0',
-                      height: '50px',
-                      width: '100px',
-                    }}
-                  >
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      padding: '0 8px',
-                      width: '100%',
-                      height: '100%',
-                      justifyContent: 'center'
-                    }}>
-                      {/* Flag */}
-                      <span style={{ fontSize: '25px' }}>
-                        <ReactCountryFlag 
-                          countryCode={selectedCountry.code} 
-                          svg 
-                          style={{ 
-                            width: '1.2em', 
-                            height: '1.2em' 
-                          }}
-                          title={selectedCountry.name}
-                        />
-                      </span>
-                      
-                      {/* Country Code */}
-                      <span style={{
-                        fontSize: '18px',
-                        color: 'var(--neutral-600)',
-                        fontWeight: '500'
-                      }}>
-                        {selectedCountry.code}
-                      </span>
-                      
-                      {/* Dropdown arrow */}
-                      <svg 
-                        width="10" 
-                        height="10" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="var(--neutral-600)" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round"
-                        style={{
-                          width: '1.2em', 
-                          height: '1.2em'
-                        }}
-                      >
-                        <path d="M6 9l6 6 6-6"></path>
-                      </svg>
-                    </div>
-                    
-                    {/* Hidden select element with full country names and dialing codes */}
-                    <select
-                      id="country-select" 
-                      aria-label="Select country"
-                      className="country-select"
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        height: '100%',
-                        width: '100%',
-                        opacity: 0,
-                        cursor: 'pointer',
-                        zIndex: 2
-                      }}
-                      value={selectedCountry.code}
-                      onChange={(e) => {
-                        const countryCode = e.target.value;
-                        setSelectedCountry({
-                          code: countryCode,
-                          name: ISO31661a2.getCountry(countryCode) || countryCode
-                        });
-                        
-                        // Update phone with new country code
-                        try {
-                          // Get current phone number (if any)
-                          const currentPhone = buyerInfoForm.watch('phone') || '';
-                          const dialCode = `+${getCountryCallingCode(countryCode)}`;
-                          
-                          if (currentPhone) {
-                            // If we have an existing phone number, try to preserve the national part
-                            try {
-                              const parsed = parsePhoneNumber(currentPhone);
-                              if (parsed && parsed.nationalNumber) {
-                                // Create new phone number with selected country + existing national number
-                                const newPhone = `${dialCode}${parsed.nationalNumber}`;
-                                buyerInfoForm.setValue('phone', newPhone, { shouldValidate: true });
-                              } else {
-                                // If can't parse, just set the dial code
-                                buyerInfoForm.setValue('phone', dialCode, { shouldValidate: true });
-                              }
-                            } catch (err) {
-                              // If parsing fails, just set the dial code
-                              buyerInfoForm.setValue('phone', dialCode, { shouldValidate: true });
-                            }
-                          } else {
-                            // If no phone, initialize with the country's dial code
-                            buyerInfoForm.setValue('phone', dialCode, { shouldValidate: true });
-                          }
-                        } catch (err) {
-                          console.error("Error updating phone with new country code:", err);
-                        }
-                      }}
-                    >
-                      {/* Common countries first */}
-                      <option value="AU">Australia, +61</option>
-                      <option value="US">United States, +1</option>
-                      <option value="GB">United Kingdom, +44</option>
-                      <option value="CA">Canada, +1</option>
-                      <option value="NZ">New Zealand, +64</option>
-                      <option value="IN">India, +91</option>
-                      <option value="SG">Singapore, +65</option>
-                      <option value="DE">Germany, +49</option>
-                      <option value="FR">France, +33</option>
-                      <option value="JP">Japan, +81</option>
-                      
-                      {/* Other countries alphabetically */}
-                      <option value="AF">Afghanistan, +93</option>
-                      <option value="AL">Albania, +355</option>
-                      <option value="DZ">Algeria, +213</option>
-                      <option value="AR">Argentina, +54</option>
-                      <option value="AT">Austria, +43</option>
-                      <option value="BH">Bahrain, +973</option>
-                      <option value="BD">Bangladesh, +880</option>
-                      <option value="BE">Belgium, +32</option>
-                      <option value="BR">Brazil, +55</option>
-                      <option value="BG">Bulgaria, +359</option>
-                      <option value="KH">Cambodia, +855</option>
-                      <option value="CL">Chile, +56</option>
-                      <option value="CN">China, +86</option>
-                      <option value="CO">Colombia, +57</option>
-                      <option value="HR">Croatia, +385</option>
-                      <option value="CY">Cyprus, +357</option>
-                      <option value="CZ">Czech Republic, +420</option>
-                      <option value="DK">Denmark, +45</option>
-                      <option value="EG">Egypt, +20</option>
-                      <option value="EE">Estonia, +372</option>
-                      <option value="FI">Finland, +358</option>
-                      <option value="GR">Greece, +30</option>
-                      <option value="HK">Hong Kong, +852</option>
-                      <option value="HU">Hungary, +36</option>
-                      <option value="IS">Iceland, +354</option>
-                      <option value="ID">Indonesia, +62</option>
-                      <option value="IE">Ireland, +353</option>
-                      <option value="IL">Israel, +972</option>
-                      <option value="IT">Italy, +39</option>
-                      <option value="JO">Jordan, +962</option>
-                      <option value="KE">Kenya, +254</option>
-                      <option value="KW">Kuwait, +965</option>
-                      <option value="LV">Latvia, +371</option>
-                      <option value="LB">Lebanon, +961</option>
-                      <option value="LT">Lithuania, +370</option>
-                      <option value="LU">Luxembourg, +352</option>
-                      <option value="MY">Malaysia, +60</option>
-                      <option value="MV">Maldives, +960</option>
-                      <option value="MT">Malta, +356</option>
-                      <option value="MX">Mexico, +52</option>
-                      <option value="MA">Morocco, +212</option>
-                      <option value="NL">Netherlands, +31</option>
-                      <option value="NG">Nigeria, +234</option>
-                      <option value="NO">Norway, +47</option>
-                      <option value="OM">Oman, +968</option>
-                      <option value="PK">Pakistan, +92</option>
-                      <option value="PH">Philippines, +63</option>
-                      <option value="PL">Poland, +48</option>
-                      <option value="PT">Portugal, +351</option>
-                      <option value="QA">Qatar, +974</option>
-                      <option value="RO">Romania, +40</option>
-                      <option value="RU">Russian Federation, +7</option>
-                      <option value="SA">Saudi Arabia, +966</option>
-                      <option value="RS">Serbia, +381</option>
-                      <option value="ZA">South Africa, +27</option>
-                      <option value="ES">Spain, +34</option>
-                      <option value="LK">Sri Lanka, +94</option>
-                      <option value="SE">Sweden, +46</option>
-                      <option value="CH">Switzerland, +41</option>
-                      <option value="TW">Taiwan, +886</option>
-                      <option value="TH">Thailand, +66</option>
-                      <option value="TR">Turkey, +90</option>
-                      <option value="UA">Ukraine, +380</option>
-                      <option value="AE">United Arab Emirates, +971</option>
-                      <option value="VN">Vietnam, +84</option>
-                    </select>
-                  </div>
-                  
-                  {/* Phone input - without country select */}
-                  <input
-                    id="phone"
-                    type="tel"
-                    {...buyerInfoForm.register('phone')}
-                    autoComplete="tel"
-                    placeholder="Enter phone number"
-                    style={{
-                      flex: 1,
-                      border: 'none',
-                      fontSize: '16px',
-                      padding: '15px',
-                      outline: 'none',
-                      width: '100%',
-                      height: '50px',
-                      backgroundColor: 'transparent',
-                    }}
-                  />
-                </div>
-                {buyerInfoForm.formState.errors.phone && (
-                  <p style={{ 
-                    color: 'var(--primary)', 
-                    fontSize: '12px', 
-                    marginTop: '5px',
-                    fontWeight: '500'
-                  }}>
-                    {buyerInfoForm.formState.errors.phone.message}
-                  </p>
-                )}
-                <p style={{
-                  fontSize: '12px',
-                  color: 'var(--neutral-600)',
-                  marginTop: '4px',
-                }}>
-                  Format example: {selectedCountry.code 
-                    ? `+${getCountryCallingCode(selectedCountry.code)} XXX XXX XXXX` 
-                    : '+61 XXX XXX XXX'
-                  }
-                </p>
-              </div>
+              {/* Phone Number with PhoneInputWithValidation component */}
+              <FormProvider {...buyerInfoForm}>
+                <PhoneInputWithValidation 
+                  fieldName="phone"
+                  defaultCountry={selectedCountry.code}
+                  label="Phone Number"
+                />
+              </FormProvider>
               
               {/* Email */}
               <div style={{ marginBottom: '30px' }}>
