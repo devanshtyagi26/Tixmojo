@@ -29,16 +29,16 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-# HTML files with proper MIME type
+# Index.html at root with proper MIME type
 [[headers]]
-  for = "/*.html"
+  for = "/index.html"
   [headers.values]
     Content-Type = "text/html; charset=utf-8"
     Cache-Control = "public, max-age=0, must-revalidate"
 
-# Index.html at root with proper MIME type
+# All HTML files
 [[headers]]
-  for = "/index.html"
+  for = "/*.html"
   [headers.values]
     Content-Type = "text/html; charset=utf-8"
     Cache-Control = "public, max-age=0, must-revalidate"
