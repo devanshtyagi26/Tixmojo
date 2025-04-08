@@ -1,4 +1,4 @@
-import { BiUser, BiCog, BiWallet, BiHelpCircle, BiLogOut, BiPhone } from "react-icons/bi";
+import { BiUser, BiCog, BiWallet, BiHelpCircle, BiLogOut } from "react-icons/bi";
 import { HiChartPie } from "react-icons/hi";
 import { PiListHeartBold } from "react-icons/pi";
 import { Link } from "react-router-dom";
@@ -96,14 +96,6 @@ const styles = {
     color: "var(--gray-light)",
     letterSpacing: "-0.01em",
   },
-  profilePhone: {
-    fontSize: "13px",
-    color: "var(--purple-600)",
-    letterSpacing: "-0.01em",
-    display: "flex",
-    alignItems: "center",
-    marginTop: "2px",
-  },
   editProfile: {
     fontSize: "13px",
     color: "var(--primary)",
@@ -172,23 +164,14 @@ export function UserSidebar({ toggleUserSidebar, isUserSidebarOpen }) {
     };
   }, [isUserSidebarOpen, toggleUserSidebar]);
   
-  // Format phone number for display
-  const formatPhoneForDisplay = (phone) => {
-    if (!phone) return '';
-    
-    // Simple formatting for display purposes
-    if (phone.startsWith('+1') && phone.length === 12) {
-      // Format US numbers as (XXX) XXX-XXXX
-      return `(${phone.slice(2, 5)}) ${phone.slice(5, 8)}-${phone.slice(8)}`;
-    }
-    
-    // For other cases, just return the phone number as is
-    return phone;
-  };
+  // User sidebar component
 
   return (
     <>
-      <div style={styles.overlay} onClick={handleClick}></div>
+      <div style={styles.overlay} onClick={(e) => {
+        e.preventDefault();
+        handleClick();
+      }}></div>
       <div style={styles.sidebar} id="userSidebar">
         {/* User profile section */}
         <div style={styles.profileHeader}>
@@ -219,13 +202,6 @@ export function UserSidebar({ toggleUserSidebar, isUserSidebarOpen }) {
             <div style={styles.profileEmail}>
               {isAuthenticated() ? currentUser.email : 'guest@example.com'}
             </div>
-            {/* Display phone number if available */}
-            {isAuthenticated() && (currentUser.phone || currentUser.phoneNumber) && (
-              <div style={styles.profilePhone}>
-                <BiPhone style={{ marginRight: '5px', fontSize: '14px' }} />
-                {formatPhoneForDisplay(currentUser.phone || currentUser.phoneNumber)}
-              </div>
-            )}
             <Link 
               to="/page-not-found"
               style={styles.editProfile}
@@ -319,7 +295,10 @@ export function UserSidebar({ toggleUserSidebar, isUserSidebarOpen }) {
         <div style={styles.itemGroup}>
           {isAuthenticated() ? (
             <div 
-              onClick={handleLogout}
+              onClick={(e) => {
+                e.preventDefault();
+                handleLogout();
+              }}
               style={{...styles.item, textDecoration: "none", color: "#e53935", cursor: "pointer"}}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = "rgba(229, 57, 53, 0.1)";

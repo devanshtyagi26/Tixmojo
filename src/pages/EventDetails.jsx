@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { getEventById, getEventsByOrganizer } from "../services/api.js";
 import { ScrollAnimation } from "../utils/ScrollAnimation.jsx";
 import { useAuth } from "../context/AuthContext";
+import { useAnimation } from "../context/AnimationContext";
 
 // Import Modular Components
 import EventDetailsHeader from "../Components/EventDetails/EventDetailsHeader.jsx";
@@ -24,10 +25,12 @@ function EventDetails(props) {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useAuth();
+  const { animationsEnabled, sidebarOpen } = useAnimation();  // Get animation context
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showContactPopup, setShowContactPopup] = useState(false);
   const [showTicketSelection, setShowTicketSelection] = useState(false);
+  const [animationsInitialized, setAnimationsInitialized] = useState(false);
   const [showPaymentPortal, setShowPaymentPortal] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
   const [expiryTime, setExpiryTime] = useState(null);

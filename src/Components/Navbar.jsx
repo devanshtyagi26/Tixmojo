@@ -69,7 +69,9 @@ function Navbar({
     }
   };
 
-  const handleUserClick = () => {
+  const handleUserClick = (e) => {
+    if (e) e.preventDefault();
+    
     if (toggleUserSidebar) {
       toggleUserSidebar();
     } else {
@@ -220,7 +222,7 @@ function Navbar({
           }}>
             {isAuthenticated() ? (
               <div
-                onClick={handleUserClick}
+                onClick={(e) => handleUserClick(e)}
                 style={{
                   width: "38px",
                   height: "38px",

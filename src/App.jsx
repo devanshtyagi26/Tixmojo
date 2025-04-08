@@ -12,13 +12,15 @@ import React from "react";
 import Loader from "./Components/Loader";
 // GoogleOAuthProvider is managed in main.jsx for the entire app
 import { AuthProvider } from "./context/AuthContext";
+import { AnimationProvider, useAnimation } from "./context/AnimationContext";
 import ProtectedRoute from "./Components/Auth/ProtectedRoute";
 
 // Lazy load the components to handle any potential loading issues
 const EventDetails = React.lazy(() => import("./pages/EventDetails"));
 const Login = React.lazy(() => import("./pages/Login"));
 
-function App({ serverData }) {
+function AppContent({ serverData }) {
+  const { setSidebarStatus } = useAnimation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isUserSidebarOpen, setIsUserSidebarOpen] = useState(false);
   
@@ -27,6 +29,11 @@ function App({ serverData }) {
   
   // Check if we have server-rendered data
   const isServerData = Boolean(serverData && Object.keys(serverData).length > 0);
+  
+  // Update animation context when sidebars open/close
+  useEffect(() => {
+    setSidebarStatus(isSidebarOpen || isUserSidebarOpen);
+  }, [isSidebarOpen, isUserSidebarOpen, setSidebarStatus]);
   
   // Log server hydration information
   useEffect(() => {
@@ -55,9 +62,6 @@ function App({ serverData }) {
   return (
     <>
       <DefaultSEO serverData={isServerData ? appData : undefined} />
-      <AuthProvider>
-        <BrowserRouter>
-          <ScrollToTop />
           <Navbar
             isSidebarOpen={isSidebarOpen}
             toggleScrollPage={() => setIsSidebarOpen((prev) => !prev)}
@@ -110,9 +114,21 @@ function App({ serverData }) {
             <Route path="*" element={<PageNotFound {...getPageProps('404')} />} />
           </Routes>
           <Footer />
-        </BrowserRouter>
-      </AuthProvider>
     </>
+  );
+}
+
+// Main App component with all providers
+function App({ serverData }) {
+  return (
+    <AuthProvider>
+      <AnimationProvider>
+        <BrowserRouter>
+          <ScrollToTop />
+          <AppContent serverData={serverData} />
+        </BrowserRouter>
+      </AnimationProvider>
+    </AuthProvider>
   );
 }
 
