@@ -1,5 +1,24 @@
-# Redirects from what the browser requests to what Netlify serves
-# This ensures that all routes are handled by the React Router
-# and direct URL access works properly
+# Redirects for Netlify with specific focus on Content-Type fixing
+# The additional headers are critical for preventing download issues
 
-/*    /index.html   200
+# Main application routes handled by React Router
+/*    /index.html   200!   Content-Type=text/html;charset=utf-8
+
+# Explicitly set HTML content type for site root and index
+/     /index.html   200!   Content-Type=text/html;charset=utf-8
+
+# Static HTML files should have correct content-type
+/*.html    /:splat    200    Content-Type=text/html;charset=utf-8
+
+# Fallback page for when content-type issues persist
+/download-issue    /fallback.html    200
+
+# Error handling for JavaScript unavailable
+/js-error    /netlify-error.html   200
+
+# Redirect requests to non-existent API routes to error page
+/api/*       /netlify-error.html   404
+
+# Serve assets with correct mime types
+*.css        /:splat     200     Content-Type=text/css;charset=utf-8
+*.js         /:splat     200     Content-Type=application/javascript;charset=utf-8

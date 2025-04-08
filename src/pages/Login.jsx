@@ -121,6 +121,22 @@ const Login = () => {
       
       console.log("Decoded token:", payload);
       
+      // Format simulated phone number for consistent display
+      const simulatePhoneNumber = () => {
+        // Generate a consistent phone number from the user ID
+        if (payload.sub) {
+          // Use last 10 digits or pad with zeros
+          let digits = payload.sub.replace(/\D/g, '');
+          if (digits.length > 10) {
+            digits = digits.slice(-10);
+          } else if (digits.length < 10) {
+            digits = digits.padStart(10, '0');
+          }
+          return `+1${digits}`;
+        }
+        return '+12025550198'; // Default fallback
+      };
+      
       // Create user data object
       const userData = {
         id: payload.sub,
@@ -130,11 +146,12 @@ const Login = () => {
         profilePicture: payload.picture || 'https://via.placeholder.com/150',
         provider: 'google',
         locale: payload.locale,
-        // Extract phone number - in a real app this would come from Google's People API
-        // For demo, we'll simulate a phone number based on the user's ID
-        phoneNumber: payload.phoneNumber || `+1${payload.sub.slice(-10)}`,
+        // In a real app this would come from Google's People API
+        phone: simulatePhoneNumber(),
         isAuthenticated: true
       };
+      
+      console.log("Generated user data:", userData);
       
       // Log the user in - will process the phone number in the AuthContext
       login(userData);

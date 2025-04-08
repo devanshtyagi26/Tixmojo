@@ -136,6 +136,16 @@ export function UserSidebar({ toggleUserSidebar, isUserSidebarOpen }) {
     toggleUserSidebar();
   };
 
+  // Debug auth state whenever sidebar opens
+  useEffect(() => {
+    if (isUserSidebarOpen) {
+      console.log("UserSidebar auth state:", { 
+        isAuthenticated: isAuthenticated(),
+        currentUser
+      });
+    }
+  }, [isUserSidebarOpen, isAuthenticated, currentUser]);
+
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
@@ -196,7 +206,7 @@ export function UserSidebar({ toggleUserSidebar, isUserSidebarOpen }) {
           <div>
             <div style={styles.profileName}>
               {isAuthenticated() 
-                ? `${currentUser.firstName} ${currentUser.lastName}`
+                ? `${currentUser.firstName || ''} ${currentUser.lastName || ''}`
                 : 'Guest User'
               }
             </div>
@@ -204,10 +214,10 @@ export function UserSidebar({ toggleUserSidebar, isUserSidebarOpen }) {
               {isAuthenticated() ? currentUser.email : 'guest@example.com'}
             </div>
             {/* Display phone number if available */}
-            {isAuthenticated() && currentUser.phone && (
+            {isAuthenticated() && (currentUser.phone || currentUser.phoneNumber) && (
               <div style={styles.profilePhone}>
                 <BiPhone style={{ marginRight: '5px', fontSize: '14px' }} />
-                {formatPhoneForDisplay(currentUser.phone)}
+                {formatPhoneForDisplay(currentUser.phone || currentUser.phoneNumber)}
               </div>
             )}
             <Link 

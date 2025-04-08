@@ -3,8 +3,8 @@
  * This file coordinates hydration of server-rendered content
  */
 
-import { hydrateRoot } from 'react-dom/client';
-import { StrictMode } from 'react';
+// Import from our utility to ensure JSX runtime is properly resolved
+import { hydrateRoot, StrictMode } from './utils/jsxRuntime';
 import { HelmetProvider } from 'react-helmet-async';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import App from './App';

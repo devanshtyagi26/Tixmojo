@@ -16,7 +16,7 @@ function Navbar({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { currentUser, isAuthenticated } = useAuth();
   const inputRef = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [scrolled, setScrolled] = useState(false);
@@ -134,8 +134,8 @@ function Navbar({
                 ? "180px"
                 : "40px"
               : searchFocused
-              ? "320px"
-              : "240px",
+                ? "320px"
+                : "240px",
             transition: "all 0.3s cubic-bezier(0.19, 1, 0.22, 1)",
             cursor: "pointer",
             boxShadow: searchFocused
@@ -219,17 +219,52 @@ function Navbar({
                   justifyContent: "center",
                   cursor: "pointer",
                   transition: "all 0.3s ease",
+                  position: "relative",
+                  overflow: "hidden",
+                  boxShadow: "0 2px 6px rgba(111, 68, 255, 0.15)",
+                  border: currentUser?.profilePicture ? "2px solid var(--purple-200)" : "none",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = "var(--purple-200)";
                   e.currentTarget.style.transform = "scale(1.05)";
+                  e.currentTarget.style.boxShadow = "0 3px 8px rgba(111, 68, 255, 0.3)";
+                  // Log auth status on hover for debugging
+                  console.log("Auth Status (Navbar):", {
+                    isAuthenticated: isAuthenticated(),
+                    currentUser
+                  });
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "var(--purple-100)";
                   e.currentTarget.style.transform = "scale(1)";
+                  e.currentTarget.style.boxShadow = "0 2px 6px rgba(111, 68, 255, 0.15)";
                 }}
               >
-                <BiUser style={{ color: "var(--primary)", fontSize: "22px" }} />
+                {/* Active indicator dot */}
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: "2px",
+                    right: "2px",
+                    width: "10px",
+                    height: "10px",
+                    backgroundColor: "#44cc77",
+                    borderRadius: "50%",
+                    border: "2px solid white",
+                    zIndex: 2,
+                  }}
+                />
+                {currentUser?.profilePicture ? (
+                  <img
+                    src={currentUser.profilePicture}
+                    alt={`${currentUser.firstName}'s profile`}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <BiUser style={{ color: "var(--primary)", fontSize: "22px" }} />
+                )}
               </div>
             ) : (
               <LoginButton />

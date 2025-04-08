@@ -1,9 +1,10 @@
 /**
- * Development-only client entry point
- * Used only during development when not using SSR
+ * Client entry point for non-SSR environments
+ * Used for development and static deployments (like Netlify)
  */
 
-import { StrictMode } from 'react';
+// Direct imports to avoid JSX runtime resolution issues
+import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -11,17 +12,20 @@ import App from './App';
 import './Style/imports.css';
 
 // Ensure the page is scrolled to top on refresh
-if (history.scrollRestoration) {
+if (typeof history !== 'undefined' && history.scrollRestoration) {
   history.scrollRestoration = 'manual';
 }
 
 // Reset scroll position on page load
-window.onload = () => {
-  window.scrollTo(0, 0);
-};
+if (typeof window !== 'undefined') {
+  window.onload = () => {
+    window.scrollTo(0, 0);
+  };
+}
 
-// Google OAuth client ID
-const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || 
+// Google OAuth client ID - with fallback for static deployments
+const googleClientId = 
+  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_GOOGLE_CLIENT_ID) || 
   '737893507438-rfo58r4pjsklna2pbj3t0g4jcn6g4p13.apps.googleusercontent.com';
 
 // Check if we have a valid-looking Google OAuth client ID
@@ -36,17 +40,48 @@ if (!isValidGoogleClientId) {
   );
 }
 
-// Use standard createRoot for development
-const root = createRoot(document.getElementById('root'));
+// Function to initialize the app
+function initializeApp() {
+  try {
+    // Check if root element exists
+    const rootElement = document.getElementById('root');
+    if (!rootElement) {
+      console.error('Root element not found!');
+      return;
+    }
+    
+    // Use standard createRoot for client-side rendering
+    const root = createRoot(rootElement);
+    
+    // Render the app
+    console.log('Static deployment: Using client-side rendering');
+    root.render(
+      <StrictMode>
+        <HelmetProvider>
+          <GoogleOAuthProvider clientId={googleClientId}>
+            <App />
+          </GoogleOAuthProvider>
+        </HelmetProvider>
+      </StrictMode>
+    );
+  } catch (error) {
+    console.error('Error initializing app:', error);
+    // Display error message if rendering fails
+    const rootElement = document.getElementById('root');
+    if (rootElement) {
+      rootElement.innerHTML = `
+        <div style="max-width: 600px; margin: 100px auto; padding: 20px; font-family: sans-serif; text-align: center;">
+          <h1 style="color: #6F44FF">TixMojo - Error</h1>
+          <p>Sorry, we encountered an error while initializing the application.</p>
+          <pre style="text-align: left; background: #f5f5f5; padding: 10px; border-radius: 4px; overflow: auto;">${error.message}</pre>
+          <button onclick="window.location.reload()" style="background: #6F44FF; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-top: 20px;">
+            Try Again
+          </button>
+        </div>
+      `;
+    }
+  }
+}
 
-// Render the app
-console.log('Development mode: Using client-side only rendering');
-root.render(
-  <StrictMode>
-    <HelmetProvider>
-      <GoogleOAuthProvider clientId={googleClientId}>
-        <App />
-      </GoogleOAuthProvider>
-    </HelmetProvider>
-  </StrictMode>
-);
+// Initialize the app
+initializeApp();

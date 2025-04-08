@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TixMojo - Loading Error</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: #333;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+    .container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #6F44FF;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 28px;
+    }
+    .error-section {
+      margin-bottom: 30px;
+    }
+    .error-section h2 {
+      color: #444;
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .error-section p {
+      margin-bottom: 15px;
+    }
+    .button {
+      display: inline-block;
+      background: #6F44FF;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .button:hover {
+      background: #5c31e6;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(111, 68, 255, 0.2);
+    }
+    .center {
+      text-align: center;
+    }
+    .troubleshooting-list {
+      background-color: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .troubleshooting-list li {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>TixMojo Application Error</h1>
+    
+    <div class="error-section">
+      <h2>The application encountered an error while loading</h2>
+      <p>We're sorry, but TixMojo is currently experiencing technical difficulties. This could be due to one of the following reasons:</p>
+      
+      <div class="troubleshooting-list">
+        <ul>
+          <li>Your internet connection may be unstable or interrupted</li>
+          <li>Your browser's cache may contain outdated files</li>
+          <li>Your browser might be blocking necessary scripts or resources</li>
+          <li>There might be a temporary issue with our servers</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="error-section">
+      <h2>Troubleshooting Steps</h2>
+      <ol>
+        <li>Refresh the page by clicking the button below</li>
+        <li>Clear your browser cache and cookies</li>
+        <li>Disable any ad-blockers or script blockers for this site</li>
+        <li>Try using a different browser</li>
+        <li>Check if you're connected to the internet</li>
+      </ol>
+    </div>
+    
+    <div class="center">
+      <button onclick="window.location.reload()" class="button">Refresh Page</button>
+    </div>
+  </div>
+  
+  <script>
+    // Report error data to console for debugging
+    console.error('TixMojo encountered a loading error');
+    
+    // Try to reload the application after a delay
+    setTimeout(function() {
+      if (confirm('Would you like to try loading the application again?')) {
+        window.location.reload();
+      }
+    }, 10000);
+  </script>
+</body>
+</html>

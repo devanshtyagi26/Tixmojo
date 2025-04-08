@@ -42,6 +42,8 @@ export const AuthProvider = ({ children }) => {
         ...userData,
         phone: phoneNumber
       };
+      
+      console.log("Processed Google user data:", processedData);
     }
     
     localStorage.setItem('user', JSON.stringify(processedData));
