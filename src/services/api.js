@@ -220,6 +220,12 @@ export const getFlyers = async () => {
  * @returns {Promise<Object>} - Event data
  */
 export const getEventById = async (id, useFallback = false) => {
+  // Validate event ID format - reject "event-#" format
+  const isValidEventId = /^[a-z0-9-]+$/.test(id) && !id.match(/^event-\d+$/);
+  if (!isValidEventId) {
+    throw new Error(`Invalid event ID format: ${id}`);
+  }
+  
   // For SSR or when fallback is requested, return immediately with fallback data
   if (useFallback || (typeof window === 'undefined')) {
     console.log("Using fallback data for event:", id);
