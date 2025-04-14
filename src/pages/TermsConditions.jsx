@@ -11,7 +11,7 @@ const TermsConditions = () => {
     <div style={{
       padding: '40px 20px 80px',
       maxWidth: '1000px',
-      margin: '0 auto',
+      margin: '40px auto',
     }}>
       {/* Breadcrumb */}
       <ScrollAnimation direction="down" delay={0.1}>
