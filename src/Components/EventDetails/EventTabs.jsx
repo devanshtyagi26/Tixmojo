@@ -63,7 +63,7 @@ const EventTabs = ({ event, setShowContactPopup, organizerEvents, handleGetTicke
             onClick={() => setActiveTab("details")}
             style={{
               flex: 1,
-              padding: "20px 15px",
+              padding: "20px 8px",
               backgroundColor: "transparent",
               border: "none",
               cursor: "pointer",
@@ -99,7 +99,7 @@ const EventTabs = ({ event, setShowContactPopup, organizerEvents, handleGetTicke
             onClick={() => setActiveTab("venue")}
             style={{
               flex: 1,
-              padding: "20px 15px",
+              padding: "20px 8px",
               backgroundColor: "transparent",
               border: "none",
               cursor: "pointer",
@@ -133,7 +133,7 @@ const EventTabs = ({ event, setShowContactPopup, organizerEvents, handleGetTicke
             onClick={() => setActiveTab("highlights")}
             style={{
               flex: 1,
-              padding: "20px 15px",
+              padding: "20px 8px",
               backgroundColor: "transparent",
               border: "none",
               cursor: "pointer",
@@ -167,7 +167,7 @@ const EventTabs = ({ event, setShowContactPopup, organizerEvents, handleGetTicke
             onClick={() => setActiveTab("more")}
             style={{
               flex: 1,
-              padding: "20px 15px",
+              padding: "20px 8px",
               backgroundColor: "transparent",
               border: "none",
               cursor: "pointer",
