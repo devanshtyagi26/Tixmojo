@@ -10,6 +10,9 @@ import { HelmetProvider } from 'react-helmet-async';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import App from './App';
 import './Style/imports.css';
+import './Style/loader.css';
+import './Style/sidebarAnimation.css';
+import './Style/eventTabs.css';
 
 // Ensure the page is scrolled to top on refresh
 if (typeof history !== 'undefined' && history.scrollRestoration) {
