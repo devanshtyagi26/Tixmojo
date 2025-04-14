@@ -5,7 +5,7 @@ import { BsCalendar2Date } from "react-icons/bs";
 import { HiOutlineLocationMarker, HiOutlineExternalLink } from "react-icons/hi";
 import { IoTicketOutline } from "react-icons/io5";
 
-const EventMainInfo = ({ event, handleGetTickets }) => {
+const EventMainInfo = ({ event, handleGetTickets, hideTicketButton = false }) => {
   const { animationsEnabled, sidebarOpen } = useAnimation();
   return (
     <div
@@ -223,7 +223,7 @@ const EventMainInfo = ({ event, handleGetTickets }) => {
             {/* Price */}
             <div
               style={{
-                display: "flex",
+                display: hideTicketButton ? "none" : "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
                 gap: "3px",

@@ -13,6 +13,7 @@ import './Style/loader.css';
 import './Style/sidebarAnimation.css';
 import './Style/eventTabs.css';
 import './Style/ticketSelection.css';
+import './Style/paymentPortal.css';
 
 // Ensure the page is scrolled to top on refresh
 if (history.scrollRestoration) {

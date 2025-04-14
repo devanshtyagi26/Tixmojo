@@ -521,7 +521,11 @@ function EventDetails(props) {
 
       <EventContainer>
         <EventDetailsHeader event={event} />
-        <EventMainInfo event={event} handleGetTickets={handleGetTickets} />
+        <EventMainInfo 
+          event={event} 
+          handleGetTickets={handleGetTickets} 
+          hideTicketButton={showTicketSelection || showPaymentPortal} 
+        />
 
         {/* Ticket Selection Component - Only shown when Get Tickets is clicked */}
         {showTicketSelection && (
