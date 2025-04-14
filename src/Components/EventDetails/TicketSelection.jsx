@@ -10,30 +10,30 @@ import { IoCartOutline, IoClose } from 'react-icons/io5';
 const TicketSelection = ({ event, expiryTime, onExpire, showTimer, onProceedToPayment, savedCartItems, savedDiscount = 0 }) => {
   const navigate = useNavigate();
   const { isAuthenticated, currentUser } = useAuth();
-  
+
   // Timer state
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
   const [isAlmostExpired, setIsAlmostExpired] = useState(false);
-  
+
   // Mobile cart visibility state
   const [showMobileCart, setShowMobileCart] = useState(false);
-  
+
   // Update timer every second
   useEffect(() => {
     if (!showTimer || !expiryTime) return;
-    
+
     const updateTimer = () => {
       try {
         // Ensure expiryTime is a Date object
         const expiry = expiryTime instanceof Date ? expiryTime : new Date(expiryTime);
         const now = new Date();
         const difference = expiry.getTime() - now.getTime();
-        
+
         if (difference <= 0) {
           setMinutes(0);
           setSeconds(0);
-          
+
           // Ensure the expiry handler is called properly
           if (typeof onExpire === 'function') {
             console.log("TicketSelection timer expired - calling parent handler");
@@ -41,11 +41,11 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer, onProceedToPa
           }
           return;
         }
-        
+
         // Calculate minutes and seconds
         const mins = Math.floor((difference / 1000 / 60) % 60);
         const secs = Math.floor((difference / 1000) % 60);
-        
+
         setMinutes(mins);
         setSeconds(secs);
         setIsAlmostExpired(difference < 120000); // Less than 2 minutes
@@ -54,24 +54,24 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer, onProceedToPa
         return;
       }
     };
-    
+
     // Initial update
     updateTimer();
-    
+
     // Update every second
     const interval = setInterval(updateTimer, 1000);
-    
+
     // Clean up
     return () => clearInterval(interval);
   }, [expiryTime, onExpire, showTimer]);
-  
+
   // Log when cart items are restored from saved state
   useEffect(() => {
     if (savedCartItems && savedCartItems.length > 0) {
       console.log("Restored", savedCartItems.length, "tickets from saved state");
     }
   }, [savedCartItems]);
-  
+
   // Sample ticket data - in a real app, this would come from the API
   const [tickets, setTickets] = useState([
     {
@@ -119,12 +119,12 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer, onProceedToPa
   // Cart state - initialize from savedCartItems prop if provided
   const [cartItems, setCartItems] = useState([]);
   const [ticketQuantities, setTicketQuantities] = useState({});
-  
+
   // Initialize from saved cart items if provided (when returning from payment portal)
   useEffect(() => {
     if (savedCartItems && savedCartItems.length > 0) {
       setCartItems(savedCartItems);
-      
+
       // Rebuild ticket quantities from saved cart items
       const quantities = {};
       savedCartItems.forEach(item => {
@@ -188,10 +188,10 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer, onProceedToPa
   // Handle checkout
   const handleProceedToCheckout = (total, discount) => {
     console.log(`Proceeding to checkout: $${total.toFixed(2)} with ${discount * 100}% discount`);
-    
+
     // Hide mobile cart if it's open
     setShowMobileCart(false);
-    
+
     // Pass cart items, total, and discount to parent component
     if (typeof onProceedToPayment === 'function') {
       onProceedToPayment(cartItems, total, discount);
@@ -227,11 +227,11 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer, onProceedToPa
           </h2>
         </div>
       </div>
-      
+
       <p className="ticket-selection-description">
         Choose the tickets you want to purchase for {event.title}
       </p>
-      
+
       {/* Show welcome message if user is logged in */}
       {isAuthenticated() && currentUser && (
         <div className="welcome-message">
@@ -243,31 +243,29 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer, onProceedToPa
         </div>
       )}
 
-      {/* Mobile floating timer */}
-      {showTimer && (
-        <div className="mobile-timer-container">
-          <div className="timer-banner">
-            <div className="timer-label">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--purple-800)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M10 2h4a2 2 0 0 1 2 2v2H8V4a2 2 0 0 1 2-2z"></path>
-                <path d="M8 4L6 7.5 8 10 6 13.5 8 16l-2 3.5 2 2.5"></path>
-                <path d="M16 4l2 3.5-2 2.5 2 3.5-2 2.5 2 3.5-2 2.5"></path>
-                <rect x="4" y="18" width="16" height="4" rx="2"></rect>
-              </svg>
-              <span className="timer-label-text">
-                Session Expires In
-              </span>
-            </div>
-            
-            <div className="timer-display" style={{ animation: isAlmostExpired ? 'pulse 1.5s infinite' : 'none' }}>
-              <span className="timer-digit">
-                {String(minutes).padStart(2, '0')}
-              </span>
-              <span className="timer-colon">:</span>
-              <span className="timer-digit">
-                {String(seconds).padStart(2, '0')}
-              </span>
-            </div>
+      {/* Mobile timer that's always visible on mobile */}
+      {window.innerWidth < 768 && showTimer && (
+        <div className="mobile-timer-banner">
+          <div className="timer-label">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple-800)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10 2h4a2 2 0 0 1 2 2v2H8V4a2 2 0 0 1 2-2z"></path>
+              <path d="M8 4L6 7.5 8 10 6 13.5 8 16l-2 3.5 2 2.5"></path>
+              <path d="M16 4l2 3.5-2 2.5 2 3.5-2 2.5 2 3.5-2 2.5"></path>
+              <rect x="4" y="18" width="16" height="4" rx="2"></rect>
+            </svg>
+            <span className="timer-label-text">
+              Session Expires In
+            </span>
+          </div>
+
+          <div className="timer-display" style={{ animation: isAlmostExpired ? 'pulse 1.5s infinite' : 'none' }}>
+            <span className="timer-digit">
+              {String(minutes).padStart(2, '0')}
+            </span>
+            <span className="timer-colon">:</span>
+            <span className="timer-digit">
+              {String(seconds).padStart(2, '0')}
+            </span>
           </div>
         </div>
       )}
@@ -299,7 +297,7 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer, onProceedToPa
                   Session Expires In
                 </span>
               </div>
-              
+
               <div className="timer-display" style={{ animation: isAlmostExpired ? 'pulse 1.5s infinite' : 'none' }}>
                 <span className="timer-digit">
                   {String(minutes).padStart(2, '0')}
@@ -311,7 +309,7 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer, onProceedToPa
               </div>
             </div>
           )}
-          
+
           <TicketCart
             cartItems={cartItems}
             onRemoveItem={handleRemoveFromCart}
@@ -320,10 +318,10 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer, onProceedToPa
           />
         </div>
       </div>
-      
+
       {/* Mobile cart toggle button */}
       {cartItems.length > 0 && (
-        <button 
+        <button
           className="cart-toggle-button"
           onClick={() => setShowMobileCart(true)}
         >
@@ -333,20 +331,20 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer, onProceedToPa
           )}
         </button>
       )}
-      
+
       {/* Mobile cart overlay */}
       <div className={`mobile-cart-overlay ${showMobileCart ? 'visible' : ''}`}>
         <div className="mobile-cart-popup">
           <div className="cart-header">
             <h3 className="cart-title">Your Cart</h3>
-            <button 
+            <button
               className="cart-overlay-close-button"
               onClick={() => setShowMobileCart(false)}
             >
               <IoClose size={24} />
             </button>
           </div>
-          
+
           <TicketCart
             cartItems={cartItems}
             onRemoveItem={handleRemoveFromCart}
