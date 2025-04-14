@@ -760,13 +760,18 @@ Created a focused "About Us" page to showcase the TixMojo platform and its missi
   - Added navigation links in both sidebar components
   - Integrated with the existing theme variables for consistent styling
   - Added automatic sidebar closing when links are clicked
+  - Implemented direct API integration without fallbacks
+  - Enhanced error handling with user-friendly error states
 
 ## Component Files Added/Modified for About Us Page
 
-1. `src/pages/AboutUs.jsx` - New About Us page component with responsive design
+1. `src/pages/AboutUs.jsx` - New About Us page component with responsive design and API integration
 2. `src/App.jsx` - Added route for About Us page
-3. `src/Components/Sidebar.jsx` - Updated About Us link to point to the new page
-4. `src/Components/UserSidebar.jsx` - Added About Us link in the settings section
+3. `src/Components/Sidebar.jsx` - Updated About Us link to point to the new page with close sidebar on click
+4. `src/Components/UserSidebar.jsx` - Added About Us link in the settings section with close sidebar on click
+5. `server/data/aboutus.js` - Updated backend data file for the About Us content
+6. `server/controllers/aboutController.js` - Controller for serving About Us data
+7. `server/routes/aboutRoutes.js` - API route for About Us data
 
 ## Future Enhancement Ideas
 

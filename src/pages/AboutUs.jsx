@@ -1,12 +1,151 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaTicketAlt, FaHandshake, FaChartLine, FaHeadset, FaTools } from "react-icons/fa";
 import { HiArrowNarrowRight } from "react-icons/hi";
 import ScrollAnimation from "../utils/ScrollAnimation";
 import { PageSEO } from "../utils/SEO";
 import "../Style/imports.css";
+import { getAboutUs } from "../services/api";
 
 const AboutUs = () => {
+  const [aboutData, setAboutData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAboutData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await getAboutUs();
+        setAboutData(data);
+      } catch (error) {
+        console.error("Error fetching about us data:", error);
+        setError("Failed to load About Us information. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAboutData();
+  }, []);
+
+  // Map icon names to React components
+  const getIconComponent = (iconName) => {
+    switch (iconName) {
+      case 'ticket':
+        return <FaTicketAlt />;
+      case 'handshake':
+        return <FaHandshake />;
+      case 'chart-line':
+        return <FaChartLine />;
+      case 'headset':
+        return <FaHeadset />;
+      case 'tools':
+        return <FaTools />;
+      default:
+        return <FaTicketAlt />;
+    }
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "70vh",
+        paddingTop: "90px" 
+      }}>
+        <div style={{
+          fontSize: "1.2rem",
+          color: "var(--primary)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center"
+        }}>
+          <div 
+            style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              border: "3px solid var(--primary)",
+              borderTopColor: "transparent",
+              marginBottom: "1rem",
+              animation: "spin 1s linear infinite"
+            }}
+          />
+          <style>
+            {`
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+            `}
+          </style>
+          Loading...
+        </div>
+      </div>
+    );
+  }
+  
+  // Error state
+  if (error) {
+    return (
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "70vh",
+        paddingTop: "90px",
+        textAlign: "center"
+      }}>
+        <div style={{
+          fontSize: "1.2rem",
+          color: "#e53935",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          maxWidth: "500px",
+          padding: "2rem",
+          borderRadius: "8px",
+          background: "#ffebee",
+          border: "1px solid #ffcdd2"
+        }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="#e53935">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p style={{ marginTop: "1rem" }}>{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            style={{
+              marginTop: "1.5rem",
+              background: "var(--primary)",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              padding: "10px 20px",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "all 0.3s ease"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 4px 8px rgba(111, 68, 255, 0.3)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "none";
+            }}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <PageSEO
@@ -30,7 +169,9 @@ const AboutUs = () => {
               fontWeight: "800",
               marginBottom: "1.5rem",
               letterSpacing: "-0.03em"
-            }}>ABOUT US</h1>
+            }}>
+              {aboutData?.title || "ABOUT US"}
+            </h1>
             
             <div style={{
               maxWidth: "800px",
@@ -40,7 +181,8 @@ const AboutUs = () => {
               color: "var(--neutral-800)"
             }}>
               <p>
-                Welcome to <span style={{ fontWeight: "700", color: "var(--primary)" }}>Tixmojo</span>, where experiences begin with a simple click! We are a cutting-edge ticketing platform dedicated to connecting you with the most exciting events, unforgettable experiences, and seamless bookings.
+                Welcome to <span style={{ fontWeight: "700", color: "var(--primary)" }}>Tixmojo</span>, 
+                {aboutData?.description || "where experiences begin with a simple click! We are a cutting-edge ticketing platform dedicated to connecting you with the most exciting events, unforgettable experiences, and seamless bookings."}
               </p>
             </div>
           </section>
@@ -61,7 +203,7 @@ const AboutUs = () => {
               position: "relative",
               display: "inline-block"
             }}>
-              OUR MISSION
+              {aboutData?.mission?.title || "OUR MISSION"}
               <span style={{
                 position: "absolute",
                 bottom: "-5px",
@@ -80,7 +222,7 @@ const AboutUs = () => {
               color: "var(--neutral-800)"
             }}>
               <p>
-                Our mission is to empower event enthusiasts and organizers by providing a robust, user-friendly platform that ensures every ticket purchase is a step closer to creating memories that last a lifetime. Whether it's a concert, theater performance, festival, or corporate event, we aim to make ticketing simple, efficient, and enjoyable.
+                {aboutData?.mission?.content || "Our mission is to empower event enthusiasts and organizers by providing a robust, user-friendly platform that ensures every ticket purchase is a step closer to creating memories that last a lifetime. Whether it's a concert, theater performance, festival, or corporate event, we aim to make ticketing simple, efficient, and enjoyable."}
               </p>
             </div>
           </section>
@@ -103,7 +245,7 @@ const AboutUs = () => {
                 position: "relative",
                 display: "inline-block"
               }}>
-                WHY CHOOSE US?
+                {aboutData?.whyChooseUs?.title || "WHY CHOOSE US?"}
                 <span style={{
                   position: "absolute",
                   bottom: "-5px",
@@ -123,35 +265,50 @@ const AboutUs = () => {
                 marginTop: "2rem"
               }}>
                 {/* Feature Cards */}
-                <FeatureCard 
-                  icon={<FaTicketAlt />}
-                  title="Diverse Events"
-                  description="From live music and sports to cultural festivals and conferences, we offer tickets to a wide variety of events to cater to every interest."
-                />
-                
-                <FeatureCard 
-                  icon={<FaHandshake />}
-                  title="Easy-to-Use Platform"
-                  description="With our intuitive interface, you can browse, book, and pay for tickets effortlessly."
-                />
-                
-                <FeatureCard 
-                  icon={<FaChartLine />}
-                  title="Secure Transactions"
-                  description="Your security is our priority. We provide safe and reliable payment options to ensure a stress-free experience."
-                />
-                
-                <FeatureCard 
-                  icon={<FaHeadset />}
-                  title="Customer Support"
-                  description="Got a question? Our dedicated support team is always ready to assist you with your queries."
-                />
-                
-                <FeatureCard 
-                  icon={<FaTools />}
-                  title="Custom Solutions for Organizers"
-                  description="We work hand-in-hand with event organizers to provide tools for event promotion, real-time analytics, and hassle-free ticket management."
-                />
+                {aboutData?.whyChooseUs?.features ? (
+                  // Map through API features
+                  aboutData.whyChooseUs.features.map((feature, index) => (
+                    <FeatureCard 
+                      key={index}
+                      icon={getIconComponent(feature.icon)}
+                      title={feature.title}
+                      description={feature.description}
+                    />
+                  ))
+                ) : (
+                  // Fallback hardcoded features
+                  <>
+                    <FeatureCard 
+                      icon={<FaTicketAlt />}
+                      title="Diverse Events"
+                      description="From live music and sports to cultural festivals and conferences, we offer tickets to a wide variety of events to cater to every interest."
+                    />
+                    
+                    <FeatureCard 
+                      icon={<FaHandshake />}
+                      title="Easy-to-Use Platform"
+                      description="With our intuitive interface, you can browse, book, and pay for tickets effortlessly."
+                    />
+                    
+                    <FeatureCard 
+                      icon={<FaChartLine />}
+                      title="Secure Transactions"
+                      description="Your security is our priority. We provide safe and reliable payment options to ensure a stress-free experience."
+                    />
+                    
+                    <FeatureCard 
+                      icon={<FaHeadset />}
+                      title="Customer Support"
+                      description="Got a question? Our dedicated support team is always ready to assist you with your queries."
+                    />
+                    
+                    <FeatureCard 
+                      icon={<FaTools />}
+                      title="Custom Solutions for Organizers"
+                      description="We work hand-in-hand with event organizers to provide tools for event promotion, real-time analytics, and hassle-free ticket management."
+                    />
+                  </>
+                )}
               </div>
             </div>
           </section>
@@ -172,7 +329,7 @@ const AboutUs = () => {
               position: "relative",
               display: "inline-block"
             }}>
-              OUR VISION
+              {aboutData?.vision?.title || "OUR VISION"}
               <span style={{
                 position: "absolute",
                 bottom: "-5px",
@@ -191,7 +348,7 @@ const AboutUs = () => {
               color: "var(--neutral-800)"
             }}>
               <p>
-                We envision a world where ticketing is no longer a hurdle but a gateway to unforgettable experiences. By continuously innovating and leveraging the latest technology, we strive to redefine the event-ticketing landscape.
+                {aboutData?.vision?.content || "We envision a world where ticketing is no longer a hurdle but a gateway to unforgettable experiences. By continuously innovating and leveraging the latest technology, we strive to redefine the event-ticketing landscape."}
               </p>
             </div>
           </section>
@@ -214,7 +371,7 @@ const AboutUs = () => {
                 position: "relative",
                 display: "inline-block"
               }}>
-                FOR EVENT ORGANIZERS
+                {aboutData?.forOrganizers?.title || "FOR EVENT ORGANIZERS"}
                 <span style={{
                   position: "absolute",
                   bottom: "-5px",
@@ -233,7 +390,7 @@ const AboutUs = () => {
                 color: "var(--neutral-800)"
               }}>
                 <p>
-                  Are you an organizer? Let us help you reach your audience with ease. From ticket sales to marketing tools and real-time reporting, we provide end-to-end solutions that make managing your event a breeze.
+                  {aboutData?.forOrganizers?.content || "Are you an organizer? Let us help you reach your audience with ease. From ticket sales to marketing tools and real-time reporting, we provide end-to-end solutions that make managing your event a breeze."}
                 </p>
               </div>
               
@@ -271,7 +428,6 @@ const AboutUs = () => {
           </section>
         </ScrollAnimation>
         
-        
         {/* Join Us Banner */}
         <ScrollAnimation animation="fade-up" delay={0.5}>
           <section style={{
@@ -286,7 +442,7 @@ const AboutUs = () => {
                 fontWeight: "700",
                 marginBottom: "1.5rem"
               }}>
-                JOIN US ON THE JOURNEY TO SIMPLIFY EVENT EXPERIENCES!
+                {aboutData?.joinUs?.title || "JOIN US ON THE JOURNEY TO SIMPLIFY EVENT EXPERIENCES!"}
               </h2>
               
               <p style={{
@@ -295,7 +451,7 @@ const AboutUs = () => {
                 maxWidth: "800px",
                 margin: "0 auto 2rem"
               }}>
-                Whether you're looking for the perfect outing or seeking to create an extraordinary event, Tixmojo is here to make it happen.
+                {aboutData?.joinUs?.content || "Whether you're looking for the perfect outing or seeking to create an extraordinary event, Tixmojo is here to make it happen."}
               </p>
               
               <Link 
@@ -380,6 +536,5 @@ const FeatureCard = ({ icon, title, description }) => {
     </div>
   );
 };
-
 
 export default AboutUs;
