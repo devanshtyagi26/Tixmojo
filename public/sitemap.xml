@@ -144,6 +144,28 @@
     <priority>0.7</priority>
   </url>
 
+  <!-- Legal Pages -->
+  <url>
+    <loc>https://tixmojo.netlify.app/terms-conditions</loc>
+    <lastmod>2025-04-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://tixmojo.netlify.app/privacy-policy</loc>
+    <lastmod>2025-04-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://tixmojo.netlify.app/about-us</loc>
+    <lastmod>2025-04-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
   <!-- Error Page - Lower priority -->
   <url>
     <loc>https://tixmojo.netlify.app/page-not-found</loc>
