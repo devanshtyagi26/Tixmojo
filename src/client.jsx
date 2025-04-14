@@ -9,6 +9,11 @@ import { HelmetProvider } from 'react-helmet-async';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import App from './App';
 import './Style/imports.css';
+import './Style/loader.css';
+import './Style/sidebarAnimation.css';
+import './Style/eventTabs.css';
+import './Style/ticketSelection.css';
+import './Style/paymentPortal.css';
 
 // Ensure the page is scrolled to top on refresh
 if (history.scrollRestoration) {
@@ -27,8 +32,8 @@ const initialData = window.__INITIAL_DATA__ || {};
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 // Check if we have a valid-looking Google OAuth client ID
-const isValidGoogleClientId = googleClientId && 
-  googleClientId.includes('.apps.googleusercontent.com') && 
+const isValidGoogleClientId = googleClientId &&
+  googleClientId.includes('.apps.googleusercontent.com') &&
   googleClientId.length > 30;
 
 if (!isValidGoogleClientId) {
@@ -60,7 +65,7 @@ hydrateRoot(
 window.addEventListener('load', () => {
   const hydrationTime = performance.now() - startHydration;
   console.log(`Hydration completed in ${Math.round(hydrationTime)}ms`);
-  
+
   // Report as a performance metric
   if (window.performance && window.performance.mark) {
     performance.mark('hydration-end');
