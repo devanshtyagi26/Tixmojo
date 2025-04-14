@@ -1596,8 +1596,14 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
       {/* Mobile cart popup */}
       {showCartPopup && (
         <>
-          <div className="cart-popup-overlay" onClick={toggleCartPopup}></div>
-          <div className="cart-popup">
+          <div 
+            className="cart-popup-overlay" 
+            onClick={toggleCartPopup}
+            style={{ display: 'block' }}
+          ></div>
+          <div className="cart-popup"
+            onClick={(e) => e.stopPropagation()} // Prevent clicks from closing when clicking on the cart
+          >
             <div className="cart-popup-header">
               <div className="cart-popup-title">
                 Your Cart
@@ -1733,7 +1739,10 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
 
             {/* Done button */}
             <button
-              onClick={toggleCartPopup}
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent event from reaching overlay
+                toggleCartPopup();
+              }}
               style={{
                 width: '100%',
                 backgroundColor: 'var(--purple-600)',

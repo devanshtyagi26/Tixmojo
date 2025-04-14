@@ -323,7 +323,10 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer, onProceedToPa
       {cartItems.length > 0 && (
         <button
           className="cart-toggle-button"
-          onClick={() => setShowMobileCart(true)}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent event from propagating
+            setShowMobileCart(true);
+          }}
         >
           <IoCartOutline size={24} />
           {totalCartItems > 0 && (
@@ -333,26 +336,36 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer, onProceedToPa
       )}
 
       {/* Mobile cart overlay */}
-      <div className={`mobile-cart-overlay ${showMobileCart ? 'visible' : ''}`}>
-        <div className="mobile-cart-popup">
-          <div className="cart-header">
-            <h3 className="cart-title">Your Cart</h3>
-            <button
-              className="cart-overlay-close-button"
-              onClick={() => setShowMobileCart(false)}
+      {showMobileCart && (
+        <>
+          <div 
+            className="mobile-cart-overlay visible" 
+            onClick={() => setShowMobileCart(false)}
+          >
+            <div 
+              className="mobile-cart-popup"
+              onClick={(e) => e.stopPropagation()} // Prevent clicking on the popup from closing it
             >
-              <IoClose size={24} />
-            </button>
-          </div>
+              <div className="cart-header">
+                <h3 className="cart-title">Your Cart</h3>
+                <button
+                  className="cart-overlay-close-button"
+                  onClick={() => setShowMobileCart(false)}
+                >
+                  <IoClose size={24} />
+                </button>
+              </div>
 
-          <TicketCart
-            cartItems={cartItems}
-            onRemoveItem={handleRemoveFromCart}
-            onProceedToCheckout={handleProceedToCheckout}
-            initialDiscount={savedDiscount}
-          />
-        </div>
-      </div>
+              <TicketCart
+                cartItems={cartItems}
+                onRemoveItem={handleRemoveFromCart}
+                onProceedToCheckout={handleProceedToCheckout}
+                initialDiscount={savedDiscount}
+              />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
