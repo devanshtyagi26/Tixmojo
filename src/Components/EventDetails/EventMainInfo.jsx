@@ -107,7 +107,49 @@ const EventMainInfo = ({ event, handleGetTickets, hideTicketButton = false }) =>
                     marginBottom: "4px",
                   }}
                 >
-                  {event.date}
+                  {(() => {
+                    // Direct inline date formatting
+                    try {
+                      // If date is already in format "Weekday, DD Mon, YYYY", use it
+                      if (event.date && typeof event.date === 'string' && 
+                          /^[A-Za-z]+,\s+\d+\s+[A-Za-z]+,\s+\d{4}$/.test(event.date)) {
+                        return event.date;
+                      }
+                      
+                      // Create a date object
+                      let dateObj;
+                      
+                      // Check for "DD Mon - DD Mon" format (e.g., "25 Mar - 27 Mar")
+                      if (event.date && typeof event.date === 'string' && event.date.includes(' - ')) {
+                        const datePart = event.date.split(' - ')[0]; // Get first date
+                        const [day, month] = datePart.split(' ');
+                        
+                        // Map month abbreviation to month number
+                        const monthMap = {
+                          Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+                          Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
+                        };
+                        
+                        dateObj = new Date();
+                        dateObj.setDate(parseInt(day, 10));
+                        dateObj.setMonth(monthMap[month]);
+                      } else {
+                        // Use current date as fallback
+                        dateObj = new Date();
+                      }
+                      
+                      // Format as "Saturday, 12 Apr, 2025"
+                      const weekday = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
+                      const day = dateObj.getDate();
+                      const month = dateObj.toLocaleDateString('en-US', { month: 'short' });
+                      const year = dateObj.getFullYear();
+                      
+                      return `${weekday}, ${day} ${month}, ${year}`;
+                    } catch (error) {
+                      console.error("Error formatting date:", error);
+                      return event.date || "Upcoming";
+                    }
+                  })()}
                 </div>
                 <div
                   style={{

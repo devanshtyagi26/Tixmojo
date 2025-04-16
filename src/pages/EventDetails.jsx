@@ -120,13 +120,58 @@ function EventDetails(props) {
   }, [showTicketSelection]);
 
   useEffect(() => {
-    // Validate the event ID format - only allow valid event names with "-" separators
-    const isValidEventId = /^[a-z0-9-]+$/.test(eventId) && !eventId.match(/^event-\d+$/);
-    if (!isValidEventId) {
-      console.error("Invalid event ID format:", eventId);
-      navigate("/page-not-found");
-      return;
+    // Function to format dates in the "Saturday, 12 Apr, 2025" format
+  const formatEventDate = (event) => {
+    if (!event) return "Upcoming";
+    
+    try {
+      // If the event already has a formatted date in this format, use it
+      if (event.date && typeof event.date === 'string' && event.date.includes(',')) {
+        return event.date;
+      }
+      
+      // Get date from eventDate or fallback to current date
+      let eventDate;
+      
+      if (event.eventDate) {
+        // Try to parse from "25 Mar - 27 Mar" format
+        const dateParts = event.eventDate.split(" - ")[0].split(" ");
+        const day = parseInt(dateParts[0], 10);
+        
+        // Map month abbreviation to month number
+        const monthMap = {
+          Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+          Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11,
+        };
+        const month = monthMap[dateParts[1]];
+        
+        // Create date object (use current year)
+        eventDate = new Date(new Date().getFullYear(), month, day);
+      } else {
+        // Use current date as fallback
+        eventDate = new Date();
+      }
+      
+      // Format date as "Saturday, 12 Apr, 2025"
+      const weekday = eventDate.toLocaleDateString('en-US', { weekday: 'long' });
+      const day = eventDate.getDate();
+      const monthShort = eventDate.toLocaleDateString('en-US', { month: 'short' });
+      const year = eventDate.getFullYear();
+      
+      return `${weekday}, ${day} ${monthShort}, ${year}`;
+    } catch (error) {
+      console.error("Error formatting event date:", error);
+      return "Upcoming";
     }
+  };
+  
+  // Validate the event ID format - only allow valid event names with "-" separators
+  const isValidEventId = /^[a-z0-9-]+$/.test(eventId) && !eventId.match(/^event-\d+$/);
+  if (!isValidEventId) {
+    console.error("Invalid event ID format:", eventId);
+    navigate("/page-not-found");
+    return;
+  }
     
     // Check if we have server-side data
     const hasServerData = props.serverData && 
@@ -199,12 +244,14 @@ function EventDetails(props) {
         const eventData = await getEventById(eventId);
 
         // Format the event data from the API
+        const formattedDate = formatEventDate(eventData);
+        
         const formattedEvent = {
           id: eventData.id,
           title: eventData.eventName,
           tags: Array.isArray(eventData.tags) ? eventData.tags : [eventData.tags],
           image: eventData.eventPoster,
-          date: eventData.date,
+          date: formattedDate,
           time: eventData.time,
           venueName: eventData.venueName,
           venueAddress: eventData.venueAddress,

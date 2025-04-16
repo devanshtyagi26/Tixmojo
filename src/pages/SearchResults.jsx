@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { searchEvents } from '../services/api';
@@ -23,6 +23,45 @@ const SearchResults = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  // Format event date from various formats
+  const formatEventDate = useCallback((event) => {
+    if (!event) return 'Upcoming';
+    
+    // Define today and tomorrow dates for comparison
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    try {
+      // Handle server data format with full date as a string (e.g., "Thursday, 3 Apr, 2025")
+      if (event.date && typeof event.date === 'string' && event.date.includes(',')) {
+        const serverDateParts = event.date.split(', ');
+        if (serverDateParts.length >= 2) {
+          // For displaying, we can return the original formatted date
+          return event.date;
+        }
+      }
+      
+      // Handle format like "25 Mar - 27 Mar"
+      if (event.eventDate) {
+        return event.eventDate;
+      }
+      
+      // If we have a dateType property, use it for special labels
+      if (event.eventDateType) {
+        if (event.eventDateType === 'today') return 'Today';
+        if (event.eventDateType === 'tomorrow') return 'Tomorrow';
+        if (event.eventDateType === 'thisWeek') return 'This Week';
+      }
+      
+      return event.eventDate || event.date || 'Upcoming';
+    } catch (error) {
+      console.error("Error formatting event date:", error, event);
+      return 'Upcoming';
+    }
+  }, []);
+  
   useEffect(() => {
     const fetchSearchResults = async () => {
       try {
@@ -36,6 +75,13 @@ const SearchResults = () => {
         }
         
         const data = await searchEvents(searchQuery, searchLocation);
+        
+        // Debug the first event to understand its structure
+        if (data && data.length > 0) {
+          console.log('Search result sample event:', data[0]);
+          console.log('Formatted date:', formatEventDate(data[0]));
+        }
+        
         setResults(data);
       } catch (err) {
         console.error('Error fetching search results:', err);
@@ -320,20 +366,34 @@ const SearchResults = () => {
               justifyContent: 'center'
             }}>
             {/* Map through the results and create a Cards component for each */}
-            {results.map((event, index) => (
-              <div key={event.id || index}>
-                <Cards
-                  eventName={event.eventName}
-                  eventDate={event.eventDate || "Upcoming"}
-                  eventAddress={event.eventAddress || `${event.venueName || ''}, ${event.venueAddress || ''}`}
-                  eventPrice={event.eventPrice || "Free"}
-                  eventPoster={event.eventPoster || "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3"}
-                  eventRanking={String(index + 1)}
-                  hideRanking={true}
-                  id={event.id}
-                />
-              </div>
-            ))}
+            {results.map((event, index) => {
+              // Extra protection in case event is null or undefined
+              if (!event) return null;
+              
+              // Get formatted event date
+              const eventDate = formatEventDate(event);
+              
+              // Determine event address
+              const eventAddress = event.eventAddress || 
+                (event.venueName && event.venueAddress 
+                  ? `${event.venueName}, ${event.venueAddress}` 
+                  : event.venueAddress || event.eventLocation || 'TBA');
+              
+              return (
+                <div key={event.id || index}>
+                  <Cards
+                    eventName={event.eventName || "Unnamed Event"}
+                    eventDate={eventDate}
+                    eventAddress={eventAddress}
+                    eventPrice={event.eventPrice || "Free"}
+                    eventPoster={event.eventPoster || "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3"}
+                    eventRanking={String(index + 1)}
+                    hideRanking={true}
+                    id={event.id}
+                  />
+                </div>
+              );
+            })}
           </div>
         </ScrollAnimation>
       )}

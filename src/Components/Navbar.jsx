@@ -83,6 +83,45 @@ function Navbar({
     }
   };
   
+  // Format event date from various formats
+  const formatEventDate = useCallback((event) => {
+    if (!event) return 'Upcoming';
+    
+    // Define today and tomorrow dates for comparison
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    try {
+      // Handle server data format with full date as a string (e.g., "Thursday, 3 Apr, 2025")
+      if (event.date && typeof event.date === 'string' && event.date.includes(',')) {
+        const serverDateParts = event.date.split(', ');
+        if (serverDateParts.length >= 2) {
+          // For displaying, we can return the original formatted date
+          return event.date;
+        }
+      }
+      
+      // Handle format like "25 Mar - 27 Mar"
+      if (event.eventDate) {
+        return event.eventDate;
+      }
+      
+      // If we have a dateType property, use it for special labels
+      if (event.eventDateType) {
+        if (event.eventDateType === 'today') return 'Today';
+        if (event.eventDateType === 'tomorrow') return 'Tomorrow';
+        if (event.eventDateType === 'thisWeek') return 'This Week';
+      }
+      
+      return event.eventDate || event.date || 'Upcoming';
+    } catch (error) {
+      console.error("Error formatting event date:", error, event);
+      return 'Upcoming';
+    }
+  }, []);
+
   // Debounced search function
   const debouncedSearch = useCallback((query) => {
     let timeoutId;
@@ -94,7 +133,14 @@ function Navbar({
           setIsSearching(true);
           try {
             const results = await searchEvents(query.trim(), '');
-            setSearchResults(results.slice(0, 5)); // Limit to 5 results for dropdown
+            
+            // Format the results with properly formatted dates
+            const formattedResults = results.slice(0, 5).map(event => ({
+              ...event,
+              formattedDate: formatEventDate(event)
+            }));
+            
+            setSearchResults(formattedResults);
             setShowDropdown(true);
           } catch (error) {
             console.error("Error fetching search results:", error);
@@ -108,7 +154,7 @@ function Navbar({
         }
       }, 300); // 300ms delay to reduce API calls while typing
     };
-  }, []);
+  }, [formatEventDate]);
 
   // Memoize the debounced search function
   const performSearch = useCallback(debouncedSearch(), [debouncedSearch]);
@@ -432,13 +478,18 @@ function Navbar({
                           {/* Date */}
                           <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--neutral-600)' }}>
                             <SlCalender style={{ marginRight: '4px', fontSize: '10px' }} />
-                            <span>{event.eventDate || 'Upcoming'}</span>
+                            <span>{event.formattedDate || formatEventDate(event)}</span>
                           </div>
                           
                           {/* Location */}
-                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--neutral-600)' }}>
-                            <IoLocationOutline style={{ marginRight: '4px', fontSize: '10px' }} />
-                            <span>{event.eventAddress || event.venueAddress || 'TBA'}</span>
+                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--neutral-600)', 
+                                       maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            <IoLocationOutline style={{ marginRight: '4px', fontSize: '10px', flexShrink: 0 }} />
+                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {event.eventAddress || 
+                               (event.venueName && event.venueAddress ? `${event.venueName}, ${event.venueAddress}` : 
+                               event.venueAddress || event.eventLocation || 'TBA')}
+                            </span>
                           </div>
                         </div>
                       </div>

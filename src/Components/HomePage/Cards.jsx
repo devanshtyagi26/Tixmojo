@@ -182,19 +182,68 @@ const Cards = memo(function Cards({
         <div
           style={{
             display: "flex",
-            alignItems: "center",
+            alignItems: "flex-start",
             fontSize: "14px",
             color: "var(--primary)",
             fontWeight: "600",
+            lineHeight: "1.4",
+            flexWrap: "wrap",
           }}
         >
           <SlCalender
             style={{
               marginRight: "8px",
               fontSize: "14px",
+              marginTop: "3px",
+              flexShrink: 0,
             }}
           />
-          <span>{eventDate}</span>
+          <span>
+            {(() => {
+              // Format the event date to "Saturday, 12 Apr, 2025" format
+              try {
+                // If already in correct format, return as is
+                if (eventDate && typeof eventDate === 'string' && 
+                    /^[A-Za-z]+,\s+\d+\s+[A-Za-z]+,\s+\d{4}$/.test(eventDate)) {
+                  return eventDate;
+                }
+                
+                // Check if it has "DD Mon" format (like "12 Apr")
+                if (eventDate && typeof eventDate === 'string') {
+                  // Basic pattern match for "DD Mon" or "DD Mon - DD Mon" format
+                  if (/^\d+\s+[A-Za-z]{3}/.test(eventDate)) {
+                    const datePart = eventDate.split(" - ")[0]; // Get first date if range
+                    const [day, month] = datePart.split(' ');
+                    
+                    // Map month abbreviation to month number
+                    const monthMap = {
+                      Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+                      Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
+                    };
+                    
+                    // Create date object
+                    const dateObj = new Date();
+                    dateObj.setDate(parseInt(day, 10));
+                    dateObj.setMonth(monthMap[month]);
+                    
+                    // Format as "Saturday, 12 Apr, 2025"
+                    const weekday = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
+                    const formattedDay = dateObj.getDate();
+                    const formattedMonth = dateObj.toLocaleDateString('en-US', { month: 'short' });
+                    const year = dateObj.getFullYear();
+                    
+                    return `${weekday}, ${formattedDay} ${formattedMonth}, ${year}`;
+                  }
+                }
+                
+                // Return original value if we can't format it
+                return eventDate || "Upcoming";
+              } catch (error) {
+                console.error("Error formatting card date:", error);
+                return eventDate || "Upcoming";
+              }
+            })()}
+          </span>
         </div>
 
         {/* Title */}
