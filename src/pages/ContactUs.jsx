@@ -8,26 +8,50 @@ import ScrollAnimation from '../utils/ScrollAnimation';
 import { PageSEO } from '../utils/SEO';
 import { contactFormSubmit } from '../services/contactService';
 import { useTranslation } from 'react-i18next';
+import { getContact} from '../services/api';
 
 const ContactUs = () => {
+  const [contactData, setContactData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchContactData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await getContact();
+        setContactData(data);
+      } catch (error) {
+        console.error("Error fetching contact us data:", error);
+        setError("Failed to load Contact Us information. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchContactData();
+  }, []);
+
+
   const { t } = useTranslation();
-  
+
   // Make navbar background always visible on this page
   useEffect(() => {
     // Find the nav element directly
     const navElement = document.querySelector('nav');
-    
+
     if (navElement) {
       // Store original styles to restore later
       const originalBackground = navElement.style.background;
       const originalBackdropFilter = navElement.style.backdropFilter;
       const originalBoxShadow = navElement.style.boxShadow;
-      
+
       // Apply new styles directly
       navElement.style.background = 'rgba(255, 255, 255, 0.95)';
       navElement.style.backdropFilter = 'blur(10px)';
       navElement.style.boxShadow = '0 4px 20px rgba(111, 68, 255, 0.1)';
-      
+
       // Clean up function to restore original styles when component unmounts
       return () => {
         navElement.style.background = originalBackground;
@@ -36,14 +60,14 @@ const ContactUs = () => {
       };
     }
   }, []);
-  
+
   // Form validation schema with translations
   const schema = yup.object().shape({
-    name: yup.string().required(t('contactPage.validation.nameRequired')).min(2, t('contactPage.validation.nameLength')),
-    email: yup.string().required(t('contactPage.validation.emailRequired')).email(t('contactPage.validation.emailValid')),
-    message: yup.string().required(t('contactPage.validation.messageRequired')).min(10, t('contactPage.validation.messageLength'))
+    name: yup.string().required(contactData?.validation?.nameRequired).min(2, contactData?.validation?.nameLength),
+    email: yup.string().required(contactData?.validation?.emailRequired).email(contactData?.validation?.emailValid),
+    message: yup.string().required(contactData?.validation?.messageRequired).min(10, contactData?.validation?.messageLength)
   });
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -60,19 +84,130 @@ const ContactUs = () => {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     setSubmitError('');
-    
+
     try {
       await contactFormSubmit(data);
       setSubmitSuccess(true);
       reset();
     } catch (error) {
       console.error('Form submission error:', error);
-      setSubmitError(error.message || t('contactPage.form.error'));
+      setSubmitError(error.message || contactData?.form?.error);
     } finally {
       setIsSubmitting(false);
     }
   };
+  // Loading state
+  if (isLoading) {
+    return (
+      <>
+        <PageSEO
+          title="Contact Us | TixMojo"
+          description="Reach out to the TixMojo team for questions, feedback, or support. We're here to help!"
+          canonicalPath="/contact"
+        />
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "70vh",
+          paddingTop: "90px"
+        }}>
+          <div style={{
+            fontSize: "1.2rem",
+            color: "var(--primary)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center"
+          }}>
+            <div
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                border: "3px solid var(--primary)",
+                borderTopColor: "transparent",
+                marginBottom: "1rem",
+                animation: "spin 1s linear infinite"
+              }}
+            />
+            <style>
+              {`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}
+            </style>
+            Loading...
+          </div>
+        </div>
+      </>
+    );
+  }
 
+  // Error state
+  if (error) {
+    return (
+      <>
+        <PageSEO
+          title="Contact Us | TixMojo"
+          description="Reach out to the TixMojo team for questions, feedback, or support. We're here to help!"
+          canonicalPath="/contact"
+        />
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "70vh",
+          paddingTop: "90px",
+          textAlign: "center"
+        }}>
+          <div style={{
+            fontSize: "1.2rem",
+            color: "#e53935",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            maxWidth: "500px",
+            padding: "2rem",
+            borderRadius: "8px",
+            background: "#ffebee",
+            border: "1px solid #ffcdd2"
+          }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="#e53935">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p style={{ marginTop: "1rem" }}>{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              style={{
+                marginTop: "1.5rem",
+                background: "var(--primary)",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                padding: "10px 20px",
+                fontWeight: "600",
+                cursor: "pointer",
+                transition: "all 0.3s ease"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 4px 8px rgba(111, 68, 255, 0.3)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
+  
   return (
     <>
       <PageSEO
@@ -80,17 +215,17 @@ const ContactUs = () => {
         description="Reach out to the TixMojo team for questions, feedback, or support. We're here to help!"
         canonicalPath="/contact"
       />
-      
+
       <ContactContainer>
         <ContactHero>
-          <h1><span>{t('contactPage.title')}</span></h1>
+          <h1><span>{contactData?.title}</span></h1>
         </ContactHero>
-        
+
         <ContactWrapper>
           <ContactForm>
-            <h2>Send Us a Message</h2>
-            <p>Have questions about an event, need help with tickets, or want to provide feedback? Fill out the form below and our team will get back to you soon.</p>
-            
+            <h2>{contactData?.form?.contactHeading}</h2>
+            <p>{contactData?.form?.contactSubHeading}</p>
+
             {submitSuccess ? (
               <SuccessMessage>
                 <div className="success-icon">
@@ -99,11 +234,11 @@ const ContactUs = () => {
                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                   </svg>
                 </div>
-                <h3>{t('contactPage.form.success')}</h3>
-                <p>{t('contactPage.form.successMessage')}</p>
+                <h3>{contactData?.form?.success}</h3>
+                <p>{contactData?.form?.successMessage}</p>
                 <Button type="button" onClick={() => setSubmitSuccess(false)}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
-                  {t('contactPage.form.sendAnother')}
+                  {contactData?.form?.sendAnother}
                 </Button>
               </SuccessMessage>
             ) : (
@@ -111,38 +246,38 @@ const ContactUs = () => {
                 <FormRow>
                   <FormGroup>
                     <FieldLabel>Full Name <span>Required</span></FieldLabel>
-                    <Input 
-                      type="text" 
-                      placeholder="Enter your full name" 
+                    <Input
+                      type="text"
+                      placeholder="Enter your full name"
                       {...register('name')}
                       error={errors.name ? true : false}
                     />
                     {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
                   </FormGroup>
-                  
+
                   <FormGroup>
                     <FieldLabel>Email Address <span>Required</span></FieldLabel>
-                    <Input 
-                      type="email" 
-                      placeholder="Enter your email address" 
+                    <Input
+                      type="email"
+                      placeholder="Enter your email address"
                       {...register('email')}
                       error={errors.email ? true : false}
                     />
                     {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
                   </FormGroup>
                 </FormRow>
-                
+
                 <FormGroup>
                   <FieldLabel>Message <span>Required</span></FieldLabel>
-                  <TextArea 
-                    placeholder="What would you like to ask us?" 
+                  <TextArea
+                    placeholder="What would you like to ask us?"
                     rows="5"
                     {...register('message')}
                     error={errors.message ? true : false}
                   />
                   {errors.message && <ErrorMessage>{errors.message.message}</ErrorMessage>}
                 </FormGroup>
-                
+
                 {submitError && (
                   <FormError>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -153,69 +288,69 @@ const ContactUs = () => {
                     {submitError}
                   </FormError>
                 )}
-                
-                <Button 
-                  type="submit" 
+
+                <Button
+                  type="submit"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
                     <>
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
-                      {t('contactPage.form.sending')}
+                      {contactData?.form?.sending}
                     </>
                   ) : (
                     <>
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                      {t('contactPage.form.button')}
+                      {contactData?.form?.button}
                     </>
                   )}
                 </Button>
               </form>
             )}
           </ContactForm>
-          
+
           <ContactSidebar>
-            <h2>Contact Info</h2>
-            
+            <h2>{contactData?.info?.infoHeading}</h2>
+
             <SidebarSection>
-              <SidebarTitle>Customer Support</SidebarTitle>
+              <SidebarTitle>{contactData?.info?.infoSubHeading}</SidebarTitle>
               <ContactItem>
                 <FaRegEnvelope />
                 <div>
                   <span>Email Us</span>
-                  <a href="mailto:info@tixmojo.com">{t('contactPage.info.emailAddress')}</a>
+                  <a href="mailto:info@tixmojo.com">{contactData?.info?.emailAddress}</a>
                 </div>
               </ContactItem>
-              
+
               <ContactItem>
                 <FaPhoneAlt />
                 <div>
                   <span>Call Us</span>
-                  <a href="tel:+61483952024">{t('contactPage.info.phoneNumber')}</a>
+                  <a href="tel:+61483952024">{contactData?.info?.phoneNumber}</a>
                 </div>
               </ContactItem>
             </SidebarSection>
-            
+
             <SidebarSection>
-              <SidebarTitle>Office Hours</SidebarTitle>
+              <SidebarTitle>{contactData?.hours?.hoursHeading}</SidebarTitle>
               <p style={{ fontSize: '14px', color: 'var(--gray)', margin: '0 0 5px 0' }}>
-                <strong>Monday-Friday:</strong> 9:00 AM - 6:00 PM
+                <strong>Monday-Friday:</strong> {contactData?.hours?.weekdays}
               </p>
               <p style={{ fontSize: '14px', color: 'var(--gray)', margin: '0' }}>
-                <strong>Weekend:</strong> 10:00 AM - 4:00 PM
+                <strong>Weekend:</strong> {contactData?.hours?.weekend}
               </p>
             </SidebarSection>
-            
+
             <QuickLinks>
-              <h4>Helpful Resources</h4>
+              <h4>{contactData?.resources?.resourcesHeading}</h4>
               <ul>
-                <li><a href="/page-not-found">FAQ</a></li>
-                <li><a href="/page-not-found">Terms & Conditions</a></li>
-                <li><a href="/page-not-found">Refund Policy</a></li>
-                <li><a href="/page-not-found">Privacy Policy</a></li>
+                <li><a href="/faq">{contactData?.resources?.list?.one}</a></li>
+                <li><a href="/terms-conditions">{contactData?.resources?.list?.two}</a></li>
+                <li><a href="/refund-policy">{contactData?.resources?.list?.three}</a></li>
+                <li><a href="/privacy-policy">{contactData?.resources?.list?.four}</a></li>
               </ul>
             </QuickLinks>
-            
+
             <InfoBadge>
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
               <p>For <strong>urgent ticket issues</strong>, please call our customer service line for immediate assistance.</p>

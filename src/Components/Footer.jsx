@@ -288,13 +288,13 @@ function Footer() {
                 let linkPath = "/page-not-found";
 
                 // Set proper paths for privacy policy and terms pages
-                if (link === "footer.links.redirects.two") {
+                if (link === footerData?.links?.redirects?.two) {
                   linkPath = "/privacy-policy";
-                } else if (link === "footer.links.redirects.one") {
+                } else if (link === footerData?.links?.redirects?.one) {
                   linkPath = "/terms-conditions";
-                } else if (link === "footer.information.redirects.one") {
+                } else if (link === footerData?.information?.redirects?.one) {
                   linkPath = "/about-us";
-                } else if (link === "footer.otherLinks.contactUs") {
+                } else if (link === footerData?.otherLinks?.contactUs) {
                   linkPath = "/contact";
                 }
 
@@ -332,7 +332,7 @@ function Footer() {
                           backgroundColor: "var(--primary)",
                         }}
                       ></span>
-                      {t(link)}
+                      {link}
                     </Link>
                   </li>
                 );

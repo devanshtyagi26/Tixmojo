@@ -271,6 +271,23 @@ export const getFooter = async () => {
   const data = await get("/footer");
   return data;
 };
+/**
+ * Get contact data
+ * @returns {Promise<Object>} - Contact data
+ */
+export const getContact = async () => {
+  const data = await get("/contact");
+  return data;
+};
+
+/**
+ * Get page not found data
+ * @returns {Promise<Object>} - Page not found data
+ */
+export const getPageNotFound = async () => {
+  const data = await get("/page-not-found");
+  return data;
+};
 
 // Export HTTP method functions individually
 export { get, post, put, del as delete, fetchAPI };
@@ -296,5 +313,7 @@ export default {
   getEventsByOrganizer,
   getAllAppData,
   getAboutUs,
-  getFooter
+  getFooter,
+  getContact,
+  getPageNotFound
 };
