@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { IoIosSearch, IoMdClose } from "react-icons/io";
 import { BiUser } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
@@ -7,6 +7,9 @@ import "../i18n";
 import Hamburger from "./Hamburger";
 import LoginButton from "./Auth/LoginButton";
 import { useAuth } from "../context/AuthContext";
+import { searchEvents } from "../services/api";
+import { SlCalender } from "react-icons/sl";
+import { IoLocationOutline } from "react-icons/io5";
 
 function Navbar({
   toggleScrollPage,
@@ -23,6 +26,10 @@ function Navbar({
   const [scrolled, setScrolled] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchInput, setSearchInput] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
   
   // Debug user profile data
   useEffect(() => {
@@ -49,10 +56,15 @@ function Navbar({
     };
     window.addEventListener("scroll", handleScroll);
 
-    // Add click outside listener to collapse search bar when clicking elsewhere
+    // Add click outside listener to collapse search bar and dropdown when clicking elsewhere
     const handleClickOutside = (event) => {
-      if (inputRef.current && !inputRef.current.contains(event.target)) {
+      // Check if click is outside both the search input and dropdown
+      const isOutsideSearchBar = inputRef.current && !inputRef.current.contains(event.target);
+      const isOutsideDropdown = dropdownRef.current && !dropdownRef.current.contains(event.target);
+      
+      if (isOutsideSearchBar && isOutsideDropdown) {
         setSearchFocused(false);
+        setShowDropdown(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -71,6 +83,43 @@ function Navbar({
     }
   };
   
+  // Debounced search function
+  const debouncedSearch = useCallback((query) => {
+    let timeoutId;
+    
+    return (query) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(async () => {
+        if (query && query.trim() && query.trim().length >= 2) {
+          setIsSearching(true);
+          try {
+            const results = await searchEvents(query.trim(), '');
+            setSearchResults(results.slice(0, 5)); // Limit to 5 results for dropdown
+            setShowDropdown(true);
+          } catch (error) {
+            console.error("Error fetching search results:", error);
+            setSearchResults([]);
+          } finally {
+            setIsSearching(false);
+          }
+        } else {
+          setSearchResults([]);
+          setShowDropdown(false);
+        }
+      }, 300); // 300ms delay to reduce API calls while typing
+    };
+  }, []);
+
+  // Memoize the debounced search function
+  const performSearch = useCallback(debouncedSearch(), [debouncedSearch]);
+
+  // Handle input change with live search
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setSearchInput(value);
+    performSearch(value);
+  };
+  
   // Handle search submission
   const handleSearchSubmit = (e) => {
     if (e) e.preventDefault();
@@ -85,12 +134,21 @@ function Navbar({
       
       // Reset search UI state
       setSearchFocused(false);
+      setShowDropdown(false);
       
       // For mobile, this may be important to blur the keyboard
       if (inputRef.current) {
         inputRef.current.blur();
       }
     }
+  };
+  
+  // Handle click on search result item
+  const handleSearchResultClick = (eventId, eventName) => {
+    navigate(`/events/${eventId || eventName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`);
+    setShowDropdown(false);
+    setSearchFocused(false);
+    setSearchInput('');
   };
 
   const handleUserClick = (e) => {
@@ -182,6 +240,7 @@ function Navbar({
             border: searchFocused
               ? "1px solid rgba(111, 68, 255, 0.3)"
               : "1px solid transparent",
+            position: "relative", // Added for dropdown positioning
           }}
         >
           <IoIosSearch
@@ -200,11 +259,19 @@ function Navbar({
                 placeholder="Search Events..."
                 onFocus={() => setSearchFocused(true)}
                 value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
+                onChange={handleInputChange}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
                     handleSearchSubmit();
+                  } else if (e.key === 'Escape') {
+                    setShowDropdown(false);
+                    setSearchFocused(false);
+                  } else if (e.key === 'ArrowDown' && showDropdown && searchResults.length > 0) {
+                    // Move focus to the first result item for keyboard navigation
+                    const firstResult = document.querySelector('.search-result-item');
+                    if (firstResult) firstResult.focus();
+                    e.preventDefault();
                   }
                 }}
                 style={{
@@ -227,6 +294,8 @@ function Navbar({
               onClick={(e) => {
                 e.stopPropagation(); // Prevent triggering the search bar click
                 setSearchFocused(false);
+                setShowDropdown(false);
+                setSearchInput('');
               }}
               style={{
                 color: "var(--neutral-600)",
@@ -244,6 +313,165 @@ function Navbar({
                 e.currentTarget.style.transform = "scale(1)";
               }}
             />
+          )}
+          
+          {/* Search Results Dropdown */}
+          {showDropdown && searchFocused && (
+            <div 
+              ref={dropdownRef}
+              style={{
+                position: 'absolute',
+                top: 'calc(100% + 5px)',
+                left: 0,
+                width: '350px',
+                maxHeight: '400px',
+                overflowY: 'auto',
+                background: 'white',
+                borderRadius: '12px',
+                boxShadow: '0 10px 30px rgba(111, 68, 255, 0.15)',
+                zIndex: 1000,
+                border: '1px solid var(--purple-100)',
+                padding: '12px 0',
+              }}
+            >
+              {isSearching ? (
+                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--neutral-600)' }}>
+                  <div style={{ display: 'inline-block', width: '20px', height: '20px', borderRadius: '50%', 
+                                border: '2px solid var(--primary)', borderTopColor: 'transparent',
+                                animation: 'spin 1s linear infinite' }}></div>
+                  <style>
+                    {`@keyframes spin { to { transform: rotate(360deg); } }`}
+                  </style>
+                  <p style={{ marginTop: '8px', fontSize: '14px' }}>Searching...</p>
+                </div>
+              ) : searchResults.length === 0 ? (
+                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--neutral-600)' }}>
+                  <p style={{ fontSize: '14px' }}>No results found. Try different keywords.</p>
+                </div>
+              ) : (
+                <>
+                  <div style={{ padding: '0 15px 10px', borderBottom: '1px solid var(--purple-100)' }}>
+                    <p style={{ fontSize: '13px', color: 'var(--neutral-600)', margin: '0' }}>
+                      {searchResults.length} result{searchResults.length !== 1 ? 's' : ''} found
+                    </p>
+                  </div>
+                  {searchResults.map((event, index) => (
+                    <div
+                      key={event.id || `event-${index}`}
+                      className="search-result-item"
+                      onClick={() => handleSearchResultClick(event.id, event.eventName)}
+                      tabIndex="0"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSearchResultClick(event.id, event.eventName);
+                        } else if (e.key === 'ArrowDown') {
+                          const nextResult = e.target.nextElementSibling;
+                          if (nextResult) nextResult.focus();
+                          e.preventDefault();
+                        } else if (e.key === 'ArrowUp') {
+                          const prevResult = e.target.previousElementSibling;
+                          if (prevResult && prevResult.classList.contains('search-result-item')) {
+                            prevResult.focus();
+                          } else {
+                            inputRef.current.focus();
+                          }
+                          e.preventDefault();
+                        } else if (e.key === 'Escape') {
+                          setShowDropdown(false);
+                          setSearchFocused(false);
+                          e.preventDefault();
+                        }
+                      }}
+                      style={{
+                        padding: '12px 15px',
+                        cursor: 'pointer',
+                        transition: 'background-color 0.2s',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        outline: 'none',
+                        borderLeft: '3px solid transparent',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--purple-50)';
+                        e.currentTarget.style.borderLeft = '3px solid var(--primary)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.borderLeft = '3px solid transparent';
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.backgroundColor = 'var(--purple-50)';
+                        e.currentTarget.style.borderLeft = '3px solid var(--primary)';
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.borderLeft = '3px solid transparent';
+                      }}
+                    >
+                      {/* Event thumbnail */}
+                      <div style={{ width: '60px', height: '45px', flexShrink: 0, borderRadius: '6px', overflow: 'hidden' }}>
+                        <img 
+                          src={event.eventPoster || "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3"} 
+                          alt={event.eventName}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          onError={(e) => {
+                            e.target.src = "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3";
+                          }}
+                        />
+                      </div>
+                      
+                      {/* Event details */}
+                      <div style={{ flex: 1, overflow: 'hidden' }}>
+                        <h4 style={{ margin: '0 0 4px', fontSize: '14px', fontWeight: '600', color: 'var(--dark)', 
+                                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {event.eventName}
+                        </h4>
+                        
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          {/* Date */}
+                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--neutral-600)' }}>
+                            <SlCalender style={{ marginRight: '4px', fontSize: '10px' }} />
+                            <span>{event.eventDate || 'Upcoming'}</span>
+                          </div>
+                          
+                          {/* Location */}
+                          <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: 'var(--neutral-600)' }}>
+                            <IoLocationOutline style={{ marginRight: '4px', fontSize: '10px' }} />
+                            <span>{event.eventAddress || event.venueAddress || 'TBA'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* View all results link */}
+                  <div 
+                    style={{ 
+                      padding: '12px 15px', 
+                      textAlign: 'center', 
+                      borderTop: '1px solid var(--purple-100)',
+                      cursor: 'pointer',
+                    }}
+                    onClick={handleSearchSubmit}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'var(--purple-50)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                    }}
+                  >
+                    <span style={{ 
+                      fontWeight: 600, 
+                      color: 'var(--primary)',
+                      fontSize: '14px',
+                    }}>
+                      View all search results
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
           )}
         </div>
 
