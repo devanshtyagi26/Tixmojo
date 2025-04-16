@@ -22,6 +22,7 @@ const AboutUs = React.lazy(() => import("./pages/AboutUs"));
 const ContactUs = React.lazy(() => import("./pages/ContactUs"));
 const TermsConditions = React.lazy(() => import("./pages/TermsConditions"));
 const PrivacyPolicy = React.lazy(() => import("./pages/PrivacyPolicy"));
+const SearchResults = React.lazy(() => import("./pages/SearchResults"));
 
 function AppContent({ serverData }) {
   const { setSidebarStatus } = useAnimation();
@@ -168,6 +169,20 @@ function AppContent({ serverData }) {
                 </div>
               }>
                 <ContactUs {...getPageProps('contact')} />
+              </React.Suspense>
+            } />
+            <Route path="/search" element={
+              <React.Suspense fallback={
+                <div style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "70vh",
+                }}>
+                  <Loader size="large" text="Loading search results..." />
+                </div>
+              }>
+                <SearchResults {...getPageProps('search')} />
               </React.Suspense>
             } />
             <Route path="/page-not-found" element={<PageNotFound {...getPageProps('404')} />} />

@@ -289,6 +289,27 @@ export const getPageNotFound = async () => {
   return data;
 };
 
+/**
+ * Search events by keyword and/or location
+ * @param {string} query - Search query text
+ * @param {string} location - Optional location filter
+ * @returns {Promise<Array>} - Search results
+ */
+export const searchEvents = async (query, location) => {
+  let endpoint = '/events/search?';
+  
+  if (query) {
+    endpoint += `query=${encodeURIComponent(query)}`;
+  }
+  
+  if (location) {
+    endpoint += query ? '&' : '';
+    endpoint += `location=${encodeURIComponent(location)}`;
+  }
+  
+  return get(endpoint);
+};
+
 // Export HTTP method functions individually
 export { get, post, put, del as delete, fetchAPI };
 
@@ -315,5 +336,6 @@ export default {
   getAboutUs,
   getFooter,
   getContact,
-  getPageNotFound
+  getPageNotFound,
+  searchEvents
 };

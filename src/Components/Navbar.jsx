@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { IoIosSearch, IoMdClose } from "react-icons/io";
 import { BiUser } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../i18n";
 import Hamburger from "./Hamburger";
 import LoginButton from "./Auth/LoginButton";
@@ -16,11 +16,13 @@ function Navbar({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { currentUser, isAuthenticated } = useAuth();
   const inputRef = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [scrolled, setScrolled] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [searchInput, setSearchInput] = useState('');
   
   // Debug user profile data
   useEffect(() => {
@@ -66,6 +68,28 @@ function Navbar({
     setSearchFocused(true);
     if (inputRef.current) {
       inputRef.current.focus();
+    }
+  };
+  
+  // Handle search submission
+  const handleSearchSubmit = (e) => {
+    if (e) e.preventDefault();
+    
+    if (searchInput.trim()) {
+      // Build search URL with query parameter
+      const searchParams = new URLSearchParams();
+      searchParams.set('q', searchInput.trim());
+      
+      // Navigate to search results page
+      navigate(`/search?${searchParams.toString()}`);
+      
+      // Reset search UI state
+      setSearchFocused(false);
+      
+      // For mobile, this may be important to blur the keyboard
+      if (inputRef.current) {
+        inputRef.current.blur();
+      }
     }
   };
 
@@ -170,20 +194,31 @@ function Navbar({
           />
 
           {(!isMobile || searchFocused) && (
-            <input
-              type="text"
-              placeholder="Search Events..."
-              onFocus={() => setSearchFocused(true)}
-              style={{
-                border: "none",
-                background: "transparent",
-                outline: "none",
-                fontSize: "14px",
-                width: "100%",
-                color: "var(--dark)",
-                transition: "all 0.3s ease",
-              }}
-            />
+            <form onSubmit={handleSearchSubmit} style={{ flex: 1 }}>
+              <input
+                type="text"
+                placeholder="Search Events..."
+                onFocus={() => setSearchFocused(true)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSearchSubmit();
+                  }
+                }}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  outline: "none",
+                  fontSize: "14px",
+                  width: "100%",
+                  color: "var(--dark)",
+                  transition: "all 0.3s ease",
+                }}
+                ref={inputRef}
+              />
+            </form>
           )}
 
           {/* Close button when search is focused */}
