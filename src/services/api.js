@@ -29,7 +29,7 @@ export const getBaseApiUrl = () => {
 };
 
 // Get the base API URL
-const API_BASE_URL = getBaseApiUrl();
+export const API_BASE_URL = getBaseApiUrl();
 
 /**
  * Generic fetch handler with error handling
@@ -262,7 +262,10 @@ export const getAboutUs = async () => {
   const data = await get("/about");
   return data;
 };
-// Export all API functions
+// Export HTTP method functions individually
+export { get, post, put, del as delete, fetchAPI };
+
+// Export all API functions as default export
 export default {
   // HTTP methods
   get,

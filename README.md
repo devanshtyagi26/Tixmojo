@@ -171,3 +171,64 @@ For errors:
   "error": "Detailed error message in development"
 }
 ```
+
+## Contact Form Email Setup
+
+The contact form uses Nodemailer to send emails. Follow these steps to configure it:
+
+### Gmail Configuration (Recommended for simplicity)
+
+1. Create or use an existing Gmail account
+2. Enable 2-Step Verification for your Google account
+   - Go to your Google Account > Security > 2-Step Verification
+   
+3. Create an App Password
+   - Go to your Google Account > Security > App passwords
+   - Select "Mail" as the app and "Other" as the device (name it "TixMojo")
+   - Copy the 16-character password
+
+4. Update your `.env` file in the server directory:
+   ```
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_SECURE=false
+   SMTP_USER=your.email@gmail.com
+   SMTP_PASS=your-16-character-app-password
+   SMTP_FROM=your.email@gmail.com
+   CONTACT_EMAIL=your.email@gmail.com
+   ```
+
+### Other Email Providers
+
+For other email providers, update these settings in your `.env` file:
+
+```
+SMTP_HOST=your-smtp-host.com
+SMTP_PORT=587  # or the appropriate port
+SMTP_SECURE=false  # set to true for port 465
+SMTP_USER=your-username
+SMTP_PASS=your-password
+SMTP_FROM=sender@yourdomain.com
+CONTACT_EMAIL=recipient@yourdomain.com
+```
+
+Common SMTP settings:
+- Gmail: smtp.gmail.com, port 587
+- Outlook/Hotmail: smtp.office365.com, port 587
+- Yahoo: smtp.mail.yahoo.com, port 587
+- Zoho: smtp.zoho.com, port 587
+
+### Testing the Contact Form
+
+1. Start the server: `cd server && npm run dev`
+2. Start the client: `npm run dev`
+3. Navigate to the Contact page
+4. Fill out the form and submit
+5. Check your email (specified in CONTACT_EMAIL) for the form submission
+
+### Troubleshooting
+
+- Check server logs for detailed error messages
+- Verify your SMTP credentials are correct
+- Make sure your email provider allows SMTP access
+- For Gmail, confirm you're using an App Password, not your regular password

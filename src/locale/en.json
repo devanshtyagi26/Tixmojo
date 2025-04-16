@@ -70,10 +70,38 @@
             "contactUs": "Contact Us"
         }
     },
+    "contactPage": {
+        "title": "Contact Us",
+        "form": {
+            "name": "Your Name",
+            "email": "Your Email",
+            "message": "Share your thoughts",
+            "button": "Send Message",
+            "sending": "Sending...",
+            "success": "Thank you for your message!",
+            "successMessage": "We've received your inquiry and will respond shortly.",
+            "sendAnother": "Send another message",
+            "error": "There was an error sending your message. Please try again later."
+        },
+        "validation": {
+            "nameRequired": "Name is required",
+            "nameLength": "Name must be at least 2 characters",
+            "emailRequired": "Email is required",
+            "emailValid": "Please enter a valid email address",
+            "messageRequired": "Message is required",
+            "messageLength": "Message must be at least 10 characters"
+        },
+        "info": {
+            "title": "Contact Info",
+            "email": "Email",
+            "emailAddress": "info@tixmojo.com",
+            "phone": "Contact Number",
+            "phoneNumber": "+61 483952024"
+        }
+    },
     "pageNotFound": {
         "title": "Page Not Found",
         "message": "Sorry, the page you are looking for does not exist.",
         "redirect": "Go back to Home"
     }
-
 }

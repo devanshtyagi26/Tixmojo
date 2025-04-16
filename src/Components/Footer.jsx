@@ -173,6 +173,8 @@ function Footer() {
                   linkPath = "/terms-conditions"; 
                 } else if (link === "footer.information.redirects.one") {
                   linkPath = "/about-us";
+                } else if (link === "footer.otherLinks.contactUs") {
+                  linkPath = "/contact";
                 }
                 
                 return (

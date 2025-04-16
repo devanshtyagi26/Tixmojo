@@ -19,6 +19,7 @@ import ProtectedRoute from "./Components/Auth/ProtectedRoute";
 const EventDetails = React.lazy(() => import("./pages/EventDetails"));
 const Login = React.lazy(() => import("./pages/Login"));
 const AboutUs = React.lazy(() => import("./pages/AboutUs"));
+const ContactUs = React.lazy(() => import("./pages/ContactUs"));
 const TermsConditions = React.lazy(() => import("./pages/TermsConditions"));
 const PrivacyPolicy = React.lazy(() => import("./pages/PrivacyPolicy"));
 
@@ -153,6 +154,20 @@ function AppContent({ serverData }) {
                 </div>
               }>
                 <PrivacyPolicy {...getPageProps('privacyPolicy')} />
+              </React.Suspense>
+            } />
+            <Route path="/contact" element={
+              <React.Suspense fallback={
+                <div style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: "70vh",
+                }}>
+                  <Loader size="large" text="Loading contact us page..." />
+                </div>
+              }>
+                <ContactUs {...getPageProps('contact')} />
               </React.Suspense>
             } />
             <Route path="/page-not-found" element={<PageNotFound {...getPageProps('404')} />} />
