@@ -8,6 +8,8 @@ import {
 import { FaLinkedinIn, FaYoutube } from "react-icons/fa";
 import { FiMail, FiPhone, FiMapPin } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
+import { getFooter } from "../services/api";
+import { useState, useEffect } from "react";
 
 // Map of icon names to actual icon components
 const iconMap = {
@@ -22,39 +24,158 @@ const iconMap = {
 };
 
 function Footer() {
+  const [footerData, setFooterData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchFooterData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await getFooter();
+        setFooterData(data);
+      } catch (error) {
+        console.error("Error fetching about us data:", error);
+        setError("Failed to load About Us information. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFooterData();
+  }, []);
+
   const { t } = useTranslation();
   const year = new Date().getFullYear();
 
   // Get footer data from translation
-  const socialNetworks = t("footer.social.networks", { returnObjects: true });
-  const categories = t("footer.categories.list", { returnObjects: true });
+  const socialNetworks = footerData?.social?.networks;
+  const categories = footerData?.categories?.list;
 
   // Contact information
   const contactInfo = [
     {
       icon: "FiMapPin",
-      text: t("footer.contact.address"),
+      text: footerData?.contact?.address,
     },
     {
       icon: "FiPhone",
-      text: t("footer.contact.redirects.one"),
+      text: footerData?.contact?.redirects?.one,
     },
     {
       icon: "FiMail",
-      text: t("footer.contact.redirects.two"),
+      text: footerData?.contact?.redirects?.two,
     },
   ];
 
   // Quick links
   const quickLinks = [
-    "footer.information.redirects.one",
-    "footer.information.redirects.two",
-    "footer.information.redirects.three",
-    "footer.links.redirects.one",
-    "footer.links.redirects.two",
-    "footer.links.redirects.three",
-    "footer.otherLinks.contactUs",
+    footerData?.information?.redirects?.one,
+    footerData?.information?.redirects?.two,
+    footerData?.information?.redirects?.three,
+    footerData?.links?.redirects?.one,
+    footerData?.links?.redirects?.two,
+    footerData?.links?.redirects?.three,
+    footerData?.otherLinks?.contactUs,
   ];
+  // Loading state
+  if (isLoading) {
+    return (
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "70vh",
+        paddingTop: "90px"
+      }}>
+        <div style={{
+          fontSize: "1.2rem",
+          color: "var(--primary)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center"
+        }}>
+          <div
+            style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              border: "3px solid var(--primary)",
+              borderTopColor: "transparent",
+              marginBottom: "1rem",
+              animation: "spin 1s linear infinite"
+            }}
+          />
+          <style>
+            {`
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+            `}
+          </style>
+          Loading...
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "70vh",
+        paddingTop: "90px",
+        textAlign: "center"
+      }}>
+        <div style={{
+          fontSize: "1.2rem",
+          color: "#e53935",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          maxWidth: "500px",
+          padding: "2rem",
+          borderRadius: "8px",
+          background: "#ffebee",
+          border: "1px solid #ffcdd2"
+        }}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="#e53935">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p style={{ marginTop: "1rem" }}>{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              marginTop: "1.5rem",
+              background: "var(--primary)",
+              color: "white",
+              border: "none",
+              borderRadius: "6px",
+              padding: "10px 20px",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "all 0.3s ease"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 4px 8px rgba(111, 68, 255, 0.3)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "none";
+            }}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <footer
@@ -101,7 +222,7 @@ function Footer() {
                 marginBottom: "20px",
               }}
             >
-              {t("footer.about")}
+              {footerData?.about}
             </p>
 
             <div
@@ -154,7 +275,7 @@ function Footer() {
                 color: "white",
               }}
             >
-              {t("footer.otherLinks.title")}
+              {footerData?.otherLinks?.title}
             </h3>
             <ul
               style={{
@@ -165,18 +286,18 @@ function Footer() {
             >
               {quickLinks.map((link, index) => {
                 let linkPath = "/page-not-found";
-                
+
                 // Set proper paths for privacy policy and terms pages
                 if (link === "footer.links.redirects.two") {
                   linkPath = "/privacy-policy";
                 } else if (link === "footer.links.redirects.one") {
-                  linkPath = "/terms-conditions"; 
+                  linkPath = "/terms-conditions";
                 } else if (link === "footer.information.redirects.one") {
                   linkPath = "/about-us";
                 } else if (link === "footer.otherLinks.contactUs") {
                   linkPath = "/contact";
                 }
-                
+
                 return (
                   <li key={index} style={{ marginBottom: "12px" }}>
                     <Link
@@ -229,7 +350,7 @@ function Footer() {
                 color: "white",
               }}
             >
-              {t("footer.categories.title")}
+              {footerData?.categories?.title}
             </h3>
             <ul
               style={{
@@ -275,7 +396,7 @@ function Footer() {
                 color: "white",
               }}
             >
-              {t("footer.contact.title")}
+              {footerData?.contact?.title}
             </h3>
             <ul
               style={{
@@ -334,7 +455,7 @@ function Footer() {
                   color: "white",
                 }}
               >
-                {t("footer.newsletter.title")}
+                {footerData?.newsletter?.title}
               </h4>
               <div
                 style={{
@@ -344,7 +465,7 @@ function Footer() {
               >
                 <input
                   type="email"
-                  placeholder={t("footer.newsletter.placeholder")}
+                  placeholder={footerData?.newsletter?.placeholder}
                   style={{
                     flex: 1,
                     padding: "10px 15px",
@@ -364,7 +485,7 @@ function Footer() {
                     padding: "0 20px",
                   }}
                 >
-                  {t("footer.newsletter.button")}
+                  {footerData?.newsletter?.button}
                 </button>
               </div>
             </div>
@@ -389,7 +510,7 @@ function Footer() {
               fontSize: "14px",
             }}
           >
-            {t("footer.copyright")}
+            {footerData?.copyright}
           </div>
 
           <div
@@ -413,7 +534,7 @@ function Footer() {
                 e.currentTarget.style.color = "var(--gray-light)";
               }}
             >
-              {t("footer.tnc.privacy")}
+              {footerData?.tnc?.privacy}
             </Link>
             <Link
               to="/page-not-found"
@@ -430,7 +551,7 @@ function Footer() {
                 e.currentTarget.style.color = "var(--gray-light)";
               }}
             >
-              {t("footer.tnc.refund")}
+              {footerData?.tnc?.refund}
             </Link>
             <Link
               to="/terms-conditions"
@@ -447,7 +568,7 @@ function Footer() {
                 e.currentTarget.style.color = "var(--gray-light)";
               }}
             >
-              {t("footer.tnc.terms")}
+              {footerData?.tnc?.terms}
             </Link>
           </div>
         </div>

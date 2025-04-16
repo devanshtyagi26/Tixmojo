@@ -172,7 +172,7 @@ function Navbar({
           {(!isMobile || searchFocused) && (
             <input
               type="text"
-              placeholder={t("navbar.search")}
+              placeholder="Search Events..."
               onFocus={() => setSearchFocused(true)}
               style={{
                 border: "none",
