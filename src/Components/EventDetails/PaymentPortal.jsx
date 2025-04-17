@@ -685,11 +685,16 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
   };
 
   // Handle successful payment from Stripe
-  const handlePaymentSuccess = (paymentIntentId) => {
-    console.log("Payment processed successfully with ID:", paymentIntentId);
+  const handlePaymentSuccess = (paymentDetails) => {
+    console.log('handlePaymentSuccess called with:', paymentDetails);
+    if (!paymentDetails || !paymentDetails.id) {
+      alert('Payment details missing or invalid.');
+      return;
+    }
+    console.log("Payment processed successfully:", paymentDetails);
 
-    // Show success message or redirect
-    alert('Payment processed successfully! In a real application, you would be redirected to a confirmation page.');
+    // Redirect to success page with only the paymentIntentId
+    navigate('/payment-success', { state: { paymentIntentId: paymentDetails.id } });
 
     setIsFormSubmitting(false);
   };

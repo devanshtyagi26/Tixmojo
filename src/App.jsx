@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import PageNotFound from "./pages/PageNotFound";
 import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
@@ -86,6 +87,7 @@ function AppContent({ serverData }) {
             />
           )}
           <Routes>
+            <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/" element={<Home {...getPageProps('home')} />} />
             <Route path="/events/:eventId" element={
               <React.Suspense fallback={

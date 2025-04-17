@@ -24,7 +24,7 @@ export const getBaseApiUrl = () => {
   }
 
   // For server-side code or in production, use the full URL
-  return 'http://localhost:5000/api';
+  return 'http://147.79.70.30:5000/api';
 };
 
 // Get the base API URL

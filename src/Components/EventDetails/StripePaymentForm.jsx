@@ -8,6 +8,7 @@ import {
   useElements
 } from '@stripe/react-stripe-js';
 import stripeService from '../../services/stripeService';
+import { useNavigate } from 'react-router-dom';
 
 // Enhanced appearance options for Stripe Elements
 const stripeElementsOptions = {
@@ -74,10 +75,10 @@ const cardElementOptions = {
 };
 
 // Stripe form component
-const CheckoutForm = ({ 
-  sessionId, 
-  buyerInfo, 
-  onPaymentSuccess, 
+const CheckoutForm = ({
+  sessionId,
+  buyerInfo,
+  onPaymentSuccess,
   onPaymentError,
   isSubmitting,
   setIsSubmitting,
@@ -107,12 +108,12 @@ const CheckoutForm = ({
   // Update billing details from form inputs - only postal code
   const handleBillingChange = (e) => {
     const { name, value } = e.target;
-    
+
     // Only handle postal_code field
     if (name === 'postal_code') {
       // Format the postal code as it's being typed
       const formattedValue = formatPostalCodeInput(value);
-      
+
       setBillingDetails({
         ...billingDetails,
         address: {
@@ -120,7 +121,7 @@ const CheckoutForm = ({
           [name]: formattedValue
         }
       });
-      
+
       // Validate postal code field
       validatePostalCode(formattedValue);
     }
@@ -130,13 +131,13 @@ const CheckoutForm = ({
   const formatPostalCodeInput = (value) => {
     // Remove all non-digits and hyphens
     const cleaned = value.replace(/[^\d-]/g, '');
-    
+
     // Format as ZIP+4 if possible
     if (cleaned.includes('-')) {
       const parts = cleaned.split('-');
       const firstPart = parts[0].substring(0, 5);
       const secondPart = parts[1].substring(0, 4);
-      
+
       if (firstPart.length === 5) {
         return secondPart ? `${firstPart}-${secondPart}` : firstPart;
       }
@@ -154,7 +155,7 @@ const CheckoutForm = ({
   // Validate postal code with enhanced validation
   const validatePostalCode = (value) => {
     let errors = { ...validationErrors };
-    
+
     if (!value.trim()) {
       errors.postal_code = 'Postal code is required';
     } else if (!patterns.postalCode.test(value) && billingDetails.address.country === 'US') {
@@ -169,7 +170,7 @@ const CheckoutForm = ({
     } else {
       delete errors.postal_code;
     }
-    
+
     setValidationErrors(errors);
     return !errors.postal_code;
   };
@@ -198,18 +199,18 @@ const CheckoutForm = ({
   });
   const [simulationFormComplete, setSimulationFormComplete] = useState(false);
   const [simulationErrors, setSimulationErrors] = useState({});
-  
+
   // Format credit card number with spaces after every 4 digits
   const formatCardNumber = (value) => {
     // Remove all non-digits
     const digits = value.replace(/\D/g, '');
-    
+
     // Limit to 16 digits
     const truncated = digits.substring(0, 16);
-    
+
     // Add spaces after every 4 digits
     const formatted = truncated.replace(/(\d{4})(?=\d)/g, '$1 ');
-    
+
     return formatted;
   };
 
@@ -217,10 +218,10 @@ const CheckoutForm = ({
   const formatExpiryDate = (value) => {
     // Remove all non-digits
     const digits = value.replace(/\D/g, '');
-    
+
     // Limit to 4 digits
     const truncated = digits.substring(0, 4);
-    
+
     // Format as MM/YY
     if (truncated.length > 2) {
       return `${truncated.substring(0, 2)}/${truncated.substring(2)}`;
@@ -233,7 +234,7 @@ const CheckoutForm = ({
   const formatCVC = (value) => {
     // Remove all non-digits
     const digits = value.replace(/\D/g, '');
-    
+
     // Limit to 4 digits
     return digits.substring(0, 4);
   };
@@ -246,7 +247,7 @@ const CheckoutForm = ({
       // Make sure first part is 5 digits, second part is up to 4 digits
       const firstPart = parts[0].replace(/\D/g, '').substring(0, 5);
       const secondPart = parts[1].replace(/\D/g, '').substring(0, 4);
-      
+
       if (firstPart.length === 5 && secondPart.length > 0) {
         return `${firstPart}-${secondPart}`;
       } else {
@@ -262,32 +263,32 @@ const CheckoutForm = ({
   // References for input elements to manage cursor position
   const cardNumberRef = useRef(null);
   const cardExpiryRef = useRef(null);
-  
+
   // Handle simulation form input changes with enhanced validation and formatting
   const handleSimulationInputChange = (e) => {
     const { name, value, selectionStart } = e.target;
     let formattedValue = value;
     let cursorPosition = selectionStart;
-    
+
     // Format input based on field type
     switch (name) {
       case 'cardNumber':
         const prevCardNumber = simulationFormData.cardNumber;
         formattedValue = formatCardNumber(value);
-        
+
         // Adjust cursor position if we added a space
-        if (formattedValue.length > prevCardNumber.length && 
-            formattedValue[cursorPosition - 1] === ' ') {
+        if (formattedValue.length > prevCardNumber.length &&
+          formattedValue[cursorPosition - 1] === ' ') {
           cursorPosition++;
         }
         break;
       case 'cardExpiry':
         const prevExpiry = simulationFormData.cardExpiry;
         formattedValue = formatExpiryDate(value);
-        
+
         // Adjust cursor position if we added a slash
-        if (formattedValue.length > prevExpiry.length && 
-            formattedValue[cursorPosition - 1] === '/') {
+        if (formattedValue.length > prevExpiry.length &&
+          formattedValue[cursorPosition - 1] === '/') {
           cursorPosition++;
         }
         break;
@@ -300,13 +301,13 @@ const CheckoutForm = ({
       default:
         break;
     }
-    
+
     // Update form data with formatted value
     setSimulationFormData({
       ...simulationFormData,
       [name]: formattedValue
     });
-    
+
     // For card number and expiry date, we need to ensure cursor position
     // is maintained despite auto-formatting
     setTimeout(() => {
@@ -316,10 +317,10 @@ const CheckoutForm = ({
         cardExpiryRef.current.setSelectionRange(cursorPosition, cursorPosition);
       }
     }, 0);
-    
+
     // Validate simulation form fields
     let errors = { ...simulationErrors };
-    
+
     switch (name) {
       case 'cardNumber':
         if (!formattedValue) {
@@ -331,20 +332,20 @@ const CheckoutForm = ({
           const digits = formattedValue.replace(/\s/g, '');
           let sum = 0;
           let shouldDouble = false;
-          
+
           // Loop through values starting from the rightmost side
           for (let i = digits.length - 1; i >= 0; i--) {
             let digit = parseInt(digits.charAt(i));
-            
+
             if (shouldDouble) {
               digit *= 2;
               if (digit > 9) digit -= 9;
             }
-            
+
             sum += digit;
             shouldDouble = !shouldDouble;
           }
-          
+
           if (sum % 10 !== 0) {
             errors.cardNumber = 'Invalid card number';
           } else {
@@ -361,7 +362,7 @@ const CheckoutForm = ({
           // Check if date is in the future and is valid
           const [month, year] = formattedValue.split('/');
           const monthNum = parseInt(month, 10);
-          
+
           // Check month is between 1-12
           if (monthNum < 1 || monthNum > 12) {
             errors.cardExpiry = 'Invalid month';
@@ -369,7 +370,7 @@ const CheckoutForm = ({
             const currentYear = new Date().getFullYear() % 100; // Get last 2 digits
             const currentMonth = new Date().getMonth() + 1; // 1-12
             const yearNum = parseInt(year, 10);
-            
+
             // Check if card is expired
             if (yearNum < currentYear || (yearNum === currentYear && monthNum < currentMonth)) {
               errors.cardExpiry = 'Card has expired';
@@ -400,20 +401,20 @@ const CheckoutForm = ({
       default:
         break;
     }
-    
+
     setSimulationErrors(errors);
-    
+
     // Check if all fields are valid and filled
     const updatedData = { ...simulationFormData, [name]: formattedValue };
     const cardDigits = updatedData.cardNumber.replace(/\s/g, '');
-    
-    const isComplete = 
-      cardDigits.length === 16 && 
+
+    const isComplete =
+      cardDigits.length === 16 &&
       updatedData.cardExpiry.length === 5 &&
       updatedData.cardCvc.length >= 3 &&
       updatedData.billingZip.length >= 5 &&
       Object.keys(errors).length === 0;
-    
+
     setSimulationFormComplete(isComplete);
   };
 
@@ -434,7 +435,7 @@ const CheckoutForm = ({
 
     // Clear previous errors
     setPaymentError(null);
-    
+
     // Validate form before submission
     if (!isSimulationMode && !validateForm()) {
       setPaymentError('Please complete all required fields correctly.');
@@ -454,19 +455,19 @@ const CheckoutForm = ({
           setIsSubmitting(false);
           return;
         }
-        
+
         // Simulate payment processing
         console.log('Simulating Stripe payment processing...');
-        
+
         // Introduce a delay to simulate payment processing
         await new Promise(resolve => setTimeout(resolve, 1500));
-        
+
         // Extract payment intent ID from the client secret (simulated)
         const simulatedPaymentIntentId = clientSecret.split('_secret_')[0];
-        
+
         // Confirm payment success on the server
         await stripeService.confirmPaymentSuccess(sessionId, simulatedPaymentIntentId);
-        
+
         // Call the success callback
         onPaymentSuccess(simulatedPaymentIntentId);
       } else {
@@ -474,10 +475,10 @@ const CheckoutForm = ({
         if (!stripe || !elements) {
           throw new Error('Stripe.js has not loaded yet');
         }
-        
+
         // Get the card element
         const cardElement = elements.getElement(CardElement);
-        
+
         // Validate billing details
         if (!billingDetails.name.trim()) {
           setPaymentError('Cardholder name is required');
@@ -485,14 +486,14 @@ const CheckoutForm = ({
           setIsSubmitting(false);
           return;
         }
-        
+
         if (!billingDetails.address.postal_code.trim()) {
           setPaymentError('Postal code is required');
           setIsProcessing(false);
           setIsSubmitting(false);
           return;
         }
-        
+
         // Create payment method with billing details (now just postal code)
         const { error: createPaymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
           type: 'card',
@@ -504,14 +505,27 @@ const CheckoutForm = ({
             address: billingDetails.address
           }
         });
-        
+
         if (createPaymentMethodError) {
           setPaymentError(createPaymentMethodError.message);
           setIsProcessing(false);
           setIsSubmitting(false);
           return;
         }
-        
+
+        if (!paymentMethod || !paymentMethod.id) {
+          console.error('Failed to create payment method:', createPaymentMethodError, paymentMethod);
+          setPaymentError('Failed to create payment method.');
+          return;
+        }
+        if (!clientSecret) {
+          console.error('Missing clientSecret');
+          setPaymentError('Payment not initialized. Please try again.');
+          return;
+        }
+        console.log('buyerInfo:', buyerInfo);
+
+
         // Process the payment with billing details
         const result = await stripe.confirmCardPayment(clientSecret, {
           payment_method: paymentMethod.id,
@@ -541,16 +555,40 @@ const CheckoutForm = ({
         } else if (result.paymentIntent.status === 'succeeded') {
           // Payment was successful
           console.log('Payment succeeded with ID:', result.paymentIntent.id);
-          
-          // Confirm payment success on the server
-          await stripeService.confirmPaymentSuccess(sessionId, result.paymentIntent.id);
-          
-          // Call the success callback
-          onPaymentSuccess(result.paymentIntent.id);
+          console.log('Stripe confirmCardPayment result:', result);
+          if (
+            result.paymentIntent &&
+            result.paymentIntent.status === 'succeeded' &&
+            typeof result.paymentIntent.id === 'string' &&
+            result.paymentIntent.id.length > 0
+          ) {
+            // Confirm payment success on the server
+            await stripeService.confirmPaymentSuccess(sessionId, result.paymentIntent.id);
+
+            // Analytics push (safe: result is defined)
+            window.dataLayer?.push({
+              event: 'stripe_payment_success',
+              paymentId: result.paymentIntent.id,
+              amount: result.paymentIntent.amount,
+              currency: result.paymentIntent.currency
+            });
+
+            // Call the success callback and pass payment details
+            onPaymentSuccess({
+              id: result.paymentIntent.id,
+              amount: result.paymentIntent.amount,
+              created: result.paymentIntent.created,
+              email: buyerInfo?.email,
+              card: result.paymentIntent.charges?.data?.[0]?.payment_method_details?.card || undefined
+            });
+          } else {
+            setPaymentError('Invalid payment intent ID');
+            onPaymentError('Invalid payment intent ID');
+          }
         } else if (result.paymentIntent.status === 'requires_action') {
           // Handle 3D Secure authentication
           const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(clientSecret);
-          
+
           if (confirmError) {
             setPaymentError(`Authentication failed: ${confirmError.message}`);
             onPaymentError(confirmError.message);
@@ -568,6 +606,9 @@ const CheckoutForm = ({
           onPaymentError(`Unexpected payment status: ${result.paymentIntent.status}`);
         }
       }
+
+      
+
     } catch (error) {
       console.error('Payment confirmation error:', error);
       setPaymentError(error.message || 'Error processing payment. Please try again.');
@@ -577,6 +618,10 @@ const CheckoutForm = ({
       setIsSubmitting(false);
     }
   };
+  const isButtonDisabled = isProcessing ||
+    (isSimulationMode ? !simulationFormComplete || Object.keys(simulationErrors).length > 0
+      : (!stripe || !elements || !cardComplete || Object.keys(validationErrors).length > 0 || !billingDetails.address.postal_code)) ||
+    !clientSecret;
 
   return (
     <div style={{ width: '100%' }}>
@@ -616,9 +661,9 @@ const CheckoutForm = ({
         >
           {isSimulationMode ? (
             /* Simplified simulation card form - only card details and zip */
-            <div>              
+            <div>
               {/* Card Details */}
-              <div style={{ 
+              <div style={{
                 border: '1px solid #e0e0e0',
                 borderRadius: '8px',
                 padding: '16px',
@@ -626,7 +671,7 @@ const CheckoutForm = ({
                 backgroundColor: '#ffffff',
                 boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)'
               }}>
-                <div style={{ 
+                <div style={{
                   fontSize: '14px',
                   marginBottom: '12px',
                   color: 'var(--neutral-600)',
@@ -654,7 +699,7 @@ const CheckoutForm = ({
                         if (!/^\d$/.test(e.key) && !allowedKeys.includes(e.key)) {
                           e.preventDefault();
                         }
-                        
+
                         // Auto-advance to next field when complete
                         if (simulationFormData.cardNumber.replace(/\s/g, '').length >= 15 && /^\d$/.test(e.key) && !e.metaKey && !e.ctrlKey) {
                           setTimeout(() => {
@@ -715,7 +760,7 @@ const CheckoutForm = ({
                       </div>
                     )}
                   </div>
-                  
+
                   <div style={{ display: 'flex', gap: '16px' }}>
                     {/* Expiry Date */}
                     <div style={{ flex: 1 }}>
@@ -732,7 +777,7 @@ const CheckoutForm = ({
                           if (!/^\d$/.test(e.key) && !allowedKeys.includes(e.key)) {
                             e.preventDefault();
                           }
-                          
+
                           // Auto-advance to next field when complete
                           if (simulationFormData.cardExpiry.length >= 4 && /^\d$/.test(e.key) && !e.metaKey && !e.ctrlKey) {
                             setTimeout(() => {
@@ -773,7 +818,7 @@ const CheckoutForm = ({
                         </p>
                       )}
                     </div>
-                    
+
                     {/* CVC */}
                     <div style={{ flex: 1 }}>
                       <input
@@ -788,7 +833,7 @@ const CheckoutForm = ({
                           if (!/^\d$/.test(e.key) && !allowedKeys.includes(e.key)) {
                             e.preventDefault();
                           }
-                          
+
                           // Auto-advance to next field when complete
                           if (simulationFormData.cardCvc.length >= 2 && /^\d$/.test(e.key) && !e.metaKey && !e.ctrlKey) {
                             setTimeout(() => {
@@ -833,10 +878,10 @@ const CheckoutForm = ({
                   </div>
                 </div>
               </div>
-              
+
               {/* Zip Code */}
               <div style={{ marginBottom: '16px' }}>
-                <label 
+                <label
                   htmlFor="billingZip"
                   style={{
                     display: 'block',
@@ -860,7 +905,7 @@ const CheckoutForm = ({
                     if (!/^\d$/.test(e.key) && !allowedKeys.includes(e.key)) {
                       e.preventDefault();
                     }
-                    
+
                     // Allow hyphen only at position 5
                     if (e.key === '-' && e.target.selectionStart !== 5) {
                       e.preventDefault();
@@ -886,7 +931,7 @@ const CheckoutForm = ({
                   onBlur={(e) => {
                     e.target.style.borderColor = simulationErrors.billingZip ? 'var(--primary)' : '#e0e0e0';
                     e.target.style.boxShadow = 'none';
-                    
+
                     // Ensure ZIP has valid format on blur
                     if (e.target.value.length === 5 && !e.target.value.includes('-')) {
                       // Valid 5-digit code
@@ -913,7 +958,7 @@ const CheckoutForm = ({
                     {simulationErrors.billingZip}
                   </p>
                 )}
-                
+
                 {/* Format hint */}
                 <div style={{
                   fontSize: '11px',
@@ -923,7 +968,7 @@ const CheckoutForm = ({
                   Use format 12345 or 12345-6789
                 </div>
               </div>
-            
+
               {/* Simulation test card tip */}
               <div style={{
                 padding: '10px 12px',
@@ -976,10 +1021,10 @@ const CheckoutForm = ({
                   />
                 </div>
               </div>
-              
+
               {/* Postal Code */}
               <div style={{ marginBottom: '16px' }}>
-                <label 
+                <label
                   htmlFor="postal_code"
                   style={{
                     display: 'block',
@@ -1003,7 +1048,7 @@ const CheckoutForm = ({
                     if (!/^\d$/.test(e.key) && !allowedKeys.includes(e.key)) {
                       e.preventDefault();
                     }
-                    
+
                     // Allow hyphen only at position 5
                     if (e.key === '-' && e.target.selectionStart !== 5) {
                       e.preventDefault();
@@ -1029,7 +1074,7 @@ const CheckoutForm = ({
                   onBlur={(e) => {
                     e.target.style.borderColor = validationErrors.postal_code ? 'var(--primary)' : '#e0e0e0';
                     e.target.style.boxShadow = 'none';
-                    
+
                     // Format ZIP code on blur for better presentation
                     const value = e.target.value;
                     if (value.length === 5 && !value.includes('-')) {
@@ -1052,16 +1097,16 @@ const CheckoutForm = ({
                   }}
                 />
                 {validationErrors.postal_code && (
-                  <p style={{ 
-                    color: 'var(--primary)', 
-                    fontSize: '12px', 
+                  <p style={{
+                    color: 'var(--primary)',
+                    fontSize: '12px',
                     marginTop: '4px',
                     marginBottom: '0'
                   }}>
                     {validationErrors.postal_code}
                   </p>
                 )}
-                
+
                 {/* Format hint */}
                 <div style={{
                   fontSize: '11px',
@@ -1071,7 +1116,7 @@ const CheckoutForm = ({
                   Use format 12345 or 12345-6789
                 </div>
               </div>
-              
+
               {/* Security Notice */}
               <div style={{
                 padding: '10px 12px',
@@ -1094,10 +1139,10 @@ const CheckoutForm = ({
             </div>
           )}
         </div>
-        
+
         {/* Enhanced error display */}
         {paymentError && (
-          <div style={{ 
+          <div style={{
             backgroundColor: 'rgba(255, 0, 60, 0.05)',
             border: '1px solid var(--primary)',
             borderRadius: '8px',
@@ -1114,16 +1159,16 @@ const CheckoutForm = ({
               <line x1="12" y1="16" x2="12.01" y2="16"></line>
             </svg>
             <div>
-              <p style={{ 
-                color: 'var(--primary)', 
+              <p style={{
+                color: 'var(--primary)',
                 fontSize: '14px',
                 fontWeight: '600',
                 margin: '0 0 4px 0'
               }}>
                 Payment Error
               </p>
-              <p style={{ 
-                color: 'var(--neutral-800)', 
+              <p style={{
+                color: 'var(--neutral-800)',
                 fontSize: '13px',
                 margin: 0,
                 lineHeight: '1.4'
@@ -1138,33 +1183,23 @@ const CheckoutForm = ({
       {/* Payment button with enhanced validation */}
       <button
         onClick={handleSubmit}
-        disabled={isProcessing || 
-          (isSimulationMode ? !simulationFormComplete || Object.keys(simulationErrors).length > 0 
-           : (!stripe || !elements || !cardComplete || Object.keys(validationErrors).length > 0 || 
-              !billingDetails.address.postal_code)) || 
-          !clientSecret}
+        disabled={isButtonDisabled}
         style={{
           width: '100%',
-          backgroundColor: isProcessing || 
-            (isSimulationMode ? !simulationFormComplete || Object.keys(simulationErrors).length > 0 
-             : (!stripe || !elements || !cardComplete || Object.keys(validationErrors).length > 0 || 
-                !billingDetails.address.postal_code)) || 
+          cursor: isButtonDisabled ? 'not-allowed' : 'pointer',
+          backgroundColor: isProcessing ||
+            (isSimulationMode ? !simulationFormComplete || Object.keys(simulationErrors).length > 0
+              : (!stripe || !elements || !cardComplete || Object.keys(validationErrors).length > 0 ||
+                !billingDetails.address.postal_code)) ||
             !clientSecret
-              ? 'var(--neutral-200)' 
-              : 'var(--primary)',
+            ? 'var(--neutral-200)'
+            : 'var(--primary)',
           color: 'white',
           padding: '16px',
           borderRadius: '8px',
           border: 'none',
           fontSize: '16px',
           fontWeight: '700',
-          cursor: isProcessing || 
-            (isSimulationMode ? !simulationFormComplete || Object.keys(simulationErrors).length > 0 
-             : (!stripe || !elements || !cardComplete || Object.keys(validationErrors).length > 0 || 
-                !billingDetails.name || !billingDetails.email || !billingDetails.address.postal_code)) || 
-            !clientSecret
-              ? 'not-allowed' 
-              : 'pointer',
           transition: 'all 0.3s ease',
           display: 'flex',
           alignItems: 'center',
@@ -1173,12 +1208,12 @@ const CheckoutForm = ({
           opacity: isProcessing ? 0.8 : 1,
         }}
         onMouseEnter={(e) => {
-          const isEnabled = !isProcessing && 
-            (isSimulationMode ? simulationFormComplete && Object.keys(simulationErrors).length === 0 
-             : (stripe && elements && cardComplete && Object.keys(validationErrors).length === 0 && 
-                billingDetails.address.postal_code)) && 
+          const isEnabled = !isProcessing &&
+            (isSimulationMode ? simulationFormComplete && Object.keys(simulationErrors).length === 0
+              : (stripe && elements && cardComplete && Object.keys(validationErrors).length === 0 &&
+                billingDetails.address.postal_code)) &&
             clientSecret;
-          
+
           if (isEnabled) {
             e.currentTarget.style.backgroundColor = '#e50036';
             e.currentTarget.style.transform = 'translateY(-2px)';
@@ -1186,13 +1221,13 @@ const CheckoutForm = ({
           }
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = isProcessing || 
-            (isSimulationMode ? !simulationFormComplete || Object.keys(simulationErrors).length > 0 
-             : (!stripe || !elements || !cardComplete || Object.keys(validationErrors).length > 0 || 
-                !billingDetails.address.postal_code)) || 
+          e.currentTarget.style.backgroundColor = isProcessing ||
+            (isSimulationMode ? !simulationFormComplete || Object.keys(simulationErrors).length > 0
+              : (!stripe || !elements || !cardComplete || Object.keys(validationErrors).length > 0 ||
+                !billingDetails.address.postal_code)) ||
             !clientSecret
-              ? 'var(--neutral-200)' 
-              : 'var(--primary)';
+            ? 'var(--neutral-200)'
+            : 'var(--primary)';
           e.currentTarget.style.transform = 'translateY(0)';
           e.currentTarget.style.boxShadow = 'none';
         }}
@@ -1221,7 +1256,7 @@ const CheckoutForm = ({
           </>
         )}
       </button>
-      
+
       {/* Secure payment notice */}
       <div style={{
         display: 'flex',
@@ -1243,36 +1278,41 @@ const CheckoutForm = ({
 };
 
 // Main Stripe payment form with Elements provider
-const StripePaymentForm = ({ 
-  sessionId, 
-  buyerInfo, 
-  onPaymentSuccess, 
-  onPaymentError,
+const StripePaymentForm = ({
+  sessionId,
+  buyerInfo,
   isSubmitting,
   setIsSubmitting,
   amount
 }) => {
+  const navigate = useNavigate(); // For redirect after success
   const [stripePromise, setStripePromise] = useState(null);
   const [isConfigured, setIsConfigured] = useState(true);
   const [clientSecret, setClientSecret] = useState('');
   const [isSimulationMode, setIsSimulationMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Create a payment intent when the component loads
+  // Redirect after payment success
+  const handleSuccess = (paymentDetails) => {
+    console.log('Payment succeeded:', paymentDetails);
+    // Inside CheckoutForm on success:
+    sessionStorage.setItem('lastPaymentId', paymentDetails.id);
+    navigate('/payment-success', { state: paymentDetails });
+  };
+
+  const handleError = (errorMessage) => {
+    console.error('Payment error:', errorMessage);
+  };
+
   useEffect(() => {
     async function createIntent() {
       try {
         setIsLoading(true);
-        // Request a payment intent from the server
         const response = await stripeService.createPaymentIntent(sessionId);
-        
-        // Check if we're in simulation mode
         if (response.isSimulated) {
           console.log('Running in Stripe simulation mode');
           setIsSimulationMode(true);
         }
-        
-        // Set the client secret from the payment intent
         setClientSecret(response.clientSecret);
         setIsLoading(false);
       } catch (error) {
@@ -1281,15 +1321,11 @@ const StripePaymentForm = ({
       }
     }
 
-    // Get the Stripe publishable key from the service
     const publishableKey = stripeService.getStripePublishableKey();
-    
-    // Check if Stripe is properly configured
     const isConfigured = stripeService.isStripeConfigured();
     setIsConfigured(isConfigured);
 
     if (isConfigured) {
-      // Initialize Stripe with the publishable key
       setStripePromise(loadStripe(publishableKey));
     }
 
@@ -1298,26 +1334,20 @@ const StripePaymentForm = ({
     }
   }, [sessionId]);
 
-  // Our simulated Stripe service will always return as configured, but we'll handle
-  // the transition in case the user has an actual Stripe key configured
   if (!isConfigured) {
     console.log("Using simulated Stripe implementation");
-    // Force simulation mode
     setIsSimulationMode(true);
-    
-    // Use a simulated Stripe instance
+
     if (!stripePromise) {
-      const dummyKey = 'pk_test_TYooMQauvdEDq54NiTphI7jx'; // Dummy key for simulation
+      const dummyKey = 'pk_test_TYooMQauvdEDq54NiTphI7jx';
       setStripePromise(loadStripe(dummyKey));
     }
-    
-    // Generate a simulated client secret if needed
+
     if (!clientSecret) {
       setClientSecret(`sim_${Math.random().toString(36).substring(2)}_secret_${Math.random().toString(36).substring(2)}`);
     }
   }
 
-  // If Stripe is loading or client secret isn't ready, show a loading message
   if (isLoading) {
     return (
       <div style={{
@@ -1330,9 +1360,7 @@ const StripePaymentForm = ({
           <circle cx="12" cy="12" r="10" stroke="var(--purple-600)" strokeWidth="4" strokeDasharray="40 20" />
           <style>{`
             @keyframes spin {
-              100% {
-                transform: rotate(360deg);
-              }
+              100% { transform: rotate(360deg); }
             }
           `}</style>
         </svg>
@@ -1343,7 +1371,6 @@ const StripePaymentForm = ({
     );
   }
 
-  // If client secret isn't ready, show an error
   if (!clientSecret) {
     return (
       <div style={{
@@ -1359,8 +1386,6 @@ const StripePaymentForm = ({
     );
   }
 
-  // Set up the options with client secret for Elements
-  // Create a comprehensive configuration that meets Stripe's requirements
   const options = {
     clientSecret,
     appearance: stripeElementsOptions.appearance,
@@ -1370,20 +1395,18 @@ const StripePaymentForm = ({
       },
     ],
     locale: 'en',
-    // Additional validation options
     rules: {
       postal: 'required'
     }
   };
 
-  // Render Stripe Elements provider with the Checkout form
   return (
     <Elements stripe={stripePromise} options={options}>
-      <CheckoutForm 
+      <CheckoutForm
         sessionId={sessionId}
         buyerInfo={buyerInfo}
-        onPaymentSuccess={onPaymentSuccess}
-        onPaymentError={onPaymentError}
+        onPaymentSuccess={handleSuccess}
+        onPaymentError={handleError}
         isSubmitting={isSubmitting}
         setIsSubmitting={setIsSubmitting}
         amount={amount}
@@ -1394,6 +1417,5 @@ const StripePaymentForm = ({
   );
 };
 
-// Export as both named and default export
 export { StripePaymentForm };
 export default StripePaymentForm;
