@@ -4,12 +4,21 @@ import { useLocation, useNavigate } from 'react-router-dom';
 const PaymentSuccess = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { id: paymentIntentId, amount, email } = location.state || {};
-  const [payment, setPayment] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Accept payment details from location.state (simulation or direct pass)
+  const locationState = location.state;
+  const [payment, setPayment] = useState(locationState || null);
+  const [loading, setLoading] = useState(!locationState);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // If payment already present (simulation mode or direct pass), skip fetch
+    if (locationState && locationState.id) {
+      setPayment(locationState);
+      setLoading(false);
+      return;
+    }
+    // Otherwise, try to fetch from backend using id in state or lastPaymentId
+    const paymentIntentId = locationState?.id || sessionStorage.getItem('lastPaymentId');
     if (!paymentIntentId) {
       navigate('/', { replace: true });
       return;
@@ -21,15 +30,18 @@ const PaymentSuccess = () => {
         if (data.success) {
           setPayment(data.data);
         } else {
+          navigate('/', { replace: true });
           setError(data.message || 'Could not fetch payment details.');
+          setPayment(null);
         }
         setLoading(false);
       })
       .catch(() => {
+        navigate('/', { replace: true });
         setError('Could not fetch payment details.');
         setLoading(false);
       });
-  }, [paymentIntentId, navigate]);
+  }, [locationState, navigate]);
 
   if (loading) return <div style={{ textAlign: 'center', marginTop: 60 }}>Loading payment details...</div>;
   if (error) return <div style={{ color: 'red', textAlign: 'center', marginTop: 60 }}>{error}</div>;

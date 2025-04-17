@@ -423,6 +423,7 @@ const CheckoutForm = ({
     if (event && event.preventDefault) {
       event.preventDefault();
     }
+    console.log('clientSecret being used:', clientSecret);
 
     if (!clientSecret) {
       setPaymentError('Payment not initialized. Please refresh the page and try again.');
@@ -469,7 +470,14 @@ const CheckoutForm = ({
         await stripeService.confirmPaymentSuccess(sessionId, simulatedPaymentIntentId);
 
         // Call the success callback
-        onPaymentSuccess(simulatedPaymentIntentId);
+        onPaymentSuccess({
+          id: simulatedPaymentIntentId,
+          amount: amount * 100,
+          created: Math.floor(Date.now() / 1000),
+          email: buyerInfo?.email,
+          card: { last4: buyerInfo?.cardNumber?.slice(-4) }
+        });
+
       } else {
         // Real Stripe payment processing
         if (!stripe || !elements) {
@@ -554,7 +562,7 @@ const CheckoutForm = ({
           onPaymentError(result.error.message);
         } else if (result.paymentIntent.status === 'succeeded') {
           // Payment was successful
-          console.log('Payment succeeded with ID:', result.paymentIntent.id);
+          console.log('Payment succeeded with ID:', result.paymentIntent.id, 'and clientSecret:', clientSecret);
           console.log('Stripe confirmCardPayment result:', result);
           if (
             result.paymentIntent &&
@@ -607,7 +615,7 @@ const CheckoutForm = ({
         }
       }
 
-      
+
 
     } catch (error) {
       console.error('Payment confirmation error:', error);
@@ -1294,12 +1302,12 @@ const StripePaymentForm = ({
 
   // Redirect after payment success
   const handleSuccess = (paymentDetails) => {
-    console.log('Payment succeeded:', paymentDetails);
+    console.log('Payment succeeded:', paymentDetails, 'and clientSecret:', clientSecret);
+    console.log('Payment processed successfully:', paymentDetails.id);
     // Inside CheckoutForm on success:
     sessionStorage.setItem('lastPaymentId', paymentDetails.id);
     navigate('/payment-success', { state: paymentDetails });
   };
-
   const handleError = (errorMessage) => {
     console.error('Payment error:', errorMessage);
   };
@@ -1411,10 +1419,11 @@ const StripePaymentForm = ({
         setIsSubmitting={setIsSubmitting}
         amount={amount}
         clientSecret={clientSecret}
-        isSimulationMode={isSimulationMode}
+        isSimulationMode={isSimulationMode} // pass this as-is
       />
     </Elements>
   );
+
 };
 
 export { StripePaymentForm };
