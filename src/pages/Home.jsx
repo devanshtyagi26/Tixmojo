@@ -151,14 +151,14 @@ function Home(props) {
   // Fetch all application data or use server-provided data
   useEffect(() => {
     // Check if we have server-side data
-    const hasServerData = props.serverData && 
-      props.serverData.events && 
+    const hasServerData = props.serverData &&
+      props.serverData.events &&
       (props.serverData.events.popular || props.serverData.events.spotlight);
-    
+
     if (hasServerData) {
       // Use server-side data for initial render
       console.log("Using server-side rendered data for Home page");
-      
+
       // Transform server data to match expected format
       const appData = {
         locationEvents: {},
@@ -166,7 +166,7 @@ function Home(props) {
         flyerData: props.serverData.flyerData || [],
         locations: props.serverData.locations || ["Sydney", "Melbourne", "Brisbane", "Singapore"]
       };
-      
+
       // Add location events if available
       if (props.serverData.events.popular) {
         // Organize by location
@@ -178,7 +178,7 @@ function Home(props) {
           appData.locationEvents[location].push(event);
         });
       }
-      
+
       // Set data and end loading state
       setAllAppData(appData);
       setLoading(false);
@@ -192,11 +192,11 @@ function Home(props) {
           try {
             const cachedData = localStorage.getItem('appData');
             const cachedTimestamp = localStorage.getItem('appDataTimestamp');
-            
+
             if (cachedData && cachedTimestamp) {
               const now = new Date().getTime();
               const then = parseInt(cachedTimestamp, 10);
-              
+
               // Use cached data if less than 1 hour old
               if (now - then < 3600000) {
                 setAllAppData(JSON.parse(cachedData));
@@ -208,14 +208,14 @@ function Home(props) {
           } catch (cacheError) {
             console.warn("Error using cached data:", cacheError);
           }
-          
+
           if (!useCached) {
             // Get all data in a single API call
             const appData = await getAllAppData();
-            
+
             // Store the complete data set
             setAllAppData(appData);
-            
+
             // Cache for future use
             try {
               localStorage.setItem('appData', JSON.stringify(appData));
@@ -231,7 +231,7 @@ function Home(props) {
           setLoading(false);
         }
       };
-  
+
       fetchAllData();
     }
   }, [props.serverData]); // Depend on server data prop
@@ -325,7 +325,7 @@ function Home(props) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <p style={{ marginTop: "1rem" }}>{error}</p>
-            <button 
+            <button
               onClick={() => window.location.reload()}
               style={{
                 marginTop: "1.5rem",

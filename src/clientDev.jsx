@@ -28,6 +28,12 @@ if (typeof window !== 'undefined') {
   };
 }
 
+// Check if Google login is enabled via environment variable
+const isGoogleLoginEnabled = () => {
+  const enableGoogleLogin = import.meta.env.VITE_ENABLE_GOOGLE_LOGIN;
+  return enableGoogleLogin === 'true' || enableGoogleLogin === true;
+};
+
 // Google OAuth client ID from environment variables
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
@@ -36,7 +42,8 @@ const isValidGoogleClientId = googleClientId &&
   googleClientId.includes('.apps.googleusercontent.com') &&
   googleClientId.length > 30;
 
-if (!isValidGoogleClientId) {
+// Only warn about missing OAuth client ID if Google login is enabled
+if (isGoogleLoginEnabled() && !isValidGoogleClientId) {
   console.warn(
     'Warning: Google OAuth client ID appears to be invalid or missing. ' +
     'Google login functionality may not work correctly.'
@@ -58,12 +65,19 @@ function initializeApp() {
 
     // Render the app
     console.log('Static deployment: Using client-side rendering');
+    console.log('Google login is ' + (isGoogleLoginEnabled() ? 'enabled' : 'disabled'));
+    
+    // Conditionally render with or without GoogleOAuthProvider based on environment variable
     root.render(
       <StrictMode>
         <HelmetProvider>
-          <GoogleOAuthProvider clientId={googleClientId}>
+          {isGoogleLoginEnabled() ? (
+            <GoogleOAuthProvider clientId={googleClientId}>
+              <App />
+            </GoogleOAuthProvider>
+          ) : (
             <App />
-          </GoogleOAuthProvider>
+          )}
         </HelmetProvider>
       </StrictMode>
     );

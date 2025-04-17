@@ -12,18 +12,17 @@
 export const getBaseApiUrl = () => {
   // Check if we're running in the browser
   const isBrowser = typeof window !== 'undefined';
-  
   // Use environment variable if defined
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
   }
-  
+
   // During development in the browser, use relative URL for proxy to work
   if (isBrowser && import.meta.env.DEV) {
     console.log("Using development proxy URL: /api");
     return '/api';
   }
-  
+
   // For server-side code or in production, use the full URL
   return 'http://localhost:5000/api';
 };
@@ -41,7 +40,7 @@ const fetchAPI = async (endpoint, options = {}) => {
   try {
     const url = `${API_BASE_URL}${endpoint}`;
     console.log(`Fetching from: ${url}`);
-    
+
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -53,7 +52,7 @@ const fetchAPI = async (endpoint, options = {}) => {
     });
 
     console.log(`Response status: ${response.status} ${response.statusText}`);
-    
+
     // Check response headers for debugging
     const headers = {};
     response.headers.forEach((value, key) => {
@@ -74,18 +73,18 @@ const fetchAPI = async (endpoint, options = {}) => {
     }
 
     const data = await response.json();
-    
+
     // Log a sample of the response data
-    console.log('API response received:', 
-      data && typeof data === 'object' 
-        ? (Array.isArray(data.data) 
-            ? `Array with ${data.data.length} items` 
-            : Object.keys(data))
+    console.log('API response received:',
+      data && typeof data === 'object'
+        ? (Array.isArray(data.data)
+          ? `Array with ${data.data.length} items`
+          : Object.keys(data))
         : typeof data
     );
 
     // Our API returns data in a 'data' property
-    return data.data || data; 
+    return data.data || data;
   } catch (error) {
     console.error(`API Error for ${endpoint}:`, error);
     throw error;
@@ -223,7 +222,7 @@ export const getEventById = async (id) => {
   if (!isValidEventId) {
     throw new Error(`Invalid event ID format: ${id}`);
   }
-  
+
   return await get(`/events/${id}`);
 };
 
@@ -297,16 +296,16 @@ export const getPageNotFound = async () => {
  */
 export const searchEvents = async (query, location) => {
   let endpoint = '/events/search?';
-  
+
   if (query) {
     endpoint += `query=${encodeURIComponent(query)}`;
   }
-  
+
   if (location) {
     endpoint += query ? '&' : '';
     endpoint += `location=${encodeURIComponent(location)}`;
   }
-  
+
   return get(endpoint);
 };
 
@@ -321,7 +320,7 @@ export default {
   put,
   delete: del,
   fetchAPI,
-  
+
   // Endpoint-specific methods
   getAllEvents,
   getSpotlightEvents,

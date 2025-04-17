@@ -3,6 +3,12 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 // Create authentication context
 const AuthContext = createContext(null);
 
+// Check if Google Login is enabled via environment variable
+export const isGoogleLoginEnabled = () => {
+  const enableGoogleLogin = import.meta.env.VITE_ENABLE_GOOGLE_LOGIN;
+  return enableGoogleLogin === 'true' || enableGoogleLogin === true;
+};
+
 // Custom hook to use the auth context
 export const useAuth = () => {
   return useContext(AuthContext);
@@ -84,7 +90,8 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateUser,
     isAuthenticated,
-    loading
+    loading,
+    isGoogleLoginEnabled: isGoogleLoginEnabled()
   };
 
   return (

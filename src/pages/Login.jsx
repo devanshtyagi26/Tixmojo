@@ -4,7 +4,7 @@ import LoginToggle from '../Components/Auth/LoginToggle';
 import OrDivider from '../Components/Auth/OrDivider';
 import GoogleLoginButton from '../Components/Auth/GoogleLoginButton';
 import GoogleAuthStatus from '../Components/Auth/GoogleAuthStatus';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, isGoogleLoginEnabled } from '../context/AuthContext';
 import { fetchUserPhoneNumbers, extractBestPhoneNumber } from '../services/googlePeopleService';
 import { ScrollAnimation } from '../utils/ScrollAnimation.jsx';
 
@@ -273,20 +273,24 @@ const Login = () => {
             Welcome to TixMojo
           </h1>
 
-          {/* Social login buttons */}
-          <div style={{ marginBottom: '20px' }}>
-            <GoogleLoginButton
-              onSuccess={handleGoogleLoginSuccess}
-              onError={handleGoogleLoginError}
-            />
-            
-            {/* Display Google Auth status when in development or when there's an error */}
-            {(import.meta.env.DEV || error.includes('OAuth')) && (
-              <GoogleAuthStatus />
-            )}
-          </div>
+          {/* Social login buttons - only show if Google login is enabled */}
+          {isGoogleLoginEnabled() && (
+            <>
+              <div style={{ marginBottom: '20px' }}>
+                <GoogleLoginButton
+                  onSuccess={handleGoogleLoginSuccess}
+                  onError={handleGoogleLoginError}
+                />
+                
+                {/* Display Google Auth status when in development or when there's an error */}
+                {(import.meta.env.DEV || error.includes('OAuth')) && (
+                  <GoogleAuthStatus />
+                )}
+              </div>
 
-          <OrDivider />
+              <OrDivider />
+            </>
+          )}
 
           {/* Login toggle */}
           <LoginToggle
@@ -314,8 +318,8 @@ const Login = () => {
                     }}
                   />
                 </div>
-                {/* Show message when phone is pre-filled from Google */}
-                {isAuthenticated() && currentUser?.phone && currentUser?.provider === 'google' && (
+                {/* Show message when phone is pre-filled from Google - only if Google login is enabled */}
+                {isGoogleLoginEnabled() && isAuthenticated() && currentUser?.phone && currentUser?.provider === 'google' && (
                   <div style={{
                     backgroundColor: 'rgba(52, 168, 83, 0.05)',
                     border: '1px solid rgba(52, 168, 83, 0.3)',

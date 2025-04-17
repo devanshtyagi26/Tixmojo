@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
+import { isGoogleLoginEnabled } from '../../context/AuthContext';
 
 const GoogleLoginButton = ({ onSuccess, onError }) => {
   const [googleConfigured, setGoogleConfigured] = useState(true);
+  const googleLoginEnabled = isGoogleLoginEnabled();
+  
+  // If Google login is disabled via environment variable, don't render anything
+  if (!googleLoginEnabled) {
+    return null;
+  }
   
   // Check if Google OAuth is properly configured
   useEffect(() => {
