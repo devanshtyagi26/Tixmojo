@@ -40,6 +40,7 @@ function EventDetails(props) {
   const [organizerEvents, setOrganizerEvents] = useState([]);
   const [cartItems, setCartItems] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [serviceFee, setServiceFee] = useState(0);
   const [discount, setDiscount] = useState(0);
   
   // Check URL parameters for automatic ticket selection display
@@ -439,12 +440,13 @@ function EventDetails(props) {
   };
   
   // Handle proceeding to payment
-  const handleProceedToPayment = (items, amount, discountAmount) => {
+  const handleProceedToPayment = (items, amount, discountAmount, serviceFee) => {
     console.log("Proceeding to payment with", items.length, "items");
     
     // Save cart data
     setCartItems(items);
     setTotalAmount(amount);
+    setServiceFee(serviceFee);
     setDiscount(discountAmount);
     
     // Hide ticket selection and show payment portal
@@ -744,6 +746,7 @@ function EventDetails(props) {
                 discount={discount}
                 onBack={handleBackToTicketSelection}
                 onCancel={handleCancelBooking}
+                serviceFee={serviceFee}
               />
             </div>
           </ScrollAnimation>

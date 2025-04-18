@@ -131,7 +131,7 @@ const getCountryFlag = (countryCode) => {
   }
 };
 
-const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, discount, onBack, onCancel }) => {
+const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, discount, onBack, onCancel, serviceFee }) => {
   const navigate = useNavigate();
   // Timer state from parent
   const [timeLeft, setTimeLeft] = useState({
@@ -1314,7 +1314,7 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
                   onPaymentError={handlePaymentError}
                   isSubmitting={isFormSubmitting}
                   setIsSubmitting={setIsFormSubmitting}
-                  amount={totalAmount + 10 - (totalAmount * discount)}
+                  amount={totalAmount + serviceFee - (totalAmount * discount)}
                 />
               </div>
 
@@ -1533,7 +1533,7 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
             }}>
               <span>Service Fee <span style={{ opacity: 0.7 }}>ⓘ</span></span>
               <span style={{ fontWeight: '600' }}>
-                $10.00
+                ${serviceFee.toFixed(2)}
               </span>
             </div>
 
@@ -1563,7 +1563,7 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
             }}>
               <span>Total</span>
               <span>
-                ${(totalAmount + 10 - (totalAmount * discount)).toFixed(2)}
+                ${(totalAmount + serviceFee - (totalAmount * discount)).toFixed(2)}
               </span>
             </div>
           </div>
@@ -1739,7 +1739,7 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
               }}>
                 <span>Total</span>
                 <span>
-                  ${(totalAmount + 10 - (totalAmount * discount)).toFixed(2)}
+                  ${(totalAmount + serviceFee - (totalAmount * discount)).toFixed(2)}
                 </span>
               </div>
             </div>

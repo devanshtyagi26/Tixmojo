@@ -5,6 +5,7 @@ import PromoCode from './PromoCode';
 const TicketCart = ({ cartItems, onRemoveItem, onProceedToCheckout, initialDiscount = 0 }) => {
   const [discount, setDiscount] = useState(initialDiscount);
   const [total, setTotal] = useState(0);
+  const [serviceFee, setServiceFee] = useState(0);
   const [totalTickets, setTotalTickets] = useState(0);
 
   // Calculate total whenever cart items or discount change
@@ -21,7 +22,7 @@ const TicketCart = ({ cartItems, onRemoveItem, onProceedToCheckout, initialDisco
 
     // Apply discount if there is one
     const discountAmount = subtotal * discount;
-    const finalTotal = subtotal - discountAmount;
+    const finalTotal = subtotal - discountAmount + serviceFee;
 
     setTotal(finalTotal);
   }, [cartItems, discount]);
@@ -108,7 +109,7 @@ const TicketCart = ({ cartItems, onRemoveItem, onProceedToCheckout, initialDisco
           <PromoCode onApplyPromo={handleApplyPromo} initialDiscount={discount} />
 
           <button
-            onClick={() => onProceedToCheckout(total, discount)}
+            onClick={() => onProceedToCheckout(total, discount, serviceFee)}
             style={{
               width: '100%',
               padding: '14px',

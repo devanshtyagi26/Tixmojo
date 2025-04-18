@@ -469,13 +469,16 @@ const CheckoutForm = ({
         // Confirm payment success on the server
         await stripeService.confirmPaymentSuccess(sessionId, simulatedPaymentIntentId);
 
+        const cardNumber = cardNumberRef.current.value;
+
+        console.log("Buyer info", buyerInfo);
         // Call the success callback
         onPaymentSuccess({
           id: simulatedPaymentIntentId,
           amount: amount * 100,
           created: Math.floor(Date.now() / 1000),
           email: buyerInfo?.email,
-          card: { last4: buyerInfo?.cardNumber?.slice(-4) }
+          card: { last4: cardNumber?.slice(-4) }
         });
 
       } else {

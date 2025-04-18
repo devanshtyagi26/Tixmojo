@@ -186,15 +186,15 @@ const TicketSelection = ({ event, expiryTime, onExpire, showTimer, onProceedToPa
   };
 
   // Handle checkout
-  const handleProceedToCheckout = (total, discount) => {
-    console.log(`Proceeding to checkout: $${total.toFixed(2)} with ${discount * 100}% discount`);
-
+  const handleProceedToCheckout = (total, discount, serviceFee) => {
+    console.log(`Proceeding to checkout: $${total.toFixed(2)} with ${discount * 100}% discount and ${serviceFee.toFixed(2)} service fee`);
+    
     // Hide mobile cart if it's open
     setShowMobileCart(false);
 
     // Pass cart items, total, and discount to parent component
     if (typeof onProceedToPayment === 'function') {
-      onProceedToPayment(cartItems, total, discount);
+      onProceedToPayment(cartItems, total, discount, serviceFee);
     } else {
       alert('This would navigate to the checkout page in a real application.');
     }

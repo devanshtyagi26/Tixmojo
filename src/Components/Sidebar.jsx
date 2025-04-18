@@ -201,7 +201,7 @@ export function SidebarScroll({ toggleScrollPage, isSidebarOpen }) {
             <HiOutlineInformationCircle style={styles.icon} /> About Us
           </Link>
           <Link 
-            to="/page-not-found" 
+            to="/contact" 
             style={{...styles.item, textDecoration: "none"}}
             onClick={() => toggleScrollPage()}
             onMouseEnter={(e) => {

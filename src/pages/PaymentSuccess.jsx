@@ -61,7 +61,7 @@ const PaymentSuccess = () => {
           <div style={{ marginBottom: 10 }}><strong>Email:</strong> {payment.email}</div>
         )}
         {payment.card && (
-          <div style={{ marginBottom: 10 }}><strong>Card:</strong> **** **** **** {payment.card.last4} ({payment.card.brand})</div>
+          <div style={{ marginBottom: 10 }}><strong>Card:</strong> **** **** **** {payment.card.last4}</div>
         )}
       </div>
       <span style={{ cursor: 'pointer', color: '#6f44ff' }} onClick={() => navigator.clipboard.writeText(payment.id)}>
