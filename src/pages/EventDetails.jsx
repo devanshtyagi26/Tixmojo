@@ -5,6 +5,7 @@ import { getEventById, getEventsByOrganizer } from "../services/api.js";
 import { ScrollAnimation } from "../utils/ScrollAnimation.jsx";
 import { useAuth } from "../context/AuthContext";
 import { useAnimation } from "../context/AnimationContext";
+import { createPaymentIntent } from "../services/stripeService";
 
 // Import Modular Components
 import EventDetailsHeader from "../Components/EventDetails/EventDetailsHeader.jsx";

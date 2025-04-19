@@ -491,12 +491,14 @@ const CheckoutForm = ({
         const cardElement = elements.getElement(CardElement);
 
         // Validate billing details
-        if (!billingDetails.name.trim()) {
+        const buyerName = (buyerInfo?.name || '').trim();
+        if (!buyerName) {
           setPaymentError('Cardholder name is required');
           setIsProcessing(false);
           setIsSubmitting(false);
           return;
         }
+
 
         if (!billingDetails.address.postal_code.trim()) {
           setPaymentError('Postal code is required');
@@ -510,8 +512,8 @@ const CheckoutForm = ({
           type: 'card',
           card: cardElement,
           billing_details: {
-            name: buyerInfo ? `${buyerInfo.firstName} ${buyerInfo.lastName}` : '',
-            email: buyerInfo?.email || '',
+            name: buyerName,
+            email: (buyerInfo?.email || '').trim(),
             phone: buyerInfo?.phone || '',
             address: billingDetails.address
           }

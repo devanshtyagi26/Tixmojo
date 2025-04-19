@@ -46,18 +46,18 @@ const saveSessions = (sessions) => {
 export const initializePaymentSession = async (cartItems, event) => {
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 500));
-  
+
   // Generate a new session ID
   const sessionId = generateId('sess');
-  
+
   // Calculate total amount from cart items
   const totalAmount = cartItems.reduce((total, item) => {
     return total + (parseFloat(item.ticket.price) * item.quantity);
   }, 0);
-  
+
   // Create a session expiry time (15 minutes from now)
   const expiryTime = new Date(Date.now() + 15 * 60 * 1000);
-  
+
   // Create a new session
   const session = {
     id: sessionId,
@@ -71,12 +71,12 @@ export const initializePaymentSession = async (cartItems, event) => {
     buyerInfo: null,
     paymentIntent: null
   };
-  
+
   // Save the session
   const sessions = getSessions();
   sessions[sessionId] = session;
   saveSessions(sessions);
-  
+
   // Return the session information
   return {
     sessionId,
@@ -94,23 +94,23 @@ export const initializePaymentSession = async (cartItems, event) => {
 export const validateBuyerInfo = async (sessionId, buyerInfo) => {
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 800));
-  
+
   // Get the session
   const sessions = getSessions();
   const session = sessions[sessionId];
-  
+
   if (!session) {
     throw new Error('Session not found');
   }
-  
+
   // Update the session with buyer info
   session.buyerInfo = buyerInfo;
   session.status = 'buyer_info_validated';
-  
+
   // Save the updated session
   sessions[sessionId] = session;
   saveSessions(sessions);
-  
+
   // Return a success response
   return {
     success: true,
@@ -125,47 +125,44 @@ export const validateBuyerInfo = async (sessionId, buyerInfo) => {
  * @returns {Promise} Payment intent creation response including client secret
  */
 export const createPaymentIntent = async (sessionId) => {
-  // Simulate network delay
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  
-  // Get the session
   const sessions = getSessions();
   const session = sessions[sessionId];
-  
-  if (!session) {
-    throw new Error('Session not found');
+  if (!session) throw new Error('Session not found');
+
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/payment/create-intent`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ amount: session.totalAmount }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.message || 'Payment intent creation failed');
   }
-  
-  // Generate a payment intent ID and client secret
-  const paymentIntentId = generateId('pi');
-  const clientSecret = `${paymentIntentId}_secret_${generateId('')}`;
-  
-  // Create a payment intent object
-  const paymentIntent = {
-    id: paymentIntentId,
-    clientSecret,
+
+  const data = await response.json();
+
+  if (!data.clientSecret) throw new Error('Failed to create payment intent');
+
+  session.paymentIntent = {
+    id: data.id,
+    clientSecret: data.clientSecret,
     amount: session.totalAmount,
-    currency: 'usd',
     status: 'requires_payment_method',
-    created: Date.now()
   };
-  
-  // Update the session with payment intent
-  session.paymentIntent = paymentIntent;
+
   session.status = 'payment_intent_created';
-  
-  // Save the updated session
   sessions[sessionId] = session;
   saveSessions(sessions);
-  
-  // Return the client secret
+
   return {
-    clientSecret,
-    isSimulated: true,
+    clientSecret: data.clientSecret,
     amount: session.totalAmount,
-    currency: 'usd'
+    currency: 'usd',
+    isSimulated: false,
   };
 };
+
 
 /**
  * Confirm payment success
@@ -176,31 +173,31 @@ export const createPaymentIntent = async (sessionId) => {
 export const confirmPaymentSuccess = async (sessionId, paymentIntentId) => {
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 1200));
-  
+
   // Get the session
   const sessions = getSessions();
   const session = sessions[sessionId];
-  
+
   if (!session) {
     throw new Error('Session not found');
   }
-  
+
   // Update the payment intent status
   if (session.paymentIntent) {
     session.paymentIntent.status = 'succeeded';
   }
-  
+
   // Update the session status
   session.status = 'payment_succeeded';
-  
+
   // Generate an order ID
   const orderId = generateId('order');
   session.orderId = orderId;
-  
+
   // Save the updated session
   sessions[sessionId] = session;
   saveSessions(sessions);
-  
+
   // Return order information
   return {
     success: true,
@@ -227,22 +224,22 @@ export const confirmPaymentSuccess = async (sessionId, paymentIntentId) => {
 export const applyPromoCode = async (sessionId, promoCode) => {
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 700));
-  
+
   // Get the session
   const sessions = getSessions();
   const session = sessions[sessionId];
-  
+
   if (!session) {
     throw new Error('Session not found');
   }
-  
+
   // Simulate promo code validation
   // For demonstration purposes, apply a standard 10% discount for any code that starts with "TIXMOJO"
   // and 15% for "WELCOME", otherwise return an error
   let discount = 0;
   let isValid = false;
   let message = 'Invalid promo code';
-  
+
   if (promoCode.toUpperCase().startsWith('TIXMOJO')) {
     discount = 0.1; // 10% discount
     isValid = true;
@@ -252,14 +249,14 @@ export const applyPromoCode = async (sessionId, promoCode) => {
     isValid = true;
     message = 'Promo code applied: 15% discount';
   }
-  
+
   if (isValid) {
     // Update the session with discount
     session.discount = discount;
     sessions[sessionId] = session;
     saveSessions(sessions);
   }
-  
+
   // Return the discount information
   return {
     isValid,
@@ -278,30 +275,30 @@ export const applyPromoCode = async (sessionId, promoCode) => {
 export const getSessionStatus = async (sessionId) => {
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 300));
-  
+
   // Get the session
   const sessions = getSessions();
   const session = sessions[sessionId];
-  
+
   if (!session) {
     throw new Error('Session not found');
   }
-  
+
   // Calculate time remaining
   const expiryTime = new Date(session.expiryTime);
   const now = new Date();
   const timeRemaining = Math.max(0, expiryTime.getTime() - now.getTime());
-  
+
   // Check if the session is expired
   const isExpired = timeRemaining <= 0;
-  
+
   // If expired, update the status
   if (isExpired && session.status !== 'expired') {
     session.status = 'expired';
     sessions[sessionId] = session;
     saveSessions(sessions);
   }
-  
+
   // Return the session status
   return {
     status: session.status,

@@ -1307,15 +1307,27 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
 
               {/* Stripe Payment Form - Only showing Stripe card element */}
               <div style={{ marginBottom: '30px' }}>
-                <StripePaymentComponent
-                  sessionId={sessionId}
-                  buyerInfo={buyerInfoForm.getValues()}
-                  onPaymentSuccess={handlePaymentSuccess}
-                  onPaymentError={handlePaymentError}
-                  isSubmitting={isFormSubmitting}
-                  setIsSubmitting={setIsFormSubmitting}
-                  amount={totalAmount + serviceFee - (totalAmount * discount)}
-                />
+                {(() => {
+                  const buyerInfo = buyerInfoForm.getValues();
+                  const fullName = `${(buyerInfo.firstName || '').trim()} ${(buyerInfo.lastName || '').trim()}`.trim();
+
+                  return (
+                    <StripePaymentComponent
+                      sessionId={sessionId}
+                      buyerInfo={{
+                        name: fullName,
+                        email: buyerInfo.email || '',
+                        phone: buyerInfo.phone || '',
+                      }}
+                      onPaymentSuccess={handlePaymentSuccess}
+                      onPaymentError={handlePaymentError}
+                      isSubmitting={isFormSubmitting}
+                      setIsSubmitting={setIsFormSubmitting}
+                      amount={totalAmount + serviceFee - (totalAmount * discount)}
+                    />
+                  );
+                })()}
+
               </div>
 
               {/* Secure payment notice */}
