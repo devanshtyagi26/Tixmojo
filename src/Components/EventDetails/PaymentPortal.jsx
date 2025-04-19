@@ -685,19 +685,44 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
   };
 
   // Handle successful payment from Stripe
-  const handlePaymentSuccess = (paymentDetails) => {
-    console.log('handlePaymentSuccess called with:', paymentDetails);
-    if (!paymentDetails || !paymentDetails.id) {
-      alert('Payment details missing or invalid.');
-      return;
+  const handlePaymentSuccess = async (paymentDetails) => {
+    console.log('🧾 Payment processed successfully yuhuu:', paymentDetails);
+
+    const buyerInfo = buyerInfoForm.getValues();
+    const fullName = `${(buyerInfo.firstName || '').trim()} ${(buyerInfo.lastName || '').trim()}`.trim();
+
+    const ticketPayload = {
+      name: fullName,
+      email: buyerInfo.email,
+      eventName: event.title,
+      bookingCode: paymentDetails.id,
+      seat: cartItems.map(i => i.ticket.name).join(', '),
+      date: event.date
+    };
+
+    const url = `${import.meta.env.VITE_API_URL}/tickets/send-ticket`;
+
+    console.log('📤 Attempting to send ticket PDF:', ticketPayload);
+    console.log('🌐 API URL:', url);
+
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(ticketPayload)
+      });
+
+      const result = await res.json();
+      console.log('📬 Ticket response:', result);
+    } catch (err) {
+      console.error('❌ Error sending ticket email:', err);
     }
-    console.log("Payment processed successfully:", paymentDetails);
 
-    // Redirect to success page with only the paymentIntentId
-    navigate('/payment-success', { state: { paymentIntentId: paymentDetails.id } });
-
+    navigate('/payment-success', { state: paymentDetails });
     setIsFormSubmitting(false);
   };
+
+
 
   // Handle payment error from Stripe
   const handlePaymentError = (errorMessage) => {

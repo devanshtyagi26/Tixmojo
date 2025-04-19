@@ -1294,6 +1294,8 @@ const CheckoutForm = ({
 const StripePaymentForm = ({
   sessionId,
   buyerInfo,
+  onPaymentSuccess,
+  onPaymentError,
   isSubmitting,
   setIsSubmitting,
   amount
@@ -1305,14 +1307,7 @@ const StripePaymentForm = ({
   const [isSimulationMode, setIsSimulationMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Redirect after payment success
-  const handleSuccess = (paymentDetails) => {
-    console.log('Payment succeeded:', paymentDetails, 'and clientSecret:', clientSecret);
-    console.log('Payment processed successfully:', paymentDetails.id);
-    // Inside CheckoutForm on success:
-    sessionStorage.setItem('lastPaymentId', paymentDetails.id);
-    navigate('/payment-success', { state: paymentDetails });
-  };
+
   const handleError = (errorMessage) => {
     console.error('Payment error:', errorMessage);
   };
@@ -1418,8 +1413,8 @@ const StripePaymentForm = ({
       <CheckoutForm
         sessionId={sessionId}
         buyerInfo={buyerInfo}
-        onPaymentSuccess={handleSuccess}
-        onPaymentError={handleError}
+        onPaymentSuccess={onPaymentSuccess} // <-- from parent component
+        onPaymentError={onPaymentError}
         isSubmitting={isSubmitting}
         setIsSubmitting={setIsSubmitting}
         amount={amount}
