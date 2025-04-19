@@ -92,6 +92,19 @@ const CheckoutForm = ({
   const [cardComplete, setCardComplete] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
+
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @keyframes spin {
+        100% { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
+
+
   // Only keep postal code in the billing details - name and email are provided by parent component
   const [billingDetails, setBillingDetails] = useState({
     address: {
@@ -423,6 +436,7 @@ const CheckoutForm = ({
     if (event && event.preventDefault) {
       event.preventDefault();
     }
+
     console.log('clientSecret being used:', clientSecret);
 
     if (!clientSecret) {
@@ -430,14 +444,10 @@ const CheckoutForm = ({
       return;
     }
 
-    if (isProcessing || isSubmitting) {
-      return;
-    }
+    if (isProcessing || isSubmitting) return;
 
-    // Clear previous errors
-    setPaymentError(null);
+    setPaymentError(null); // Clear previous errors
 
-    // Validate form before submission
     if (!isSimulationMode && !validateForm()) {
       setPaymentError('Please complete all required fields correctly.');
       return;
@@ -447,9 +457,7 @@ const CheckoutForm = ({
     setIsSubmitting(true);
 
     try {
-      // Check if we're in simulation mode
       if (isSimulationMode) {
-        // Validate simulation form fields
         if (Object.keys(simulationErrors).length > 0) {
           setPaymentError('Please correct the errors in the form before proceeding.');
           setIsProcessing(false);
@@ -457,23 +465,15 @@ const CheckoutForm = ({
           return;
         }
 
-        // Simulate payment processing
         console.log('Simulating Stripe payment processing...');
-
-        // Introduce a delay to simulate payment processing
         await new Promise(resolve => setTimeout(resolve, 1500));
 
-        // Extract payment intent ID from the client secret (simulated)
         const simulatedPaymentIntentId = clientSecret.split('_secret_')[0];
-
-        // Confirm payment success on the server
         await stripeService.confirmPaymentSuccess(sessionId, simulatedPaymentIntentId);
 
         const cardNumber = cardNumberRef.current.value;
 
-        console.log("Buyer info", buyerInfo);
-        // Call the success callback
-        onPaymentSuccess({
+        await onPaymentSuccess({
           id: simulatedPaymentIntentId,
           amount: amount * 100,
           created: Math.floor(Date.now() / 1000),
@@ -482,23 +482,19 @@ const CheckoutForm = ({
         });
 
       } else {
-        // Real Stripe payment processing
         if (!stripe || !elements) {
           throw new Error('Stripe.js has not loaded yet');
         }
 
-        // Get the card element
         const cardElement = elements.getElement(CardElement);
-
-        // Validate billing details
         const buyerName = (buyerInfo?.name || '').trim();
+
         if (!buyerName) {
           setPaymentError('Cardholder name is required');
           setIsProcessing(false);
           setIsSubmitting(false);
           return;
         }
-
 
         if (!billingDetails.address.postal_code.trim()) {
           setPaymentError('Postal code is required');
@@ -507,7 +503,6 @@ const CheckoutForm = ({
           return;
         }
 
-        // Create payment method with billing details (now just postal code)
         const { error: createPaymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
           type: 'card',
           card: cardElement,
@@ -529,17 +524,11 @@ const CheckoutForm = ({
         if (!paymentMethod || !paymentMethod.id) {
           console.error('Failed to create payment method:', createPaymentMethodError, paymentMethod);
           setPaymentError('Failed to create payment method.');
+          setIsProcessing(false);
+          setIsSubmitting(false);
           return;
         }
-        if (!clientSecret) {
-          console.error('Missing clientSecret');
-          setPaymentError('Payment not initialized. Please try again.');
-          return;
-        }
-        console.log('buyerInfo:', buyerInfo);
 
-
-        // Process the payment with billing details
         const result = await stripe.confirmCardPayment(clientSecret, {
           payment_method: paymentMethod.id,
           receipt_email: buyerInfo?.email,
@@ -556,7 +545,6 @@ const CheckoutForm = ({
         });
 
         if (result.error) {
-          // Identify and display specific error types
           if (result.error.type === 'card_error') {
             setPaymentError(`Card error: ${result.error.message}`);
           } else if (result.error.type === 'validation_error') {
@@ -566,19 +554,16 @@ const CheckoutForm = ({
           }
           onPaymentError(result.error.message);
         } else if (result.paymentIntent.status === 'succeeded') {
-          // Payment was successful
           console.log('Payment succeeded with ID:', result.paymentIntent.id, 'and clientSecret:', clientSecret);
           console.log('Stripe confirmCardPayment result:', result);
+
           if (
             result.paymentIntent &&
-            result.paymentIntent.status === 'succeeded' &&
             typeof result.paymentIntent.id === 'string' &&
             result.paymentIntent.id.length > 0
           ) {
-            // Confirm payment success on the server
             await stripeService.confirmPaymentSuccess(sessionId, result.paymentIntent.id);
 
-            // Analytics push (safe: result is defined)
             window.dataLayer?.push({
               event: 'stripe_payment_success',
               paymentId: result.paymentIntent.id,
@@ -586,8 +571,7 @@ const CheckoutForm = ({
               currency: result.paymentIntent.currency
             });
 
-            // Call the success callback and pass payment details
-            onPaymentSuccess({
+            await onPaymentSuccess({
               id: result.paymentIntent.id,
               amount: result.paymentIntent.amount,
               created: result.paymentIntent.created,
@@ -598,39 +582,37 @@ const CheckoutForm = ({
             setPaymentError('Invalid payment intent ID');
             onPaymentError('Invalid payment intent ID');
           }
+
         } else if (result.paymentIntent.status === 'requires_action') {
-          // Handle 3D Secure authentication
           const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(clientSecret);
 
           if (confirmError) {
             setPaymentError(`Authentication failed: ${confirmError.message}`);
             onPaymentError(confirmError.message);
           } else if (paymentIntent.status === 'succeeded') {
-            // 3D Secure authentication successful
             await stripeService.confirmPaymentSuccess(sessionId, paymentIntent.id);
-            onPaymentSuccess(paymentIntent.id);
+            await onPaymentSuccess(paymentIntent.id);
           } else {
             setPaymentError(`Payment failed with status: ${paymentIntent.status}`);
             onPaymentError(`Payment failed with status: ${paymentIntent.status}`);
           }
         } else {
-          // Unexpected status
           setPaymentError(`Payment status: ${result.paymentIntent.status}`);
           onPaymentError(`Unexpected payment status: ${result.paymentIntent.status}`);
         }
       }
 
-
-
     } catch (error) {
       console.error('Payment confirmation error:', error);
       setPaymentError(error.message || 'Error processing payment. Please try again.');
       onPaymentError(error.message || 'Error processing payment. Please try again.');
-    } finally {
-      setIsProcessing(false);
-      setIsSubmitting(false);
     }
+
+    // ✅ Moved to the end: ensure it only happens after all success flows
+    setIsProcessing(false);
+    setIsSubmitting(false);
   };
+
   const isButtonDisabled = isProcessing ||
     (isSimulationMode ? !simulationFormComplete || Object.keys(simulationErrors).length > 0
       : (!stripe || !elements || !cardComplete || Object.keys(validationErrors).length > 0 || !billingDetails.address.postal_code)) ||
@@ -1247,16 +1229,27 @@ const CheckoutForm = ({
       >
         {isProcessing ? (
           <>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ animation: 'spin 1s linear infinite' }}>
-              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" strokeDasharray="40 20" />
-              <style>{`
-                @keyframes spin {
-                  100% {
-                    transform: rotate(360deg);
-                  }
-                }
-              `}</style>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{
+                animation: 'spin 1s linear infinite',
+                transformOrigin: 'center'
+              }}
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+                strokeDasharray="40 20"
+              />
             </svg>
+
             Processing Payment...
           </>
         ) : (
