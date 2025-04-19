@@ -702,25 +702,26 @@ const PaymentPortal = ({ event, expiryTime, onExpire, cartItems, totalAmount, di
 
     const url = `${import.meta.env.VITE_API_URL}/tickets/send-ticket`;
 
-    console.log('📤 Attempting to send ticket PDF:', ticketPayload);
+    console.log('📤 Triggering ticket PDF/email in background:', ticketPayload);
     console.log('🌐 API URL:', url);
 
-    try {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(ticketPayload)
-      });
+    // Fire and forget
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(ticketPayload)
+    })
+      .then(res => res.json())
+      .then(data => console.log('📬 Ticket email response:', data))
+      .catch(err => console.error('❌ Error sending ticket email:', err));
 
-      const result = await res.json();
-      console.log('📬 Ticket response:', result);
-    } catch (err) {
-      console.error('❌ Error sending ticket email:', err);
-    }
-
+    // Immediately redirect to success page
     navigate('/payment-success', { state: paymentDetails });
+
+    // Mark submission complete
     setIsFormSubmitting(false);
   };
+
 
 
 
